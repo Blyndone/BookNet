@@ -5,12 +5,12 @@ const app = express()
 const pool = require('./db')
 
 app.get('/', (req, res) => {
-    res.send("HEYY JESSSSEE!!!")
+    res.send("HEYY JESSSSEE!!")
 })
 
 app.get('/books', async(req,res) => {
     try{
-        const books = await pool.query('SELECT * from book')
+        const books = await pool.query('SELECT * from books')
         res.json(books.rows)
     }catch (err) {
         console.error(err)
