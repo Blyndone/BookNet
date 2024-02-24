@@ -6,6 +6,8 @@ import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
+import RadioGroup from '@mui/material/RadioGroup';
+import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -33,6 +35,9 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignUp() {
+    const [role, setRole] = React.useState('employee');
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -105,6 +110,18 @@ export default function SignUp() {
                 />
               </Grid>
               <Grid item xs={12}>
+                <RadioGroup
+                  row
+                  aria-label="role"
+                  name="role"
+                  value={role}
+                  onChange={ev => setRole(ev.target.value)}
+                >
+                  <FormControlLabel value="employee" control={<Radio />} label="Employee" />
+                  <FormControlLabel value="customer" control={<Radio />} label="Customer" />
+                </RadioGroup>
+              </Grid>
+              <Grid item xs={12}>
                 <FormControlLabel
                   control={<Checkbox value="allowExtraEmails" color="primary" />}
                   label="I want to receive inspiration, marketing promotions and updates via email."
@@ -121,7 +138,7 @@ export default function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>

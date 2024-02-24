@@ -121,7 +121,7 @@ const Login = (props) => {
             else
             // Else, ask user if they want to create a new account and if yes, then log in
                 if (window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
-                    logIn()
+                    navigate("/signUp")
                 }
         })        
   
@@ -230,7 +230,7 @@ const Login = (props) => {
                     </Link>
                   </Grid>
                   <Grid item>
-                    <Link href="#" variant="body2">
+                    <Link href="/signUp" variant="body2">
                       {"Don't have an account? Sign Up"}
                     </Link>
                   </Grid>
