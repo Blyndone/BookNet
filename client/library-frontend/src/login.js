@@ -83,50 +83,6 @@ const Login = (props) => {
           password: data.get('password'),
         });
       };
-    
-        
-    const onButtonClick = () => {
-        
-
-        // Set initial error values to empty
-        setEmailError("")
-        setPasswordError("")
-
-        // Check if the user has entered both fields correctly
-        if ("" === email) {
-            setEmailError("Please enter your email")
-            return
-        }
-
-        if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-            setEmailError("Please enter a valid email")
-            return
-        }
-
-        if ("" === password) {
-            setPasswordError("Please enter a password")
-            return
-        }
-
-        if (password.length < 7) {
-            setPasswordError("The password must be 8 characters or longer")
-            return
-        }
-
-        // Check if email has an account associated with it
-        checkAccountExists(accountExists => {
-            // If yes, log in 
-            if (accountExists)
-                logIn()
-            else
-            // Else, ask user if they want to create a new account and if yes, then log in
-                if (window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
-                    navigate("/signUp")
-                }
-        })        
-  
-
-    }
 
     // Call the server API to check if the given email ID already exists
     const checkAccountExists = (callback) => {
@@ -197,7 +153,6 @@ const Login = (props) => {
                   error={Boolean(emailError)} // Set error to true if there is an error
                   helperText={emailError} // Display the error message
                 />
-                  <label className="errorLabel" >{emailError}</label>
                 <TextField
                   margin="normal"
                   required
