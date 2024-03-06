@@ -18,11 +18,14 @@ import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const SignUp = (props) => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [emailError, setEmailError] = useState("")
-  const [passwordError, setPasswordError] = useState("")
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [role, setRole] = useState('employee');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
   
   const navigate = useNavigate();
   const defaultTheme = createTheme();
@@ -102,12 +105,18 @@ const SignUp = (props) => {
 
   // Log in a user using email and password
   const signup = () => {
-      fetch("http://localhost:3006/auth", {
+      fetch("http://localhost:3006/signup", {
           method: "POST",
           headers: {
               'Content-Type': 'application/json'
             },
-          body: JSON.stringify({email, password})
+          body: JSON.stringify({
+           firstName,
+           lastName,
+            email,
+            password,
+            role
+          })
       })
       .then(r => r.json())
       .then(r => {
@@ -120,6 +129,10 @@ const SignUp = (props) => {
               window.alert("Wrong email or password")
           }
       })
+      .catch(error => {
+        console.error("Signup error:", error);
+        window.alert("An error occurred during signup. Please try again later.");
+    });
   }
 
   return (
@@ -151,6 +164,7 @@ const SignUp = (props) => {
                 id="firstName"
                 label="First Name"
                 autoFocus
+                onChange={ev => setFirstName(ev.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -161,6 +175,7 @@ const SignUp = (props) => {
                 label="Last Name"
                 name="lastName"
                 autoComplete="family-name"
+                onChange={ev => setLastName(ev.target.value)}
               />
             </Grid>
             <Grid item xs={12}>

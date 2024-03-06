@@ -24,52 +24,8 @@ app.get('/books', async(req,res) => {
     }
 })
 
-// app.post('/auth', async (req, res) => {
-//     const { email, password } = req.body;
-  
-//     try {
-//       // Look up the user entry in the database
-//       const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-  
-//       // If found, compare the hashed passwords and generate the JWT token for the user
-//       if (result.rows.length === 1) {
-//         const user = result.rows[0];
-//         bcrypt.compare(password, user.password, function (_err, result) {
-//           if (!result) {
-//             return res.status(401).json({ message: 'Invalid password' });
-//           } else {
-//             let loginData = {
-//               email,
-//               signInTime: Date.now(),
-//             };
-  
-//             const token = jwt.sign(loginData, jwtSecretKey);
-//             res.status(200).json({ message: 'success', token });
-//           }
-//         });
-//       } else {
-//         // If no user is found, hash the given password and create a new entry in the auth db with the email and hashed password
-//         bcrypt.hash(password, 10, async function (_err, hash) {
-//           const insertQuery = 'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *';
-//           const result = await pool.query(insertQuery, [email, hash]);
-  
-//           let loginData = {
-//             email,
-//             signInTime: Date.now(),
-//           };
-  
-//           const token = jwt.sign(loginData, jwtSecretKey);
-//           res.status(200).json({ message: 'success', token });
-//         });
-//       }
-//     } catch (error) {
-//       console.error('Error executing SQL query', error);
-//       res.status(500).json({ message: 'Internal Server Error' });
-//     }
-//   });
-
   app.post("/signup", async (req, res) => {
-    const { email, password } = req.body;
+    const { firstName , lastName , email, password, role} = req.body;
 
     try {
         // Check if user already exists
@@ -83,9 +39,11 @@ app.get('/books', async(req,res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        
+
         // Insert new user into the database
-        const insertUserQuery = 'INSERT INTO users(email, password) VALUES($1, $2) RETURNING *';
-        const insertedUserResult = await pool.query(insertUserQuery, [email, hashedPassword]);
+        const insertUserQuery = 'INSERT INTO users( firstName, lastName, email, password, role) VALUES($1, $2, $3, $4, $5) RETURNING *';
+        const insertedUserResult = await pool.query(insertUserQuery, [firstName, lastName, email, hashedPassword, role]);
 
         const newUser = insertedUserResult.rows[0];
 
@@ -155,19 +113,27 @@ app.post('/verify', (req, res) => {
 
 })
 
-app.post('/check-account', (req, res) => {
-    const { email } = req.body
+app.post('/check-account', async (req, res) => {
+    try {
+        const { email } = req.body;
 
-    console.log(req.body)
+        // Check if user exists in the database
+        const getUserQuery = 'SELECT * FROM users WHERE email = $1';
+        const result = await pool.query(getUserQuery, [email]);
 
-    const user = db.get("users").value().filter(user => email === user.email)
+        const user = result.rows;
 
-    console.log(user)
-    
-    res.status(200).json({
-        status: user.length === 1 ? "User exists" : "User does not exist", userExists: user.length === 1
-    })
-})
+        console.log(user);
+
+        res.status(200).json({
+            status: user.length === 1 ? "User exists" : "User does not exist",
+            userExists: user.length === 1,
+        });
+    } catch (error) {
+        console.error("Error checking account:", error);
+        res.status(500).json({ status: "error", message: "Internal server error" });
+    }
+});
 
 
 app.listen(PORT, ()=> console.log(`Server running on Port ${PORT}`))

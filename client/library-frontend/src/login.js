@@ -101,7 +101,7 @@ const Login = (props) => {
 
     // Log in a user using email and password
     const logIn = () => {
-        fetch("http://localhost:3006/auth", {
+        fetch("http://localhost:3006/login", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
