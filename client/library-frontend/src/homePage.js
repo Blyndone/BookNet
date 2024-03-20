@@ -4,6 +4,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton'; // Import IconButton component
+import SearchIcon from '@mui/icons-material/Search'; // Import SearchIcon
+import InputAdornment from '@mui/material/InputAdornment';
 import { useNavigate } from "react-router-dom";
 
 
@@ -27,8 +31,20 @@ const LandingPage = (props) => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Book.net
           </Typography>
+            <TextField
+              label="Search"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment>
+                    <IconButton>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
           <Button color="inherit" onClick={onButtonClick}>Log Out</Button>
-          <Button color="inherit">{}</Button>
+          <Button color="inherit">Profile</Button>
         </Toolbar>
       </AppBar>
 
