@@ -1,5 +1,5 @@
 # Library_System
-# Still setting up repo
+# Intial Setup Complete
 # INSTALLATION 
 
         1. git clone the repositry 
