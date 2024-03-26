@@ -25,7 +25,7 @@ const Header = props => {
   return (
     <div>
       {/* Header */}
-      <AppBar position="static">
+      <AppBar position="static" style={{ backgroundColor: "B1DDF0" }}>
         <Toolbar>
           <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
             Book.net
