@@ -28,7 +28,7 @@ const Header = (props) =>{
 
     <div>
         {/* Header */}
-      <AppBar position="static">
+      <AppBar position="static" style = {{backgroundColor: "B1DDF0"}}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Book.net
