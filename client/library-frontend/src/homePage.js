@@ -2,20 +2,25 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box'; 
 import Header from './component/header';
+import Footer from './component/footer';
+import SideBar from './component/sidebar';
 
 
 const LandingPage = (props) => {
     const { loggedIn} = props
-   
-  return (
-    <div>
-      {/* Header */}
-      <Header  loggedIn={loggedIn} />
-
-      {/* Main Content */}
-      <Container>
-        <Typography variant="h2" sx={{ mt: 4 }}>
+    
+    return (
+      <Grid container direction="column" spacing={2}> {/* Set container direction to column */}
+        <Grid item>  {/* Header takes full width of the column */}
+          <Header   loggedIn={loggedIn} />
+        </Grid>
+        <Grid container spacing={2} style={{marginLeft:"auto"}}>  {/* Nested container for three columns */}
+            <SideBar/>
+          <Grid item xs={6}>
+          <Typography variant="h2" sx={{ mt: 4 }}>
           Welcome to Book.net
         </Typography>
         <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
@@ -35,16 +40,13 @@ const LandingPage = (props) => {
         <Button variant="contained" color="primary" sx={{ mt: 2 }}>
           Learn More
         </Button>
-      </Container>
+          </Grid>
+          <SideBar/>
 
-      {/* Footer */}
-      <Container sx={{ mt: 5 }}>
-        <Typography variant="body2" color="text.secondary" align="center">
-          © {new Date().getFullYear()} Your Company. All rights reserved.
-        </Typography>
-      </Container>
-    </div>
-  );
+<Footer/>
+        </Grid>
+      </Grid>
+    );
 };
 
 export default LandingPage;
