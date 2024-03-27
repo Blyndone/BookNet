@@ -16,6 +16,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/books', async (req, res) => {
+    console.log("get:books")
     try {
         const books = await pool.query('SELECT * from books ORDER BY book_id')
         res.json(books.rows)
@@ -24,6 +25,21 @@ app.get('/books', async (req, res) => {
     }
 })
 
+
+app.get('/books/:title', async (req, res) => {
+    console.log("get:books/title")
+
+    try {
+        const { title } = req.params;
+        console.log(title)
+        const query = 'SELECT * FROM books WHERE title = $1';
+        const books = await pool.query(query, [title])
+        res.json(books.rows)
+        console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
 
 //Update Books API endpoint
 //
@@ -49,7 +65,9 @@ app.patch('/books', async (req, res) => {
     const {
         title
     } = req.body
-    console.log("Updateing:", title)
+    console.log("Updating:", title)
+    
+
     try {
         const query = 'SELECT * FROM books WHERE title = $1';
         const books = await pool.query(query, [title])
