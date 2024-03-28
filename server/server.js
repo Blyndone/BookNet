@@ -116,6 +116,34 @@ app.patch('/books', async (req, res) => {
     }
 })
 
+app.get('/events', async (req, res) => {
+    try {
+        // Query the database to retrieve events data
+        const queryText = `
+        SELECT 
+            e.event_id, 
+            e.event_name, 
+            e.event_date, 
+            e.book_id, 
+            e.author_id, 
+            b.title, 
+            a.author_name
+        FROM 
+            events e
+        JOIN 
+            books b ON e.book_id = b.book_id
+        JOIN 
+            author a ON e.author_id = a.author_id
+    `; 
+        const { rows } = await pool.query(queryText);
+
+        // Send the events data as a response
+        res.json(rows);
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 app.post("/signup", async (req, res) => {
     const {

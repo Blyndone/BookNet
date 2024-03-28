@@ -9,6 +9,7 @@ import BookSearch from "./mutual/booksearch";
 import "./App.css";
 import { useEffect, useState } from "react";
 import EditBook from "./employee/editbook";
+import Profile from "./mutual/profile";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -69,6 +70,10 @@ function App() {
           <Route
             path="/userhome"
             element={<UserHome setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+          />
+          <Route
+            path="/profile"
+            element={<Profile setLoggedIn={setLoggedIn} setEmail={setEmail} />}
           />
           <Route
             path="/emphome"
