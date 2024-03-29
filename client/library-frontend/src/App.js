@@ -12,6 +12,7 @@ import EditBook from "./employee/editbook";
 import CheckoutBook from "./employee/checkoutbook";
 import ReturnBook from "./employee/returnbook";
 import Profile from "./mutual/profile";
+import Events from "./mutual/events";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -102,6 +103,10 @@ function App() {
             element={
               <ReturnBook setLoggedIn={setLoggedIn} setEmail={setEmail} />
             }
+          />
+          <Route
+            path="/events"
+            element={<Events setLoggedIn={setLoggedIn} setEmail={setEmail} />}
           />
         </Routes>
       </BrowserRouter>
