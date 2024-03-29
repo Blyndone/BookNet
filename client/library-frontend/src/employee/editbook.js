@@ -111,9 +111,9 @@ const EditBook = props => {
               </form>
             </div>
             <div>
-              <br />
+              {/* <br />
               {JSON.stringify(data)}
-              <br /> <br />
+              <br /> <br /> */}
               {/* Book Edit Form */}
               <Typography variant="h5" sx={{ mt: 4 }}>
                 Book Edit Form{null === data ? "" : " - " + data.title}

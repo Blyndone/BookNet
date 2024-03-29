@@ -96,6 +96,12 @@ const Home = props => {
                 onClick={() => Nav("/booksearch")}
                 value={"Book Search"}
               />
+              <input
+                className={"inputButton"}
+                type="button"
+                onClick={() => Nav("/events")}
+                value={"Events"}
+              />
             </div>
           </div>
         </Grid>
