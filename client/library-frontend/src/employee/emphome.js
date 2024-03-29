@@ -50,6 +50,20 @@ const EmpHome = props => {
                 }}>
                 Edit Book
               </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  navigate("/checkoutbook");
+                }}>
+                Checkout Book
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  navigate("/returnbook");
+                }}>
+                Return Book
+              </Button>
             </Container>
           </div>
         </Grid>

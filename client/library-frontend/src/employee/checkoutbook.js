@@ -11,7 +11,7 @@ import Grid from "@mui/material/Grid";
 import Header from ".././component/header";
 import Footer from ".././component/footer";
 import SideBar from ".././component/sidebar";
-const EditBook = props => {
+const CheckoutBook = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
   const [data, setData] = useState({
@@ -25,8 +25,14 @@ const EditBook = props => {
     img: "",
     count: ""
   });
+  const [userdata, setUserData] = useState({
+    id: "",
+    firstname: "",
+    lastname: ""
+  });
 
   const [query, setQuery] = useState("");
+  const [userquery, setUserQuery] = useState("");
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -50,28 +56,43 @@ const EditBook = props => {
       .catch(err => console.log(err));
   };
 
-  const submitEditBook = e => {
+  const handleUserSubmit = e => {
+    console.log(e);
     e.preventDefault();
+    window.alert(userquery);
+    // if (!query) return;
 
+    async function fetchData() {
+      if (userquery.length == 0) {
+        return;
+      }
+      const response = await fetch(`http://localhost:3006/user/` + userquery);
+      const res = await response.json();
+      // const results = data[0];
+      return res;
+    }
+
+    fetchData()
+      .then(res => {
+        setUserData(res[0]);
+      })
+      .catch(err => console.log(err));
+  };
+  const CheckoutBook = () => {
     async function patchbook() {
-      fetch(`http://localhost:3006/books/`, {
+      fetch(`http://localhost:3006/checkoutbook/` + data.title, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          title: data.title,
-          publisher: data.publisher,
-          isbn: data.isbn,
-          publication_year: data.publication_year,
-          genre: data.genre,
-          img: data.img,
-          count: data.count
+          title: data.title
         })
       });
     }
 
     patchbook();
+    setData({ ...data, instock: false });
   };
 
   return (
@@ -88,16 +109,17 @@ const EditBook = props => {
           {/* Main Content */}
           <Container>
             <Typography variant="h2" sx={{ mt: 4 }}>
-              Edit Book
+              Checkout Book
             </Typography>
             <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-              Type in the name of the book you want to edit!
+              Type in the name of the book you want to Checkout, and the User
+              ID!
             </Typography>
             <div />
             <div>
               <form onSubmit={handleSubmit}>
                 <label>
-                  Name:
+                  Book Name:
                   <input
                     type="text"
                     placeholder={null === data ? "Book Title" : data.title}
@@ -109,16 +131,53 @@ const EditBook = props => {
                 </label>
                 <input type="submit" value="Search" />
               </form>
+
+              <form onSubmit={handleUserSubmit}>
+                <label>
+                  User ID:
+                  <input
+                    type="text"
+                    placeholder={null === data ? "UserID" : userdata.id}
+                    value={userquery}
+                    onChange={e => {
+                      setUserQuery(e.target.value);
+                    }}
+                  />
+                </label>
+                <input type="submit" value="Search" />
+              </form>
             </div>
             <div>
               <br />
               {JSON.stringify(data)}
-              <br /> <br />
+              {JSON.stringify(userdata)}
+              <br />
               {/* Book Edit Form */}
+
               <Typography variant="h5" sx={{ mt: 4 }}>
-                Book Edit Form{null === data ? "" : " - " + data.title}
+                Book Data{null === data ? "" : " - " + data.title}
+                <br />
+                InStock: {String(data.instock)}
               </Typography>
-              <form onSubmit={submitEditBook}>
+              <Typography variant="h6" sx={{ mt: 4 }}>
+                Name:{data.title}
+                <br />
+                ISBN:{data.isbn}
+                <br />
+                Publisher:{data.publisher}
+                <br />
+                Genre:{data.genre}
+                <br />
+                Count:{data.count}
+              </Typography>
+              <Typography variant="h5" sx={{ mt: 4 }}>
+                User Data{null === data ? "" : " - " + data.title}
+              </Typography>
+              <Typography variant="h6" sx={{ mt: 4 }}>
+                Name:{userdata.firstname} {userdata.lastname}
+                <br />
+              </Typography>
+              {/* <form onSubmit={submitEditBook}>
                 <label>
                   Publisher:
                   <input
@@ -192,8 +251,15 @@ const EditBook = props => {
                 <br />
                 <br />
                 <input type="submit" value="Edit Books" />
-              </form>
+              </form> */}
             </div>
+            <Button
+              variant="contained"
+              onClick={() => {
+                CheckoutBook();
+              }}>
+              CHECKOUT
+            </Button>
             <br /> <br /> <br />
             <Button
               variant="contained"
@@ -220,4 +286,4 @@ const EditBook = props => {
   );
 };
 
-export default EditBook;
+export default CheckoutBook;

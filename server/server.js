@@ -41,6 +41,21 @@ app.get('/books/:title', async (req, res) => {
     }
 })
 
+
+app.get('/user/:id', async (req, res) => {
+    console.log("get:user/id")
+
+    try {
+        const { id } = req.params;
+        console.log(id)
+        const query = 'SELECT * FROM users WHERE id = $1';
+        const books = await pool.query(query, [id])
+        res.json(books.rows)
+        console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
 //Update Books API endpoint
 //
 //Patch Body Format:
@@ -112,6 +127,80 @@ app.patch('/books', async (req, res) => {
             });
         }
     } catch (err) {
+        console.error(err)
+    }
+})
+
+
+
+app.patch('/checkoutbook/:title', async (req, res) => {
+    const {
+        title
+    } = req.body
+    console.log("Checking Out:", title)
+    
+
+    try {
+            const query = `
+            UPDATE books 
+            SET 
+            instock=false
+            WHERE title = $1
+            `
+            const values = [title]
+            console.log(values)
+            const booksupdated = await pool.query(query, values)
+            console.log(booksupdated.rows)
+
+
+            res.status(200).json({
+                books: title,
+                message: 'Book Checked Out',
+
+            });
+         
+    } catch (err) {
+        res.status(500).json({
+            books: title,
+            message: 'Book Error:' + err,
+
+        })
+        console.error(err)
+    }
+})
+
+app.patch('/returnbook/:title', async (req, res) => {
+    const {
+        title
+    } = req.body
+    console.log("Returning Book", title)
+    
+
+    try {
+            const query = `
+            UPDATE books 
+            SET 
+            instock=true
+            WHERE title = $1
+            `
+            const values = [title]
+            console.log(values)
+            const booksupdated = await pool.query(query, values)
+            console.log(booksupdated.rows)
+
+
+            res.status(200).json({
+                books: title,
+                message: 'Book Returned',
+
+            });
+         
+    } catch (err) {
+        res.status(500).json({
+            books: title,
+            message: 'Book Error:' + err,
+
+        })
         console.error(err)
     }
 })
