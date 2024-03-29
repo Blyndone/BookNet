@@ -45,7 +45,11 @@ const Header = props => {
           <Button color="inherit" onClick={onButtonClick}>
             Log Out
           </Button>
-          <Button color="inherit">Profile</Button>
+          <Button 
+          color="inherit" 
+          onClick={() => { navigate("/profile"); }}>
+          Profile
+          </Button>
         </Toolbar>
       </AppBar>
     </div>
