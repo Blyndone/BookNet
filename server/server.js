@@ -1,6 +1,6 @@
 const PORT = process.env.PORT ?? 3006
 const express = require('express')
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 var cors = require('cors')
 const app = express()
@@ -74,15 +74,10 @@ app.get('/user/:id', async (req, res) => {
 // "count": 5
 //  }
 
-
-
 app.patch('/books', async (req, res) => {
     const {
         title
     } = req.body
-    console.log("Updating:", title)
-    
-
     try {
         const query = 'SELECT * FROM books WHERE title = $1';
         const books = await pool.query(query, [title])
@@ -381,6 +376,109 @@ app.post('/check-account', async (req, res) => {
             status: "error",
             message: "Internal server error"
         });
+    }
+});
+
+app.post('/book_insert', async (req,res) => {
+
+    const {title, author_id, publisher, isbn, publication_year, genre, img, count , instock} = req.body;
+    try {
+        const queryResult =
+            // Search for the isbn
+            await pool.query('SELECT isbn FROM books WHERE isbn = $1', [isbn]);
+
+            const id_count = await pool.query('SELECT COUNT(*) FROM books');
+            let rowCount = parseInt(id_count.rows[0].count);
+            rowCount+=1;
+
+        // If the result of the query is null, insert book
+        if (queryResult.rows.length === 0) {
+            const insert_query
+                = await pool.query('INSERT INTO books (book_id, title, author_id, publisher, isbn, publication_year, genre, img, count, instock) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+                [rowCount, title, author_id, publisher, isbn, publication_year, genre, img, count, instock]);
+
+                
+
+            // 200 Message
+            return res.status(200).json({
+                message: 'A new book has been added.'
+            });
+        }
+        else {
+            // Update the count for the existing book
+            await pool.query(
+                'UPDATE books SET count = count + $1 WHERE isbn = $2',
+                [count, isbn]
+            );
+            // Send response indicating the book already exists
+            return res.status(409).json({
+                message: 'Book with the same ISBN already exists.'
+            });
+        }
+    }
+    catch (error) {
+        console.error("Error adding book:", error);
+    return res.status(500).json({
+        message: 'An error occurred while adding the book.'
+    });
+    }
+});
+
+app.delete('/book_delete', async (req,res) => {
+
+    const {isbn} = req.body;
+    try {
+        const queryResult =
+            // Search for the isbn.
+            await pool.query('SELECT isbn FROM books WHERE isbn = $1', [isbn]);
+
+        // If the isbn is in the DB, delete book.
+        if (queryResult.rows.length > 0) {
+            const delete_query
+                = await pool.query('DELETE FROM books WHERE isbn = $1', [isbn]);
+
+            // 200 Message
+            return res.status(200).json({
+                message: 'THe book has been deleted.'
+            });
+        }
+        else {
+            // Send response indicating the book not in DB.
+            return res.status(404).json({
+                message: 'This book is not in the database.'
+            });
+        }
+    }
+    catch (error) {
+        console.error("Error deleting book:", error);
+    return res.status(500).json({
+        message: 'An error occurred while deleting the book.'
+    });
+    }
+});
+
+app.post('/event_insert', async (req,res) => {
+
+    const {event_name, event_date, book_id, author_id} = req.body;
+    try {
+        const id_count = await pool.query('SELECT COUNT(*) FROM events');
+            let rowCount = parseInt(id_count.rows[0].count);
+            rowCount+=1;
+
+        const insert_query
+            = await pool.query('INSERT INTO events (event_id, event_name, event_date, book_id, author_id) VALUES ($1, $2, $3, $4, $5)',
+            [rowCount, event_name, event_date, book_id, author_id]);
+
+        // 200 Message
+        return res.status(200).json({
+            message: 'A new event has been added.'
+        });
+    }
+    catch (error) {
+        console.error("Error adding event:", error);
+        return res.status(500).json({
+            message: 'An error occurred while adding the event.'
+    });
     }
 });
 
