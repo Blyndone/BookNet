@@ -1,6 +1,6 @@
 const PORT = process.env.PORT ?? 3006
 const express = require('express')
-//const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 var cors = require('cors')
 const app = express()
