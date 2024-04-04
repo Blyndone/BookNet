@@ -13,10 +13,12 @@ import CheckoutBook from "./employee/checkoutbook";
 import ReturnBook from "./employee/returnbook";
 import Profile from "./mutual/profile";
 import Events from "./mutual/events";
+import PrivateRoutes from "./utils/PrivateRoutes";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     // Fetch the user email and token from local storage
@@ -39,6 +41,7 @@ function App() {
       .then(r => {
         setLoggedIn("success" === r.message);
         setEmail(user.email || "");
+        setRole(user.role || ""); // Set the user's role
       });
   }, []);
 
@@ -46,6 +49,32 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
+          {/* Admin/Employee routes */}
+          <Route
+                    element={<PrivateRoutes loggedIn={loggedIn} role={role} />}
+                >
+                    {/* Nested routes for admin/employee */}
+                    <Route
+                      path="/emphome"
+                      element={<EmpHome setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+                    />
+                    <Route
+                    path="/editbook"
+                    element={<EditBook setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+                  />
+                  <Route
+                    path="/checkoutbook"
+                    element={
+                      <CheckoutBook setLoggedIn={setLoggedIn} setEmail={setEmail} />
+                    }
+                  />
+                  <Route
+                    path="/returnbook"
+                    element={
+                      <ReturnBook setLoggedIn={setLoggedIn} setEmail={setEmail} />
+                    }
+                  />
+                </Route>
           <Route
             path="/"
             element={
@@ -79,29 +108,9 @@ function App() {
             element={<Profile setLoggedIn={setLoggedIn} setEmail={setEmail} />}
           />
           <Route
-            path="/emphome"
-            element={<EmpHome setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
-          <Route
             path="/booksearch"
             element={
               <BookSearch setLoggedIn={setLoggedIn} setEmail={setEmail} />
-            }
-          />
-          <Route
-            path="/editbook"
-            element={<EditBook setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
-          <Route
-            path="/checkoutbook"
-            element={
-              <CheckoutBook setLoggedIn={setLoggedIn} setEmail={setEmail} />
-            }
-          />
-          <Route
-            path="/returnbook"
-            element={
-              <ReturnBook setLoggedIn={setLoggedIn} setEmail={setEmail} />
             }
           />
           <Route

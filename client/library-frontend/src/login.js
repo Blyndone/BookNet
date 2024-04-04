@@ -20,6 +20,7 @@ const Login = (props) => {
     const [password, setPassword] = useState("")
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
+    const [role, setRole] = useState("")
     
     const navigate = useNavigate();
     const defaultTheme = createTheme();
@@ -111,10 +112,15 @@ const Login = (props) => {
         .then(r => r.json())
         .then(r => {
             if ('success' === r.message) {
-                localStorage.setItem("user", JSON.stringify({email, token: r.token}))
+                localStorage.setItem("user", JSON.stringify({email, role: r.role ,token: r.token}))
                 props.setLoggedIn(true)
                 props.setEmail(email)
-                navigate("/home")
+                setRole(r.role)
+                if(role === "employee"){
+                  navigate("/emphome")
+                }else{
+                  navigate("/home")
+                }
             } else {
                 window.alert("Wrong email or password")
             }

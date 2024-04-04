@@ -262,13 +262,15 @@ app.post("/signup", async (req, res) => {
 
         let loginData = {
             email: newUser.email,
+            role: newUser.role,
             signInTime: Date.now(),
         };
 
         const token = jwt.sign(loginData, jwtSecretKey);
         res.status(200).json({
             message: "success",
-            token
+            token,
+            role: user.role
         });
     } catch (error) {
         console.error("Error during signup:", error);
@@ -306,13 +308,15 @@ app.post("/login", async (req, res) => {
 
         let loginData = {
             email: user.email,
+            role: user.role,
             signInTime: Date.now(),
         };
 
         const token = jwt.sign(loginData, jwtSecretKey);
         res.status(200).json({
             message: "success",
-            token
+            token,
+            role: user.role
         });
     } catch (error) {
         console.error("Error during login:", error);

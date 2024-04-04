@@ -121,10 +121,14 @@ const SignUp = (props) => {
       .then(r => r.json())
       .then(r => {
           if ('success' === r.message) {
-              localStorage.setItem("user", JSON.stringify({email, token: r.token}))
+              localStorage.setItem("user", JSON.stringify({email, role: r.role, token: r.token}))
               props.setLoggedIn(true)
               props.setEmail(email)
-              navigate("/home")
+              if(role === "employee"){
+                navigate("/emphome")
+              }else{
+                navigate("/home")
+              }
           } else {
               window.alert("Wrong email or password")
           }

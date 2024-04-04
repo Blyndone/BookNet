@@ -19,6 +19,7 @@ const Header = props => {
       props.setLoggedIn(false);
     } else {
       navigate("/login");
+      localStorage.removeItem("user");
     }
   };
 

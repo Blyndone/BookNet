@@ -77,32 +77,6 @@ const Home = props => {
                   </div>
                 : <div />}
             </div>
-            <div>
-              <input
-                className={"inputButton"}
-                type="button"
-                onClick={() => Nav("/userhome")}
-                value={"User Landing"}
-              />
-              <input
-                className={"inputButton"}
-                type="button"
-                onClick={() => Nav("/emphome")}
-                value={"Employee Landing"}
-              />
-              <input
-                className={"inputButton"}
-                type="button"
-                onClick={() => Nav("/booksearch")}
-                value={"Book Search"}
-              />
-              <input
-                className={"inputButton"}
-                type="button"
-                onClick={() => Nav("/events")}
-                value={"Events"}
-              />
-            </div>
           </div>
         </Grid>
         <SideBar />
