@@ -260,6 +260,11 @@ app.post("/signup", async (req, res) => {
 
         const newUser = insertedUserResult.rows[0];
 
+        if (role === 'employee') {
+            const insertEmployeeQuery = 'INSERT INTO employee(user_id, position) VALUES($1, $2)';
+            await pool.query(insertEmployeeQuery, [newUser.id, 'worker']);
+        }
+
         let loginData = {
             email: newUser.email,
             role: newUser.role,
@@ -270,7 +275,7 @@ app.post("/signup", async (req, res) => {
         res.status(200).json({
             message: "success",
             token,
-            role: user.role
+            role: newUser.role
         });
     } catch (error) {
         console.error("Error during signup:", error);
@@ -316,7 +321,8 @@ app.post("/login", async (req, res) => {
         res.status(200).json({
             message: "success",
             token,
-            role: user.role
+            role: user.role,
+            loggedIn: true
         });
     } catch (error) {
         console.error("Error during login:", error);

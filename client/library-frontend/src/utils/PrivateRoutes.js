@@ -1,7 +1,7 @@
 import { Outlet, Navigate } from 'react-router-dom'
 
 const PrivateRoutes = ({ isLoggedIn, role }) => {
-    const allowedRoles = ['admin', 'employee'];
+    const allowedRoles = ['employee'];
     const isAuthenticated = isLoggedIn && allowedRoles.includes(role);
 
     return(

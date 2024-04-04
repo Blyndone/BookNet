@@ -81,7 +81,7 @@ const Login = (props) => {
                 })    
         console.log({
           email: data.get('email'),
-          password: data.get('password'),
+          password: data.get('password')
         });
       };
 
@@ -102,30 +102,31 @@ const Login = (props) => {
 
     // Log in a user using email and password
     const logIn = () => {
-        fetch("http://localhost:3006/login", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-              },
-            body: JSON.stringify({email, password})
-        })
-        .then(r => r.json())
-        .then(r => {
-            if ('success' === r.message) {
-                localStorage.setItem("user", JSON.stringify({email, role: r.role ,token: r.token}))
-                props.setLoggedIn(true)
-                props.setEmail(email)
-                setRole(r.role)
-                if(role === "employee"){
-                  navigate("/emphome")
-                }else{
-                  navigate("/home")
-                }
-            } else {
-                window.alert("Wrong email or password")
-            }
-        })
-    }
+      fetch("http://localhost:3006/login", {
+          method: "POST",
+          headers: {
+              'Content-Type': 'application/json'
+            },
+          body: JSON.stringify({email, password})
+      })
+      .then(r => r.json())
+      .then(r => {
+          if ('success' === r.message) {
+              localStorage.setItem("user", JSON.stringify({email, role: r.role ,loggedIn: r.loggedIn,token: r.token}))
+              props.setLoggedIn(true)
+              props.setEmail(email)
+              if (r.role === "employee") {
+                  navigate("/employee/emphome");
+              } else {
+                  navigate("/home");
+              }
+          } else {
+              window.alert("Wrong email or password")
+          }
+      })
+  }
+
+    console.log(role)
 
     return (
         <ThemeProvider theme={defaultTheme}>

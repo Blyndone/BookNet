@@ -20,6 +20,8 @@ const Header = props => {
     } else {
       navigate("/login");
       localStorage.removeItem("user");
+      localStorage.removeItem("role");
+      localStorage.removeItem("loggedIn");
     }
   };
 

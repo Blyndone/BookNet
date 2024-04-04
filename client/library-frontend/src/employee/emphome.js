@@ -46,21 +46,21 @@ const EmpHome = props => {
               <Button
                 variant="contained"
                 onClick={() => {
-                  navigate("/editbook");
+                  navigate("/employee/editbook");
                 }}>
                 Edit Book
               </Button>
               <Button
                 variant="contained"
                 onClick={() => {
-                  navigate("/checkoutbook");
+                  navigate("/employee/checkoutbook");
                 }}>
                 Checkout Book
               </Button>
               <Button
                 variant="contained"
                 onClick={() => {
-                  navigate("/returnbook");
+                  navigate("/employee/returnbook");
                 }}>
                 Return Book
               </Button>

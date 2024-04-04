@@ -1,24 +1,31 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+import PrivateRoutes from "./utils/PrivateRoutes";
 import Home from "./home";
 import Login from "./login";
 import SignUp from "./signUp";
 import LandingPage from "./homePage";
 import EmpHome from "./employee/emphome";
-import UserHome from "./user/userhome";
-import BookSearch from "./mutual/booksearch";
-import "./App.css";
-import { useEffect, useState } from "react";
 import EditBook from "./employee/editbook";
 import CheckoutBook from "./employee/checkoutbook";
 import ReturnBook from "./employee/returnbook";
 import Profile from "./mutual/profile";
 import Events from "./mutual/events";
-import PrivateRoutes from "./utils/PrivateRoutes";
+import UserHome from "./user/userhome";
+import BookSearch from "./mutual/booksearch";
+import "./App.css";
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState(localStorage.getItem("role") || "");
+  const [loggedIn, setLoggedIn] = useState(localStorage.getItem("loggedIn") === "true");
+
+  useEffect(() => {
+    // Save role and loggedIn state to localStorage whenever they change
+    localStorage.setItem("role", role);
+    localStorage.setItem("loggedIn", loggedIn);
+  }, [role, loggedIn]);
+
 
   useEffect(() => {
     // Fetch the user email and token from local storage
@@ -39,9 +46,15 @@ function App() {
     })
       .then(r => r.json())
       .then(r => {
-        setLoggedIn("success" === r.message);
-        setEmail(user.email || "");
-        setRole(user.role || ""); // Set the user's role
+        if (r.message === "success") {
+          setLoggedIn(true);
+          setEmail(user.email || "");
+          setRole(user.role || ""); // Set the user's role
+        } else {
+          setLoggedIn(false);
+          setEmail("");
+          setRole("");
+        }
       });
   }, []);
 
@@ -49,74 +62,25 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          {/* Admin/Employee routes */}
-          <Route
-                    element={<PrivateRoutes loggedIn={loggedIn} role={role} />}
-                >
-                    {/* Nested routes for admin/employee */}
-                    <Route
-                      path="/emphome"
-                      element={<EmpHome setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-                    />
-                    <Route
-                    path="/editbook"
-                    element={<EditBook setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-                  />
-                  <Route
-                    path="/checkoutbook"
-                    element={
-                      <CheckoutBook setLoggedIn={setLoggedIn} setEmail={setEmail} />
-                    }
-                  />
-                  <Route
-                    path="/returnbook"
-                    element={
-                      <ReturnBook setLoggedIn={setLoggedIn} setEmail={setEmail} />
-                    }
-                  />
-                </Route>
-          <Route
-            path="/"
-            element={
-              <Home
-                email={email}
-                loggedIn={loggedIn}
-                setLoggedIn={setLoggedIn}
-              />
-            }
-          />
-          <Route
-            path="/login"
-            element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
-          <Route
-            path="/signUp"
-            element={<SignUp setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
-          <Route
-            path="/home"
-            element={
-              <LandingPage setLoggedIn={setLoggedIn} setEmail={setEmail} />
-            }
-          />
-          <Route
-            path="/userhome"
-            element={<UserHome setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
-          <Route
-            path="/profile"
-            element={<Profile setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
-          <Route
-            path="/booksearch"
-            element={
-              <BookSearch setLoggedIn={setLoggedIn} setEmail={setEmail} />
-            }
-          />
-          <Route
-            path="/events"
-            element={<Events setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
+          {/* Public routes */}
+          <Route path="/" element={<Home email={email} loggedIn={loggedIn} />} />
+          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+          <Route path="/signUp" element={<SignUp setLoggedIn={setLoggedIn}  setEmail={setEmail}/>} />
+          <Route path="/home" element={<LandingPage setLoggedIn={setLoggedIn} />} />
+          <Route path="/userhome" element={<UserHome setLoggedIn={setLoggedIn} />} />
+          <Route path="/profile" element={<Profile setLoggedIn={setLoggedIn} />} />
+          <Route path="/booksearch" element={<BookSearch setLoggedIn={setLoggedIn} />} />
+          <Route path="/events" element={<Events setLoggedIn={setLoggedIn} />} />
+
+          {/* Private routes for employees */}
+          <Route element={<PrivateRoutes isLoggedIn={loggedIn} role={role} />}>
+            <Route path="employee">
+              <Route path="emphome" element={<EmpHome />} />
+              <Route path="editbook" element={<EditBook />} />
+              <Route path="checkoutbook" element={<CheckoutBook />} />
+              <Route path="returnbook" element={<ReturnBook />} />
+            </Route>
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>
