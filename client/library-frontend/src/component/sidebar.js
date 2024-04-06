@@ -8,7 +8,7 @@ const SideBar = () =>{
         <>
         {/* Sidebar */}
     
-          <Box sx={{ bgcolor:"lightblue", width: "25%", marginRight: "0px", height:"800px", marginTop:"17px"}}>  {/* Adjust width and margin as needed */}
+          <Box sx={{ bgcolor:"lightblue", width: "25%", marginRight: "0px", height:"1/2", marginTop:"17px"}}>  {/* Adjust width and margin as needed */}
             {/*sidebar*/}
             </Box>
         </>

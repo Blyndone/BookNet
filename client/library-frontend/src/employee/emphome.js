@@ -64,6 +64,13 @@ const EmpHome = props => {
                 }}>
                 Return Book
               </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  navigate("/booksearch");
+                }}>
+                Book Search
+              </Button>
             </Container>
           </div>
         </Grid>
