@@ -18,6 +18,7 @@ import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton"; // Import IconButton component
 import SearchIcon from "@mui/icons-material/Search"; // Import SearchIcon
 import InputAdornment from "@mui/material/InputAdornment";
+import BasicModal from "../component/BasicModal";
 
 import { useEffect } from "react";
 
@@ -165,6 +166,12 @@ const BookSearch = props => {
 };
 
 function ListItem(items) {
+  const [open, setOpen] = React.useState(false);
+
+  const [bookdata, setBookData] = React.useState({
+    title: ""
+  });
+
   if (items.length == 0) {
     console.log("ZERO RECORDS");
   } else {
@@ -172,11 +179,25 @@ function ListItem(items) {
       items = Object(items.items);
 
       return (
-        <ul style={{ listStyleType: "none" }}>
-          {items.map(item =>
-            <Item key={item.book_id.toString()} value={item} />
-          )}
-        </ul>
+        <div>
+          <Button onClick={() => setOpen(true)}>Open modal</Button>
+          <BasicModal
+            open={open}
+            onClose={() => setOpen(false)}
+            bookdata={bookdata}
+          />
+
+          <ul style={{ listStyleType: "none" }}>
+            {items.map(item =>
+              <Item
+                key={item.book_id.toString()}
+                value={item}
+                setOpen={setOpen}
+                setBookData={setBookData}
+              />
+            )}
+          </ul>
+        </div>
       );
     } catch (err) {
       console.log(err);
@@ -184,6 +205,7 @@ function ListItem(items) {
   }
 }
 function Item(props) {
+  const { setOpen, setBookData } = props;
   return (
     <li>
       <Paper
@@ -197,7 +219,12 @@ function Item(props) {
         }}>
         <Grid container spacing={2}>
           <Grid item>
-            <ButtonBase sx={{ width: 128, height: 128 }}>
+            <ButtonBase
+              sx={{ width: 128, height: 128 }}
+              onClick={() => {
+                setBookData(props.value);
+                setOpen(true);
+              }}>
               <Img
                 alt="book image"
                 onError={e => console.log("e", e)}
@@ -250,7 +277,6 @@ const SearchBar = ({ setSearchQuery }) =>
       id="search-bar"
       className="text"
       onInput={e => {
-        debugger;
         setSearchQuery(e.target.value);
       }}
       label="Enter a city name"
@@ -269,4 +295,5 @@ const Img = styled("img")({
   maxWidth: "100%",
   maxHeight: "100%"
 });
+
 export default BookSearch;
