@@ -27,7 +27,8 @@ const BookSearch = props => {
     document.title = `Book Search Page`;
 
     RetrieveBooks();
-  });
+  }, []);
+
   const { loggedIn, email } = props;
   const navigate = useNavigate();
 
@@ -39,17 +40,14 @@ const BookSearch = props => {
     e.preventDefault();
 
     if (query.length == 0) {
+      RetrieveBooks();
       return;
     } else {
-      setData(
-        saveddata.filter(d =>
-          d.title.toLowerCase().includes(query.toLowerCase())
-        )
-      );
+      RetrieveSearch();
     }
   };
 
-  const RetrieveBooks = e => {
+  const RetrieveBooks = async e => {
     if (e) {
       e.preventDefault();
     }
@@ -60,20 +58,62 @@ const BookSearch = props => {
       // if (query.length == 0) {
       //   return;
       // }
-      const response = await fetch(`http://localhost:3006/books/`);
+      // console.log("saveddata", saveddata);
+      var ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      var index = new URLSearchParams(ids.map(s => ["id", s]));
+      console.log("" + index);
+      const response = await fetch(`http://localhost:3006/books/` + index);
       const res = await response.json();
       // const results = data[0];
       // setData(res);
       return res;
     }
-
+    if (saveddata.length != 0) {
+      console.log("saveddata skip", saveddata.length);
+      return saveddata;
+    }
     fetchData()
       .then(res => {
         if (saveddata.length == 0) {
           setSavedData(res);
           setData(res);
-          console.log(saveddata);
         }
+      })
+      .catch(err => console.log(err));
+  };
+
+  const RetrieveSearch = async e => {
+    if (e) {
+      e.preventDefault();
+    }
+    // window.alert(query);
+    // // if (!query) return;
+
+    async function fetchData() {
+      // if (query.length == 0) {
+      //   return;
+      // }
+      // console.log("saveddata", saveddata);
+      let page = 0;
+      let limit = 10;
+      let offset = limit * page;
+
+      let querystring =
+        "?query=" + query + "&limit=" + limit + "&offset=" + offset;
+      const response = await fetch(
+        `http://localhost:3006/books/query/` + querystring
+      );
+      const res = await response.json();
+      // const results = data[0];
+      // setData(res);
+
+      return res;
+    }
+
+    fetchData()
+      .then(res => {
+        setSavedData("");
+        setData(res);
       })
       .catch(err => console.log(err));
   };
@@ -124,7 +164,7 @@ const BookSearch = props => {
                     placeholder="Search..."
                     size="small"
                   />
-                  <IconButton type="submit" aria-label="search">
+                  <IconButton id="search-bar" type="submit" aria-label="search">
                     <SearchIcon style={{ fill: "blue" }} />
                   </IconButton>
                 </label>
@@ -239,17 +279,16 @@ function Item(props) {
                   {props.value.title}
                 </Typography>
                 <Typography variant="body3" gutterBottom>
-                  Author: {props.value.author_id}
+                  Author: {props.value.author}
                 </Typography>{" "}
                 <Typography variant="body2" gutterBottom>
                   Genre: {props.value.genre}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   ISBN: {props.value.isbn}
-                  {props.value.img}
                 </Typography>{" "}
                 <Typography variant="body2" color="text.secondary">
-                  Publisher: {props.value.publisher},{" "}
+                  Year Published: {props.value.publishyear}{" "}
                   {props.value.publication_year}
                 </Typography>
               </Grid>
@@ -261,7 +300,7 @@ function Item(props) {
             </Grid>
             <Grid item>
               <Typography variant="subtitle1" component="div">
-                Instock count: {props.value.count}
+                Instock count: {props.value.stockcount}
               </Typography>
             </Grid>
           </Grid>

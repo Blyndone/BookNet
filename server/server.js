@@ -6,6 +6,7 @@ var cors = require('cors')
 const app = express()
 const pool = require('./db')
 
+
 app.use(cors())
 app.use(express.json())
 
@@ -18,13 +19,63 @@ app.get('/', (req, res) => {
 app.get('/books', async (req, res) => {
     console.log("get:books")
     try {
-        const books = await pool.query('SELECT * from books ORDER BY book_id')
+
+        const books = await pool.query('SELECT * from testbooks ORDER BY book_id')
         res.json(books.rows)
+        // console.log(books.rows)
     } catch (err) {
         console.error(err)
     }
 })
 
+
+app.get('/books/query/', async (req, res) => {
+    console.log("get:books/query")
+
+
+    const { query, limit, offset } = req.query
+    console.log("params", query, limit, offset)
+    // params = new URLSearchParams(decodeURI(req.params.query))
+    // let query = params.entries()
+    // console.log(query.next().value.query)
+
+
+    try {
+
+        const querystring = 'SELECT * FROM testbooks WHERE title ~* $1 Limit $2 Offset $3';
+        const books = await pool.query(querystring, [query, limit, offset])
+        res.json(books.rows)
+        console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+
+app.get('/books/:index', async (req, res) => {
+    console.log("get:books/index")
+    params = new URLSearchParams(decodeURI(req.params.index))
+    console.log(params)
+    idlist = []
+    for (const [key, value] of params.entries()) {
+        console.log(`${key}, ${value}`);
+        idlist.push(parseInt(value))
+      }
+    console.log(idlist)
+    // idlist = `(${idlist.map(v => JSON.stringify(v)).join(', ')})`;
+    //  console.log(idlist)
+
+    try {
+        const { title } = req.params;
+        console.log(title)
+        const query = 'SELECT * FROM testbooks WHERE book_id = ANY($1::int[])';
+        const books = await pool.query(query, [idlist])
+        res.json(books.rows)
+        console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
 
 app.get('/books/:title', async (req, res) => {
     console.log("get:books/title")
