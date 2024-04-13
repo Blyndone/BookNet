@@ -14,32 +14,28 @@ import SideBar from ".././component/sidebar";
 const EditBook = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
-  const [data, setData] = useState({
-    book_id: "",
-    title: "",
-    author_id: "",
-    publisher: "",
-    isbn: "",
-    publication_year: "",
-    genre: "",
-    img: "",
-    count: ""
-  });
+  const [data, setData] = useState({});
 
   const [query, setQuery] = useState("");
 
   const handleSubmit = e => {
     e.preventDefault();
-    window.alert(query);
+    // window.alert(query);
     // if (!query) return;
 
     async function fetchData() {
       if (query.length == 0) {
         return;
       }
-      const response = await fetch(`http://localhost:3006/books/` + query);
+
+      let querystring = "?query=" + query + "&limit=1&offset=0";
+      const response = await fetch(
+        `http://localhost:3006/books/index/` + querystring
+      );
       const res = await response.json();
       // const results = data[0];
+      // setData(res);
+
       return res;
     }
 
@@ -60,13 +56,13 @@ const EditBook = props => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
+          book_id: data.book_id,
           title: data.title,
-          publisher: data.publisher,
+          publishyear: data.publishyear,
           isbn: data.isbn,
-          publication_year: data.publication_year,
           genre: data.genre,
           img: data.img,
-          count: data.count
+          description: data.description
         })
       });
     }
@@ -97,10 +93,10 @@ const EditBook = props => {
             <div>
               <form onSubmit={handleSubmit}>
                 <label>
-                  Name:
+                  Book ID:
                   <input
-                    type="text"
-                    placeholder={null === data ? "Book Title" : data.title}
+                    type="number"
+                    placeholder={null === data ? "BookID" : data.book_id}
                     value={query}
                     onChange={e => {
                       setQuery(e.target.value);
@@ -117,15 +113,31 @@ const EditBook = props => {
               {/* Book Edit Form */}
               <Typography variant="h5" sx={{ mt: 4 }}>
                 Book Edit Form{null === data ? "" : " - " + data.title}
+                <br />
+                <br />
               </Typography>
+
+              <label>
+                Book Title:
+                <input
+                  type="text"
+                  placeholder={null === data ? "Book Title" : data.title}
+                  value={data.title}
+                  onChange={e => {
+                    setData({ ...data, title: e.target.value });
+                  }}
+                />
+              </label>
+              <br />
+              <br />
               <form onSubmit={submitEditBook}>
                 <label>
-                  Publisher:
+                  Published Year:
                   <input
                     type="text"
-                    value={data.publisher}
+                    value={data.publishyear}
                     onChange={e => {
-                      setData({ ...data, publisher: e.target.value });
+                      setData({ ...data, publishyear: e.target.value });
                     }}
                   />
                 </label>
@@ -180,12 +192,15 @@ const EditBook = props => {
                 <br />
                 <br />
                 <label>
-                  Count:
-                  <input
+                  Description: <br />
+                  <textarea
+                    rows={6}
+                    cols={100}
+                    resize={"none"}
                     type="text"
-                    value={data.count}
+                    value={data.description}
                     onChange={e => {
-                      setData({ ...data, count: e.target.value });
+                      setData({ ...data, description: e.target.value });
                     }}
                   />
                 </label>
