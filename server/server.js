@@ -45,7 +45,7 @@ app.get('/books/query/', async (req, res) => {
 
     try {
 
-        const querystring = 'SELECT * FROM testbooks WHERE title ~* $1 Limit $2 Offset $3';
+        const querystring = 'SELECT count(S.instock) as stockcount, b.* FROM (testbooks B Join testauthors A ON B.author = A.id) JOIN teststock S on B.book_id = S.book_id   WHERE title ~* $1  group by B.book_id order by B.book_id Limit $2 Offset $3 ';
         const books = await pool.query(querystring, [query, limit, offset])
         res.json(books.rows)
         console.log(books.rows)

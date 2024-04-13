@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-
+import { styled } from "@mui/material/styles";
 const style = {
   position: "absolute",
   top: "50%",
@@ -30,28 +30,48 @@ export default function BasicModal(props) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Typography gutterBottom variant="h5" component="div" align="center">
             {bookdata.title}
           </Typography>
-          <Typography gutterBottom variant="h5" component="div">
-            {bookdata.title}
-          </Typography>
+          <Img
+            alt="book image"
+            onError={e => console.log("e", e)}
+            src={bookdata.img}
+          />
           <Typography variant="body3" gutterBottom>
-            Author: {bookdata.author_id}
-          </Typography>{" "}
+            Author: {bookdata.author_name} <br />
+            <br />
+          </Typography>
+
+          <Typography variant="body1" gutterBottom>
+            Description: {bookdata.description} <br /> <br />
+          </Typography>
           <Typography variant="body2" gutterBottom>
             Genre: {bookdata.genre}
           </Typography>
+
           <Typography variant="body2" color="text.secondary">
             ISBN: {bookdata.isbn}
-            {bookdata.img}
-          </Typography>{" "}
-          <Typography variant="body2" color="text.secondary">
-            Publisher: {bookdata.publisher}, {bookdata.publication_year}
           </Typography>
-          <button type="button" onClick={() => onClose(false)} />
+
+          <Typography variant="body2" color="text.secondary">
+            Publish Year: {bookdata.publishyear}, {bookdata.publication_year}
+          </Typography>
+          <input
+            className={"inputButton"}
+            type="button"
+            onClick={() => onClose(false)}
+            value="Close"
+          />
         </Box>
       </Modal>
     </div>
   );
 }
+
+const Img = styled("img")({
+  margin: "auto",
+  display: "block",
+  maxWidth: "30%",
+  maxHeight: "30%"
+});

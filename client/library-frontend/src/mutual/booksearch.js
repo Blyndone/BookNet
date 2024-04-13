@@ -296,7 +296,7 @@ function Item(props) {
                   {props.value.title}
                 </Typography>
                 <Typography variant="body3" gutterBottom>
-                  Author: {props.value.author}
+                  Author: {props.value.author_name}
                 </Typography>{" "}
                 <Typography variant="body2" gutterBottom>
                   Genre: {props.value.genre}
