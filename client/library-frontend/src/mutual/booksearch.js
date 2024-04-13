@@ -237,13 +237,11 @@ function ListItem(items) {
 
       return (
         <div>
-          <Button onClick={() => setOpen(true)}>Open modal</Button>
           <BasicModal
             open={open}
             onClose={() => setOpen(false)}
             bookdata={bookdata}
           />
-
           <ul style={{ listStyleType: "none" }}>
             {items.map(item =>
               <Item
