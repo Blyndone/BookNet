@@ -33,8 +33,11 @@ app.get('/books/query/', async (req, res) => {
     console.log("get:books/query")
 
 
-    const { query, limit, offset } = req.query
+    let { query, limit, offset } = req.query
     console.log("params", query, limit, offset)
+    if (query.length <= 0){
+        query = '.*'
+    }
     // params = new URLSearchParams(decodeURI(req.params.query))
     // let query = params.entries()
     // console.log(query.next().value.query)

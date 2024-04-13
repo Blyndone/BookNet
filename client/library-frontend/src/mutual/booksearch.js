@@ -19,6 +19,8 @@ import IconButton from "@mui/material/IconButton"; // Import IconButton componen
 import SearchIcon from "@mui/icons-material/Search"; // Import SearchIcon
 import InputAdornment from "@mui/material/InputAdornment";
 import BasicModal from "../component/BasicModal";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import { useEffect } from "react";
 
@@ -35,17 +37,49 @@ const BookSearch = props => {
   const [data, setData] = useState("");
   const [saveddata, setSavedData] = useState("");
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
 
   const submitQuery = e => {
     e.preventDefault();
-
-    if (query.length == 0) {
-      RetrieveBooks();
-      return;
-    } else {
-      RetrieveSearch();
-    }
+    setPage(0);
+    RetrieveBooks();
   };
+
+  // const RetrieveBooks = async e => {
+  //   if (e) {
+  //     e.preventDefault();
+  //   }
+  //   // window.alert(query);
+  //   // // if (!query) return;
+
+  //   async function fetchData() {
+  //     // if (query.length == 0) {
+  //     //   return;
+  //     // }
+  //     // console.log("saveddata", saveddata);
+  //     var ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  //     var index = new URLSearchParams(ids.map(s => ["id", s]));
+  //     console.log("" + index);
+  //     const response = await fetch(`http://localhost:3006/books/` + index);
+  //     const res = await response.json();
+  //     // const results = data[0];
+  //     // setData(res);
+  //     return res;
+  //   }
+  //   if (saveddata.length != 0) {
+  //     console.log("saveddata skip", saveddata.length);
+  //     return saveddata;
+  //   }
+  //   fetchData()
+  //     .then(res => {
+  //       if (saveddata.length == 0) {
+  //         setSavedData(res);
+  //         setData(res);
+  //       }
+  //     })
+  //     .catch(err => console.log(err));
+  // };
 
   const RetrieveBooks = async e => {
     if (e) {
@@ -59,47 +93,9 @@ const BookSearch = props => {
       //   return;
       // }
       // console.log("saveddata", saveddata);
-      var ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-      var index = new URLSearchParams(ids.map(s => ["id", s]));
-      console.log("" + index);
-      const response = await fetch(`http://localhost:3006/books/` + index);
-      const res = await response.json();
-      // const results = data[0];
-      // setData(res);
-      return res;
-    }
-    if (saveddata.length != 0) {
-      console.log("saveddata skip", saveddata.length);
-      return saveddata;
-    }
-    fetchData()
-      .then(res => {
-        if (saveddata.length == 0) {
-          setSavedData(res);
-          setData(res);
-        }
-      })
-      .catch(err => console.log(err));
-  };
-
-  const RetrieveSearch = async e => {
-    if (e) {
-      e.preventDefault();
-    }
-    // window.alert(query);
-    // // if (!query) return;
-
-    async function fetchData() {
-      // if (query.length == 0) {
-      //   return;
-      // }
-      // console.log("saveddata", saveddata);
-      let page = 0;
-      let limit = 10;
-      let offset = limit * page;
 
       let querystring =
-        "?query=" + query + "&limit=" + limit + "&offset=" + offset;
+        "?query=" + query + "&limit=" + limit + "&offset=" + limit * page;
       const response = await fetch(
         `http://localhost:3006/books/query/` + querystring
       );
@@ -112,12 +108,17 @@ const BookSearch = props => {
 
     fetchData()
       .then(res => {
-        setSavedData("");
         setData(res);
       })
       .catch(err => console.log(err));
   };
 
+  useEffect(
+    () => {
+      RetrieveBooks();
+    },
+    [page]
+  );
   return (
     <Grid container direction="column" spacing={2}>
       {" "}{/* Set container direction to column */}
@@ -170,7 +171,23 @@ const BookSearch = props => {
                 </label>
               </form>
             </div>
-
+            <div>
+              <ArrowBackIcon
+                onClick={() => {
+                  setPage(page > 1 ? page - 1 : 0);
+                  console.log(page);
+                  RetrieveBooks();
+                }}
+              />
+              <Typography>PAGE NAVIGATION</Typography>{" "}
+              <ArrowForwardIcon
+                onClick={() => {
+                  setPage(data.length < limit ? page : page + 1);
+                  console.log(page);
+                  RetrieveBooks();
+                }}
+              />
+            </div>
             <Typography>
               {/* {JSON.stringify(data)} */}
             </Typography>
