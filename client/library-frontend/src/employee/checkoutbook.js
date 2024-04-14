@@ -2,6 +2,7 @@ import React from "react";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
+import { styled } from "@mui/material/styles";
 
 import { TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -14,17 +15,7 @@ import SideBar from ".././component/sidebar";
 const CheckoutBook = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
-  const [data, setData] = useState({
-    book_id: "",
-    title: "",
-    author_id: "",
-    publisher: "",
-    isbn: "",
-    publication_year: "",
-    genre: "",
-    img: "",
-    count: ""
-  });
+  const [data, setData] = useState({});
   const [userdata, setUserData] = useState({
     id: "",
     firstname: "",
@@ -36,16 +27,21 @@ const CheckoutBook = props => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    window.alert(query);
+    // window.alert(query);
     // if (!query) return;
 
     async function fetchData() {
       if (query.length == 0) {
         return;
       }
-      const response = await fetch(`http://localhost:3006/books/` + query);
+      let querystring = "?query=" + query;
+      const response = await fetch(
+        `http://localhost:3006/books/stock/` + querystring
+      );
       const res = await response.json();
       // const results = data[0];
+      // setData(res);
+
       return res;
     }
 
@@ -59,7 +55,7 @@ const CheckoutBook = props => {
   const handleUserSubmit = e => {
     console.log(e);
     e.preventDefault();
-    window.alert(userquery);
+    // window.alert(userquery);
     // if (!query) return;
 
     async function fetchData() {
@@ -79,14 +75,18 @@ const CheckoutBook = props => {
       .catch(err => console.log(err));
   };
   const CheckoutBook = () => {
+    if (data.length == 0 || userdata.length == 0) {
+      return;
+    }
     async function patchbook() {
-      fetch(`http://localhost:3006/checkoutbook/` + data.title, {
+      fetch(`http://localhost:3006/checkoutbook/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          title: data.title
+          stockid: data.id,
+          user_id: userdata.id
         })
       });
     }
@@ -112,16 +112,15 @@ const CheckoutBook = props => {
               Checkout Book
             </Typography>
             <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-              Type in the name of the book you want to Checkout, and the User
-              ID!
+              Type in the ID of the book you want to Checkout, and the User ID!
             </Typography>
             <div />
             <div>
               <form onSubmit={handleSubmit}>
                 <label>
-                  Book Name:
+                  Book ID:
                   <input
-                    type="text"
+                    type="number"
                     placeholder={null === data ? "Book Title" : data.title}
                     value={query}
                     onChange={e => {
@@ -136,7 +135,7 @@ const CheckoutBook = props => {
                 <label>
                   User ID:
                   <input
-                    type="text"
+                    type="number"
                     placeholder={null === data ? "UserID" : userdata.id}
                     value={userquery}
                     onChange={e => {
@@ -148,34 +147,46 @@ const CheckoutBook = props => {
               </form>
             </div>
             <div>
-              {/* <br />
-              {JSON.stringify(data)}
-              {JSON.stringify(userdata)}
-              <br /> */}
-              {/* Book Edit Form */}
-
               <Typography variant="h5" sx={{ mt: 4 }}>
-                Book Data{null === data ? "" : " - " + data.title}
+                Book Data {null === data ? "" : " - " + data.title}
                 <br />
-                InStock: {String(data.instock)}
+                InStock: {data.instock == true ? "In Stock" : "Out of Stock"}
               </Typography>
-              <Typography variant="h6" sx={{ mt: 4 }}>
+              <Img
+                alt="Book Image"
+                onError={e => console.log("e", e)}
+                src={data.img}
+              />
+              <Typography variant="body1" sx={{ mt: 4 }}>
                 Name:{data.title}
                 <br />
                 ISBN:{data.isbn}
                 <br />
-                Publisher:{data.publisher}
+                Year Published:{data.publishyear}
                 <br />
                 Genre:{data.genre}
                 <br />
-                Count:{data.count}
+                Description: <br />
+                {data.description}
+                <br />
+                <br />
+                Book Condition: {data.book_condition}
+                <br />
               </Typography>
               <Typography variant="h5" sx={{ mt: 4 }}>
-                User Data{null === data ? "" : " - " + data.title}
+                User Data{null === userdata ? "" : " - " + userdata.firstname}
               </Typography>
               <Typography variant="h6" sx={{ mt: 4 }}>
-                Name:{userdata.firstname} {userdata.lastname}
+                Name: {userdata.firstname} {userdata.lastname}
                 <br />
+              </Typography>{" "}
+              <Typography variant="h6" sx={{ mt: 4 }}>
+                Email: {userdata.email}
+                <br />
+              </Typography>{" "}
+              <Typography variant="h6" sx={{ mt: 4 }}>
+                Balance:0.00
+                <br /> <br /> <br />
               </Typography>
               {/* <form onSubmit={submitEditBook}>
                 <label>
@@ -285,5 +296,11 @@ const CheckoutBook = props => {
     </Grid>
   );
 };
+const Img = styled("img")({
+  margin: "auto",
+  display: "block",
+  maxWidth: "20%",
+  maxHeight: "20%"
+});
 
 export default CheckoutBook;

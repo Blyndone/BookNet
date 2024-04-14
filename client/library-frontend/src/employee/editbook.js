@@ -236,7 +236,7 @@ const EditBook = props => {
               <td>
                 <Grid item xs={4}>
                   <Img
-                    alt="book image"
+                    alt="Book Image"
                     onError={e => console.log("e", e)}
                     src={data.img}
                   />

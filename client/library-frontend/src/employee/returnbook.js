@@ -36,57 +36,87 @@ const ReturnBook = props => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    window.alert(query);
+    // window.alert(query);
     // if (!query) return;
 
     async function fetchData() {
       if (query.length == 0) {
         return;
       }
-      const response = await fetch(`http://localhost:3006/books/` + query);
+
+      let querystring = "?query=" + query;
+      const response = await fetch(
+        `http://localhost:3006/books/stock/` + querystring
+      );
       const res = await response.json();
       // const results = data[0];
       return res;
     }
 
-    fetchData()
-      .then(res => {
-        setData(res[0]);
-      })
-      .catch(err => console.log(err));
-  };
-
-  const handleUserSubmit = e => {
-    console.log(e);
-    e.preventDefault();
-    window.alert(userquery);
-    // if (!query) return;
-
-    async function fetchData() {
-      if (userquery.length == 0) {
+    async function fetchuser() {
+      if (query.length == 0) {
         return;
       }
-      const response = await fetch(`http://localhost:3006/user/` + userquery);
+      const response = await fetch(`http://localhost:3006/stockuser/` + query);
       const res = await response.json();
       // const results = data[0];
       return res;
     }
 
+    fetchuser()
+      .then(res => {
+        if (res.length != 0) {
+          setUserData(res[0]);
+        }
+      })
+      .catch(err => console.log(err));
+
     fetchData()
       .then(res => {
-        setUserData(res[0]);
+        if (res.length != 0) {
+          setData(res[0]);
+        }
       })
       .catch(err => console.log(err));
   };
-  const CheckoutBook = () => {
+
+  // const handleUserSubmit = e => {
+  //   console.log(e);
+  //   e.preventDefault();
+  //   // window.alert(userquery);
+  //   // if (!query) return;
+
+  //   async function fetchData() {
+  //     if (userquery.length == 0) {
+  //       return;
+  //     }
+  //     const response = await fetch(
+  //       `http://localhost:3006/stockuser/` + userquery
+  //     );
+  //     const res = await response.json();
+  //     // const results = data[0];
+  //     return res;
+  //   }
+
+  //   fetchData()
+  //     .then(res => {
+  //       setUserData(res[0]);
+  //     })
+  //     .catch(err => console.log(err));
+  // };
+
+  const ReturnBook = () => {
+    if (data.length == 0) {
+      return;
+    }
     async function patchbook() {
-      fetch(`http://localhost:3006/returnbook/` + data.title, {
+      fetch(`http://localhost:3006/returnbook/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          title: data.title
+          stockid: data.book_id
         })
       });
     }
@@ -118,7 +148,7 @@ const ReturnBook = props => {
             <div>
               <form onSubmit={handleSubmit}>
                 <label>
-                  Book Name:
+                  Book ID:
                   <input
                     type="text"
                     placeholder={null === data ? "Book Title" : data.title}
@@ -152,7 +182,6 @@ const ReturnBook = props => {
               {JSON.stringify(userdata)}
               <br /> */}
               {/* Book Edit Form */}
-
               <Typography variant="h5" sx={{ mt: 4 }}>
                 Book Data{null === data ? "" : " - " + data.title}
                 <br />
@@ -163,17 +192,21 @@ const ReturnBook = props => {
                 <br />
                 ISBN:{data.isbn}
                 <br />
-                Publisher:{data.publisher}
-                <br />
-                Genre:{data.genre}
-                <br />
-                Count:{data.count}
               </Typography>
               <Typography variant="h5" sx={{ mt: 4 }}>
                 User Data{null === data ? "" : " - " + data.title}
               </Typography>
               <Typography variant="h6" sx={{ mt: 4 }}>
-                Name:{userdata.firstname} {userdata.lastname}
+                User Name:{userdata.firstname} {userdata.lastname}
+                <br />
+              </Typography>{" "}
+              <Typography variant="h6" sx={{ mt: 4 }}>
+                Email: {userdata.email}
+                <br />
+              </Typography>{" "}
+              <Typography variant="h6" sx={{ mt: 4 }}>
+                BALANCE: {}
+                <br />
                 <br />
               </Typography>
               {/* <form onSubmit={submitEditBook}>
@@ -255,7 +288,7 @@ const ReturnBook = props => {
             <Button
               variant="contained"
               onClick={() => {
-                CheckoutBook();
+                ReturnBook();
               }}>
               Return Book
             </Button>

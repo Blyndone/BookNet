@@ -57,7 +57,32 @@ app.get('/books/query/', async (req, res) => {
 
 // ==========================
 
+app.get('/books/stock/', async (req, res) => {
+    console.log("get:books/stock")
 
+
+    let { query } = req.query
+    console.log("params", query)
+    if (query.length <= 0){
+        query = '.*'
+    }
+    // params = new URLSearchParams(decodeURI(req.params.query))
+    // let query = params.entries()
+    // console.log(query.next().value.query)
+
+
+
+    try {
+
+        const querystring = 'Select * from testbooks B join teststock S on B.book_id = S.book_id where S.id = $1 ';
+        const books = await pool.query(querystring, [query])
+        res.json(books.rows)
+        console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
+//============================
 
 
 
@@ -137,6 +162,22 @@ app.get('/user/:id', async (req, res) => {
         const books = await pool.query(query, [id])
         res.json(books.rows)
         console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+
+app.get('/stockuser/:id', async (req, res) => {
+    console.log("getstockuser/id")
+
+    try {
+        const { id } = req.params;
+        console.log(id)
+        const query = 'SELECT * FROM users U JOIN teststock S on U.id=S.user_id where s.id = $1';
+        const users = await pool.query(query, [id])
+        res.json(users.rows)
+        console.log(users.rows)
     } catch (err) {
         console.error(err)
     }
@@ -240,35 +281,36 @@ app.get('/events', async (req, res) => {
 });
 
 
-app.patch('/checkoutbook/:title', async (req, res) => {
+app.patch('/checkoutbook/', async (req, res) => {
     const {
-        title
+        stockid, user_id
     } = req.body
-    console.log("Checking Out:", title)
+    console.log("Checking Out:", stockid, 'User: ', user_id)
+
     
 
     try {
             const query = `
-            UPDATE books 
+            UPDATE teststock 
             SET 
-            instock=false
-            WHERE title = $1
+            instock=false, user_id = $1
+            WHERE id = $2
             `
-            const values = [title]
-            console.log(values)
-            const booksupdated = await pool.query(query, values)
+
+            console.log(stockid)
+            const booksupdated = await pool.query(query, [user_id , stockid])
             console.log(booksupdated.rows)
 
 
             res.status(200).json({
-                books: title,
+                books: stockid,
                 message: 'Book Checked Out',
 
             });
          
     } catch (err) {
         res.status(500).json({
-            books: title,
+            books: stockid,
             message: 'Book Error:' + err,
 
         })
@@ -276,35 +318,55 @@ app.patch('/checkoutbook/:title', async (req, res) => {
     }
 })
 
-app.patch('/returnbook/:title', async (req, res) => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.patch('/returnbook/', async (req, res) => {
+    console.log(req.body)
     const {
-        title
+        stockid
     } = req.body
-    console.log("Returning Book", title)
+    console.log("Returning Book", stockid)
     
 
     try {
             const query = `
-            UPDATE books 
+            UPDATE teststock 
             SET 
-            instock=true
-            WHERE title = $1
+            instock=true, user_id = NULL
+            WHERE id = $1
             `
-            const values = [title]
+            const values = [stockid]
             console.log(values)
             const booksupdated = await pool.query(query, values)
             console.log(booksupdated.rows)
 
 
             res.status(200).json({
-                books: title,
+                books: stockid,
                 message: 'Book Returned',
 
             });
          
     } catch (err) {
         res.status(500).json({
-            books: title,
+            books: stockid,
             message: 'Book Error:' + err,
 
         })
