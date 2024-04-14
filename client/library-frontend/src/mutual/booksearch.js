@@ -218,7 +218,7 @@ const BookSearch = props => {
                     />
                   </Grid>
                   <Grid item xs={6} textAlign={"center"}>
-                    <Typography>PAGE NAVIGATION</Typography>
+                    <Typography variant="h5">Page Navigation</Typography>
                   </Grid>
                   <Grid item>
                     <ArrowForwardIcon

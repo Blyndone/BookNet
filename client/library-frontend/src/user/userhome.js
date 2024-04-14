@@ -113,13 +113,13 @@ const UserHome = props => {
 
     bookBuddy()
       .then(res => {
-        setData2(res);
+        setData1(res);
       })
       .catch(err => console.log(err));
 
     popGenre()
       .then(res => {
-        setData1(res);
+        setData2(res);
       })
       .catch(err => console.log(err));
   };
@@ -144,10 +144,10 @@ const UserHome = props => {
         <Grid item xs={6}>
           {/* Main Content */}
           <Container>
-            <Typography variant="h2" sx={{ mt: 4 }}>
+            <Typography variant="h2" textAlign={"center"} sx={{ mt: 4 }}>
               USER HOME
             </Typography>
-            <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
+            <Typography variant="h5" textAlign={"center"} sx={{ mt: 2, mb: 4 }}>
               Your Book Reccomendations!
             </Typography>
             <div>
@@ -175,7 +175,7 @@ const UserHome = props => {
                     />
                   </Grid>
                   <Grid item xs={6} textAlign={"center"}>
-                    <Typography variant="h6">PAGE NAVIGATION</Typography>
+                    <Typography variant="h5">More Recomendations</Typography>
                   </Grid>
                   <Grid item>
                     <ArrowForwardIcon
@@ -199,12 +199,18 @@ const UserHome = props => {
             <Container>
               {data1.length < 1
                 ? <Typography>No Books Found!</Typography>
-                : <ListItem items={data1} label={"BUDDY RECCOMENDATIONS"} />}
+                : <ListItem
+                    items={data1}
+                    label={'"Book Buddy" Recomendations!'}
+                  />}
             </Container>
             <Container>
               {data2.length < 1
                 ? <Typography>No Books Found!</Typography>
-                : <ListItem items={data2} label={"GENRE RECCOMENDATIONS"} />}
+                : <ListItem
+                    items={data2}
+                    label={"Top Books in your Favorite Genres!"}
+                  />}
             </Container>
 
             <Button
@@ -272,58 +278,6 @@ function ListItem(props) {
     }
   }
 }
-// function Item(props) {
-//   const { setOpen, setBookData } = props;
-//   return (
-//     <li>
-//       <Paper
-//         sx={{
-//           p: 2,
-//           margin: 2,
-//           maxWidth: 200,
-//           flexGrow: 1,
-//           backgroundColor: theme =>
-//             theme.palette.mode === "dark" ? "#1A2027" : "#fff"
-//         }}>
-//         <Grid container spacing={2}>
-//           <Grid item justifyContent={"center"} width={200} height={200}>
-//             <ButtonBase
-//               sx={{ width: 128, height: 128 }}
-//               onClick={() => {
-//                 setBookData(props.value);
-//                 setOpen(true);
-//               }}>
-//               <Img
-//                 alt="book image"
-//                 onError={e => console.log("e", e)}
-//                 src={props.value.img}
-//               />
-//             </ButtonBase>
-//           </Grid>
-//           <Grid item xs={12} sm container>
-//             <Grid item xs container direction="column" spacing={2}>
-//               <Grid item xs>
-//                 <Typography
-//                   gutterBottom
-//                   variant="h5"
-//                   component="div"
-//                   textAlign={"center"}>
-//                   {props.value.title}
-//                 </Typography>
-//                 <Typography variant="body3" gutterBottom>
-//                   Author: {props.value.author_name}
-//                 </Typography>{" "}
-//                 <Typography variant="body2" gutterBottom>
-//                   Genre: {props.value.genre}
-//                 </Typography>
-//               </Grid>
-//             </Grid>
-//           </Grid>
-//         </Grid>
-//       </Paper>
-//     </li>
-//   );
-// }
 
 function Item(props) {
   const { setOpen, setBookData } = props;

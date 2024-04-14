@@ -48,49 +48,58 @@ select book_id from testreservations r2 join user2 on r2.user_id = user2.u1id
 ----
 ---buddy Reccomendation 
 WITH
-	USER2 (UCOUNT, U2ID, U1ID) AS (
-		SELECT
-			COUNT(U1.ID),
-			U2.ID,
-			U1.ID
-		FROM
-			TESTUSERS U1
-			JOIN TESTRESERVATIONS R1 ON U1.ID = R1.USER_ID
-			JOIN TESTRESERVATIONS R2 ON R1.BOOK_ID = R2.BOOK_ID
-			JOIN TESTUSERS U2 ON R2.USER_ID = U2.ID
-		WHERE
-			U1.ID = 1
-			AND U1.ID <> U2.ID
-		GROUP BY
-			U2.ID,
-			U1.ID
-		ORDER BY
-			COUNT DESC
-		LIMIT
-			1
-	)
-SELECT
-	*
-FROM
-	TESTBOOKS
-WHERE
-	BOOK_ID IN (
-		SELECT
-			BOOK_ID
-		FROM
-			TESTRESERVATIONS R1
-			JOIN USER2 ON R1.USER_ID = USER2.U2ID
-		EXCEPT
-		SELECT
-			BOOK_ID
-		FROM
-			TESTRESERVATIONS R2
-			JOIN USER2 ON R2.USER_ID = USER2.U1ID
-	)
-ORDER BY
-	CHECKOUT_COUNT DESC
-LIMIT
-	10
+        USER2 (UCOUNT, U2ID, U1ID) AS (
+            SELECT
+                COUNT(U1.ID),
+                U2.ID,
+                U1.ID
+            FROM
+                TESTUSERS U1
+                JOIN TESTRESERVATIONS R1 ON U1.ID = R1.USER_ID
+                JOIN TESTRESERVATIONS R2 ON R1.BOOK_ID = R2.BOOK_ID
+                JOIN TESTUSERS U2 ON R2.USER_ID = U2.ID
+            WHERE
+                U1.ID = $1
+                AND U1.ID <> U2.ID
+            GROUP BY
+                U2.ID,
+                U1.ID
+            ORDER BY
+                COUNT DESC
+            LIMIT
+                1
+        )
+    SELECT DISTINCT
+        B.*,
+        COUNT(S.INSTOCK) AS STOCKCOUNT,
+        A.AUTHOR_NAME
+    FROM
+        TESTBOOKS B
+        JOIN TESTAUTHORS A ON B.AUTHOR = A.ID
+        JOIN TESTSTOCK S ON B.BOOK_ID = S.BOOK_ID
+    WHERE
+        B.BOOK_ID IN (
+            SELECT
+                BOOK_ID
+            FROM
+                TESTRESERVATIONS R1
+                JOIN USER2 ON R1.USER_ID = USER2.U2ID
+            EXCEPT
+            SELECT
+                BOOK_ID
+            FROM
+                TESTRESERVATIONS R2
+                JOIN USER2 ON R2.USER_ID = USER2.U1ID
+        )
+    GROUP BY
+        B.BOOK_ID,
+        A.AUTHOR_NAME
+    ORDER BY
+        CHECKOUT_COUNT DESC
+    LIMIT
+        5
+    OFFSET
+        $2
 
 ------------
 --Your Top Genres, Popular books you have not read

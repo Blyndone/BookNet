@@ -93,12 +93,16 @@ app.get('/books/bookbuddy/', async (req, res) => {
             LIMIT
                 1
         )
-    SELECT
-    DISTINCT *
+    SELECT DISTINCT
+        B.*,
+        COUNT(S.INSTOCK) AS STOCKCOUNT,
+        A.AUTHOR_NAME
     FROM
-        TESTBOOKS
+        TESTBOOKS B
+        JOIN TESTAUTHORS A ON B.AUTHOR = A.ID
+        JOIN TESTSTOCK S ON B.BOOK_ID = S.BOOK_ID
     WHERE
-        BOOK_ID IN (
+        B.BOOK_ID IN (
             SELECT
                 BOOK_ID
             FROM
@@ -110,12 +114,15 @@ app.get('/books/bookbuddy/', async (req, res) => {
             FROM
                 TESTRESERVATIONS R2
                 JOIN USER2 ON R2.USER_ID = USER2.U1ID
-        )
+        ) 
+    GROUP BY
+        B.BOOK_ID,
+        A.AUTHOR_NAME
     ORDER BY
         CHECKOUT_COUNT DESC
     LIMIT
         5
-    Offset
+    OFFSET
         $2`;
         const books = await pool.query(querystring, [userid, offset])
         res.json(books.rows)
@@ -144,52 +151,61 @@ app.get('/books/popgenre/', async (req, res) => {
 
         const querystring = `
         WITH
-            TOPGENRES (GCOUNT, TGENRES, U1ID) AS (
-                SELECT
-                    COUNT(U.ID),
-                    B.GENRE,
-                    U.ID
-                FROM
-                    TESTUSERS U
-                    JOIN TESTRESERVATIONS R ON U.ID = R.USER_ID
-                    JOIN TESTBOOKS B ON B.BOOK_ID = R.BOOK_ID
-                WHERE
-                    U.ID = $1
-                GROUP BY
-                    B.GENRE,
-                    U.ID
-                ORDER BY
-                    COUNT DESC
-                LIMIT
-                    4
-            ),
-            NOTREAD (BOOKS) AS (
-                SELECT
-                    BOOK_ID
-                FROM
-                    TESTBOOKS B
-                    JOIN TOPGENRES G ON B.GENRE = G.TGENRES
-                EXCEPT
-                (
-                    SELECT
-                        BOOK_ID
-                    FROM
-                        TESTRESERVATIONS R
-                        JOIN TESTUSERS U ON U.ID = R.USER_ID
-                    WHERE
-                        U.ID = $2
-                )
-            )
-        SELECT
-        DISTINCT *
-        FROM
-            TESTBOOKS B1
-            JOIN NOTREAD B2 ON B1.BOOK_ID = B2.BOOKS
-        ORDER BY
-            CHECKOUT_COUNT desc
-        LIMIT
-            5
-        offset $3`;
+	TOPGENRES (GCOUNT, TGENRES, U1ID) AS (
+		SELECT
+			COUNT(U.ID),
+			B.GENRE,
+			U.ID
+		FROM
+			TESTUSERS U
+			JOIN TESTRESERVATIONS R ON U.ID = R.USER_ID
+			JOIN TESTBOOKS B ON B.BOOK_ID = R.BOOK_ID
+		WHERE
+			U.ID = $1
+		GROUP BY
+			B.GENRE,
+			U.ID
+		ORDER BY
+			COUNT DESC
+		LIMIT
+			4
+	),
+	NOTREAD (BOOKS) AS (
+		SELECT
+			BOOK_ID
+		FROM
+			TESTBOOKS B
+			JOIN TOPGENRES G ON B.GENRE = G.TGENRES
+		EXCEPT
+		(
+			SELECT
+				BOOK_ID
+			FROM
+				TESTRESERVATIONS R
+				JOIN TESTUSERS U ON U.ID = R.USER_ID
+			WHERE
+				U.ID = $2
+		)
+	)
+SELECT DISTINCT
+	B1.*,
+	COUNT(S.INSTOCK) AS STOCKCOUNT,
+	A.AUTHOR_NAME
+FROM
+	TESTBOOKS B1
+	JOIN NOTREAD B2 ON B1.BOOK_ID = B2.BOOKS
+	JOIN TESTAUTHORS A ON B1.AUTHOR = A.ID
+	JOIN TESTSTOCK S ON B1.BOOK_ID = S.BOOK_ID
+GROUP BY
+	B1.BOOK_ID,
+	A.AUTHOR_NAME
+ORDER BY
+	CHECKOUT_COUNT DESC
+LIMIT
+	5
+OFFSET
+	$3
+    `;
         const books = await pool.query(querystring, [userid,userid,offset])
         res.json(books.rows)
         console.log(books.rows)
