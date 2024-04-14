@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import Header from ".././component/header";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import Grid from "@mui/material/Grid";
@@ -25,8 +25,24 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect } from "react";
 
 const BookSearch = props => {
+  const location = useLocation();
+  const [query, setQuery] = useState(
+    location.state === null ? "" : location.state.q
+  );
+  // try {
+  //   const q = location.state.q;
+  //   console.log(q);
+  //   setQuery(q);
+  // } catch (err) {
+  //   console.log(err);
+  // }
+
   useEffect(() => {
     document.title = `Book Search Page`;
+
+    // let args = new URLSearchParams(document.URL);
+    // const initparam = args.values().next().value;
+    // setQuery(initparam);
 
     RetrieveBooks();
   }, []);
@@ -36,7 +52,7 @@ const BookSearch = props => {
 
   const [data, setData] = useState("");
   const [saveddata, setSavedData] = useState("");
-  const [query, setQuery] = useState("");
+
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
 
@@ -119,6 +135,7 @@ const BookSearch = props => {
     },
     [page]
   );
+
   return (
     <Grid container direction="column" spacing={2}>
       {" "}{/* Set container direction to column */}
