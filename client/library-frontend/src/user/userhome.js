@@ -287,7 +287,7 @@ function Item(props) {
         sx={{
           p: 2,
           maxWidth: 180,
-          height: 450,
+          height: 410,
           flexGrow: 1,
           backgroundColor: theme =>
             theme.palette.mode === "dark" ? "#1A2027" : "#fff"
@@ -307,17 +307,31 @@ function Item(props) {
               />
             </ButtonBase>
           </Grid>
-          <Grid item xs={12} sm container>
+          <Grid item xs={12} sm container direction="column" align="center">
             <Grid item xs container direction="column" spacing={2}>
               <Grid item xs>
                 <Typography gutterBottom variant="h5" component="div">
-                  {props.value.title}
+                  {props.value.title.length > 20
+                    ? props.value.title.slice(0, 20) + "..."
+                    : props.value.title}
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                  Author: <br />
                 </Typography>
                 <Typography variant="body3" gutterBottom>
-                  Author: {props.value.author_name}
-                </Typography>{" "}
-                <Typography variant="body2" gutterBottom>
-                  Genre: {props.value.genre}
+                  {props.value.author_name.length > 18
+                    ? props.value.author_name.slice(0, 18) + "..."
+                    : props.value.author_name}
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                  Genre:<br />
+                </Typography>
+                <Typography variant="body3" gutterBottom>
+                  {props.value.genre.length > 15
+                    ? props.value.genre.slice(0, 15) + "..."
+                    : props.value.genre}
+
+                  <br />
                 </Typography>
               </Grid>
               <Grid item>
@@ -326,7 +340,12 @@ function Item(props) {
                 </Typography> */}
               </Grid>
             </Grid>
-            <Grid item>
+            <Grid
+              item
+              container
+              direction="row"
+              alignItems="flex-end"
+              justify="center">
               <Typography variant="subtitle1" component="div">
                 Instock count: {props.value.stockcount}
               </Typography>
