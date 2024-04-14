@@ -12,6 +12,10 @@ import Grid from "@mui/material/Grid";
 import Header from ".././component/header";
 import Footer from ".././component/footer";
 import SideBar from ".././component/sidebar";
+
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+
 const CheckoutBook = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
@@ -105,90 +109,91 @@ const CheckoutBook = props => {
       <Grid container spacing={2} style={{ marginLeft: "auto" }}>
         {" "}{/* Nested container for three columns */}
         <SideBar />
-        <Grid item xs={6}>
-          {/* Main Content */}
-          <Container>
-            <Typography variant="h2" sx={{ mt: 4 }}>
-              Checkout Book
-            </Typography>
-            <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-              Type in the ID of the book you want to Checkout, and the User ID!
-            </Typography>
-            <div />
-            <div>
-              <form onSubmit={handleSubmit}>
-                <label>
-                  Book ID:
-                  <input
-                    type="number"
-                    placeholder={null === data ? "Book Title" : data.title}
-                    value={query}
-                    onChange={e => {
-                      setQuery(e.target.value);
-                    }}
-                  />
-                </label>
-                <input type="submit" value="Search" />
-              </form>
+        <Grid item xs={6} columns={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          <Grid container spacing={2}>
+            {/* Main Content */}
+            <Grid item xs={8} container>
+              <Typography variant="h2" sx={{ mt: 4 }}>
+                Checkout Book
+              </Typography>
+              <Paper sx={{ padding: 5, bgcolor: "azure", width: "100%" }}>
+                <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
+                  Type in the ID of the book you want to Checkout, and the User
+                  ID!
+                </Typography>
+                <div />
+                <div>
+                  <form onSubmit={handleSubmit}>
+                    <label>
+                      Book ID:
+                      <input
+                        type="number"
+                        placeholder={null === data ? "Book Title" : data.title}
+                        value={query}
+                        onChange={e => {
+                          setQuery(e.target.value);
+                        }}
+                      />
+                    </label>
+                    <input type="submit" value="Search" />
+                  </form>
 
-              <form onSubmit={handleUserSubmit}>
-                <label>
-                  User ID:
-                  <input
-                    type="number"
-                    placeholder={null === data ? "UserID" : userdata.id}
-                    value={userquery}
-                    onChange={e => {
-                      setUserQuery(e.target.value);
-                    }}
-                  />
-                </label>
-                <input type="submit" value="Search" />
-              </form>
-            </div>
-            <div>
-              <Typography variant="h5" sx={{ mt: 4 }}>
-                Book Data {null === data ? "" : " - " + data.title}
-                <br />
-                InStock: {data.instock == true ? "In Stock" : "Out of Stock"}
-              </Typography>
-              <Img
-                alt="Book Image"
-                onError={e => console.log("e", e)}
-                src={data.img}
-              />
-              <Typography variant="body1" sx={{ mt: 4 }}>
-                Name:{data.title}
-                <br />
-                ISBN:{data.isbn}
-                <br />
-                Year Published:{data.publishyear}
-                <br />
-                Genre:{data.genre}
-                <br />
-                Description: <br />
-                {data.description}
-                <br />
-                <br />
-                Book Condition: {data.book_condition}
-                <br />
-              </Typography>
-              <Typography variant="h5" sx={{ mt: 4 }}>
-                User Data{null === userdata ? "" : " - " + userdata.firstname}
-              </Typography>
-              <Typography variant="h6" sx={{ mt: 4 }}>
-                Name: {userdata.firstname} {userdata.lastname}
-                <br />
-              </Typography>{" "}
-              <Typography variant="h6" sx={{ mt: 4 }}>
-                Email: {userdata.email}
-                <br />
-              </Typography>{" "}
-              <Typography variant="h6" sx={{ mt: 4 }}>
-                Balance: ${userdata.balance}
-                <br /> <br /> <br />
-              </Typography>
-              {/* <form onSubmit={submitEditBook}>
+                  <form onSubmit={handleUserSubmit}>
+                    <label>
+                      User ID:
+                      <input
+                        type="number"
+                        placeholder={null === data ? "UserID" : userdata.id}
+                        value={userquery}
+                        onChange={e => {
+                          setUserQuery(e.target.value);
+                        }}
+                      />
+                    </label>
+                    <input type="submit" value="Search" />
+                  </form>
+                </div>
+                <div>
+                  <Typography variant="h5" sx={{ mt: 4 }}>
+                    Book Data {null === data ? "" : " - " + data.title}
+                    <br />
+                    InStock:{" "}
+                    {data.instock == true ? "In Stock" : "Out of Stock"}
+                  </Typography>
+                  <Typography variant="body1" sx={{ mt: 4 }}>
+                    Name:{data.title}
+                    <br />
+                    ISBN:{data.isbn}
+                    <br />
+                    Year Published:{data.publishyear}
+                    <br />
+                    Genre:{data.genre}
+                    <br />
+                    Description: <br />
+                    {data.description}
+                    <br />
+                    <br />
+                    Book Condition: {data.book_condition}
+                    <br />
+                  </Typography>
+                  <Typography variant="h5" sx={{ mt: 4 }}>
+                    User Data{null === userdata
+                      ? ""
+                      : " - " + userdata.firstname}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mt: 4 }}>
+                    Name: {userdata.firstname} {userdata.lastname}
+                    <br />
+                  </Typography>{" "}
+                  <Typography variant="h6" sx={{ mt: 4 }}>
+                    Email: {userdata.email}
+                    <br />
+                  </Typography>{" "}
+                  <Typography variant="h6" sx={{ mt: 4 }}>
+                    Balance: ${userdata.balance}
+                    <br /> <br /> <br />
+                  </Typography>
+                  {/* <form onSubmit={submitEditBook}>
                 <label>
                   Publisher:
                   <input
@@ -263,31 +268,45 @@ const CheckoutBook = props => {
                 <br />
                 <input type="submit" value="Edit Books" />
               </form> */}
-            </div>
-            <Button
-              variant="contained"
-              onClick={() => {
-                CheckoutBook();
-              }}>
-              CHECKOUT
-            </Button>
-            <br /> <br /> <br />
-            <Button
-              variant="contained"
-              onClick={() => {
-                navigate("/");
-              }}>
-              Home
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => {
-                navigate("/employee/emphome");
-              }}>
-              Emp Landing
-            </Button>
-          </Container>
-
+                </div>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    CheckoutBook();
+                  }}>
+                  CHECKOUT
+                </Button>
+              </Paper>
+            </Grid>
+            <Grid item xs={4} alignItems={"center"}>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="65vh">
+                <Img
+                  alt="Book Image"
+                  onError={e => console.log("e", e)}
+                  src={data.img}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+          <br /> <br /> <br />
+          <Button
+            variant="contained"
+            onClick={() => {
+              navigate("/");
+            }}>
+            Home
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              navigate("/employee/emphome");
+            }}>
+            Emp Landing
+          </Button>
           {/* Footer */}
         </Grid>
         <SideBar />
@@ -299,8 +318,7 @@ const CheckoutBook = props => {
 const Img = styled("img")({
   margin: "auto",
   display: "block",
-  maxWidth: "20%",
-  maxHeight: "20%"
+  maxWidth: "80%",
+  maxHeight: "80%"
 });
-
 export default CheckoutBook;

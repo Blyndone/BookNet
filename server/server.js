@@ -54,6 +54,148 @@ app.get('/books/query/', async (req, res) => {
     }
 })
 
+///================================================================================================
+app.get('/books/bookbuddy/', async (req, res) => {
+    console.log("get:books/bookbuddy")
+
+
+    let { userid } = req.query
+    console.log("params", userid)
+    if (userid.length <= 0){
+        userid = '.*'
+    }
+    // params = new URLSearchParams(decodeURI(req.params.query))
+    // let query = params.entries()
+    // console.log(query.next().value.query)
+
+
+    try {
+
+        const querystring = `WITH
+        USER2 (UCOUNT, U2ID, U1ID) AS (
+            SELECT
+                COUNT(U1.ID),
+                U2.ID,
+                U1.ID
+            FROM
+                TESTUSERS U1
+                JOIN TESTRESERVATIONS R1 ON U1.ID = R1.USER_ID
+                JOIN TESTRESERVATIONS R2 ON R1.BOOK_ID = R2.BOOK_ID
+                JOIN TESTUSERS U2 ON R2.USER_ID = U2.ID
+            WHERE
+                U1.ID = $1
+                AND U1.ID <> U2.ID
+            GROUP BY
+                U2.ID,
+                U1.ID
+            ORDER BY
+                COUNT DESC
+            LIMIT
+                1
+        )
+    SELECT
+        *
+    FROM
+        TESTBOOKS
+    WHERE
+        BOOK_ID IN (
+            SELECT
+                BOOK_ID
+            FROM
+                TESTRESERVATIONS R1
+                JOIN USER2 ON R1.USER_ID = USER2.U2ID
+            EXCEPT
+            SELECT
+                BOOK_ID
+            FROM
+                TESTRESERVATIONS R2
+                JOIN USER2 ON R2.USER_ID = USER2.U1ID
+        )
+    ORDER BY
+        CHECKOUT_COUNT DESC
+    LIMIT
+        5`;
+        const books = await pool.query(querystring, [userid])
+        res.json(books.rows)
+        console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
+///=====================================================================================================
+///================================================================================================
+app.get('/books/popgenre/', async (req, res) => {
+    console.log("get:books/popgenre")
+
+
+    let { userid, offset } = req.query
+    console.log("params", userid)
+    if (userid.length <= 0){
+        userid = '.*'
+    }
+    // params = new URLSearchParams(decodeURI(req.params.query))
+    // let query = params.entries()
+    // console.log(query.next().value.query)
+
+
+    try {
+
+        const querystring = `
+        WITH
+            TOPGENRES (GCOUNT, TGENRES, U1ID) AS (
+                SELECT
+                    COUNT(U.ID),
+                    B.GENRE,
+                    U.ID
+                FROM
+                    TESTUSERS U
+                    JOIN TESTRESERVATIONS R ON U.ID = R.USER_ID
+                    JOIN TESTBOOKS B ON B.BOOK_ID = R.BOOK_ID
+                WHERE
+                    U.ID = $1
+                GROUP BY
+                    B.GENRE,
+                    U.ID
+                ORDER BY
+                    COUNT DESC
+                LIMIT
+                    4
+            ),
+            NOTREAD (BOOKS) AS (
+                SELECT
+                    BOOK_ID
+                FROM
+                    TESTBOOKS B
+                    JOIN TOPGENRES G ON B.GENRE = G.TGENRES
+                EXCEPT
+                (
+                    SELECT
+                        BOOK_ID
+                    FROM
+                        TESTRESERVATIONS R
+                        JOIN TESTUSERS U ON U.ID = R.USER_ID
+                    WHERE
+                        U.ID = $2
+                )
+            )
+        SELECT
+            *
+        FROM
+            TESTBOOKS B1
+            JOIN NOTREAD B2 ON B1.BOOK_ID = B2.BOOKS
+        ORDER BY
+            CHECKOUT_COUNT desc
+        LIMIT
+            5
+        offset $3`;
+        const books = await pool.query(querystring, [userid,userid,offset])
+        res.json(books.rows)
+        console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
+///=====================================================================================================
 
 // ==========================
 

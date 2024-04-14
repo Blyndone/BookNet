@@ -50,7 +50,9 @@ const UserHome = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
 
-  const [data, setData] = useState("");
+  const [data1, setData1] = useState("");
+  const [data2, setData2] = useState("");
+  const [data3, setData3] = useState("");
   const [saveddata, setSavedData] = useState("");
 
   const [page, setPage] = useState(0);
@@ -62,58 +64,19 @@ const UserHome = props => {
     RetrieveBooks();
   };
 
-  // const RetrieveBooks = async e => {
-  //   if (e) {
-  //     e.preventDefault();
-  //   }
-  //   // window.alert(query);
-  //   // // if (!query) return;
-
-  //   async function fetchData() {
-  //     // if (query.length == 0) {
-  //     //   return;
-  //     // }
-  //     // console.log("saveddata", saveddata);
-  //     var ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  //     var index = new URLSearchParams(ids.map(s => ["id", s]));
-  //     console.log("" + index);
-  //     const response = await fetch(`http://localhost:3006/books/` + index);
-  //     const res = await response.json();
-  //     // const results = data[0];
-  //     // setData(res);
-  //     return res;
-  //   }
-  //   if (saveddata.length != 0) {
-  //     console.log("saveddata skip", saveddata.length);
-  //     return saveddata;
-  //   }
-  //   fetchData()
-  //     .then(res => {
-  //       if (saveddata.length == 0) {
-  //         setSavedData(res);
-  //         setData(res);
-  //       }
-  //     })
-  //     .catch(err => console.log(err));
-  // };
-
   const RetrieveBooks = async e => {
+    const userid = 1;
+    const offset = 0;
     if (e) {
       e.preventDefault();
     }
     // window.alert(query);
     // // if (!query) return;
 
-    async function fetchData() {
-      // if (query.length == 0) {
-      //   return;
-      // }
-      // console.log("saveddata", saveddata);
-
-      let querystring =
-        "?query=" + query + "&limit=" + limit + "&offset=" + limit * page;
+    async function bookBuddy() {
+      let querystring = "?userid=" + userid;
       const response = await fetch(
-        `http://localhost:3006/books/query/` + querystring
+        `http://localhost:3006/books/bookbuddy/` + querystring
       );
       const res = await response.json();
       // const results = data[0];
@@ -122,9 +85,39 @@ const UserHome = props => {
       return res;
     }
 
-    fetchData()
+    async function popGenre() {
+      let querystring = "?userid=" + userid + "&offset=" + limit;
+      const response = await fetch(
+        `http://localhost:3006/books/popgenre/` + querystring
+      );
+      const res = await response.json();
+      // const results = data[0];
+      // setData(res);
+
+      return res;
+    }
+
+    async function bookBuddy3() {
+      let querystring = "?userid=" + "2";
+      const response = await fetch(
+        `http://localhost:3006/books/bookbuddy/` + querystring
+      );
+      const res = await response.json();
+      // const results = data[0];
+      // setData(res);
+
+      return res;
+    }
+
+    bookBuddy()
       .then(res => {
-        setData(res);
+        setData2(res);
+      })
+      .catch(err => console.log(err));
+
+    popGenre()
+      .then(res => {
+        setData1(res);
       })
       .catch(err => console.log(err));
   };
@@ -199,7 +192,7 @@ const UserHome = props => {
               <Typography>PAGE NAVIGATION</Typography>{" "}
               <ArrowForwardIcon
                 onClick={() => {
-                  setPage(data.length < limit ? page : page + 1);
+                  setPage(data1.length < limit ? page : page + 1);
                   console.log(page);
                   RetrieveBooks();
                 }}
@@ -209,9 +202,9 @@ const UserHome = props => {
               {/* {JSON.stringify(data)} */}
             </Typography>
             <Container>
-              {data.length < 1
+              {data1.length < 1
                 ? <Typography>No Books Found!</Typography>
-                : <ListItem items={data} />}
+                : <ListItem items={data1} />}
             </Container>
 
             <Button
@@ -276,6 +269,59 @@ function ListItem(items) {
     }
   }
 }
+// function Item(props) {
+//   const { setOpen, setBookData } = props;
+//   return (
+//     <li>
+//       <Paper
+//         sx={{
+//           p: 2,
+//           margin: 2,
+//           maxWidth: 200,
+//           flexGrow: 1,
+//           backgroundColor: theme =>
+//             theme.palette.mode === "dark" ? "#1A2027" : "#fff"
+//         }}>
+//         <Grid container spacing={2}>
+//           <Grid item justifyContent={"center"} width={200} height={200}>
+//             <ButtonBase
+//               sx={{ width: 128, height: 128 }}
+//               onClick={() => {
+//                 setBookData(props.value);
+//                 setOpen(true);
+//               }}>
+//               <Img
+//                 alt="book image"
+//                 onError={e => console.log("e", e)}
+//                 src={props.value.img}
+//               />
+//             </ButtonBase>
+//           </Grid>
+//           <Grid item xs={12} sm container>
+//             <Grid item xs container direction="column" spacing={2}>
+//               <Grid item xs>
+//                 <Typography
+//                   gutterBottom
+//                   variant="h5"
+//                   component="div"
+//                   textAlign={"center"}>
+//                   {props.value.title}
+//                 </Typography>
+//                 <Typography variant="body3" gutterBottom>
+//                   Author: {props.value.author_name}
+//                 </Typography>{" "}
+//                 <Typography variant="body2" gutterBottom>
+//                   Genre: {props.value.genre}
+//                 </Typography>
+//               </Grid>
+//             </Grid>
+//           </Grid>
+//         </Grid>
+//       </Paper>
+//     </li>
+//   );
+// }
+
 function Item(props) {
   const { setOpen, setBookData } = props;
   return (
@@ -363,8 +409,8 @@ const SearchBar = ({ setSearchQuery }) =>
 const Img = styled("img")({
   margin: "auto",
   display: "block",
-  maxWidth: "100%",
-  maxHeight: "100%"
+  maxWidth: "115%",
+  maxHeight: "115%"
 });
 
 export default UserHome;

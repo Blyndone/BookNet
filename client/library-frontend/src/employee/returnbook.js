@@ -11,6 +11,9 @@ import Grid from "@mui/material/Grid";
 import Header from ".././component/header";
 import Footer from ".././component/footer";
 import SideBar from ".././component/sidebar";
+import { styled } from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
 const ReturnBook = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
@@ -148,33 +151,35 @@ const ReturnBook = props => {
       <Grid container spacing={2} style={{ marginLeft: "auto" }}>
         {" "}{/* Nested container for three columns */}
         <SideBar />
-        <Grid item xs={6}>
-          {/* Main Content */}
-          <Container>
-            <Typography variant="h2" sx={{ mt: 4 }}>
-              Return Book
-            </Typography>
-            <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-              Type in the name of the book you want to Return!
-            </Typography>
-            <div />
-            <div>
-              <form onSubmit={handleSubmit}>
-                <label>
-                  Book ID:
-                  <input
-                    type="text"
-                    placeholder={null === data ? "Book Title" : data.title}
-                    value={query}
-                    onChange={e => {
-                      setQuery(e.target.value);
-                    }}
-                  />
-                </label>
-                <input type="submit" value="Search" />
-              </form>
+        <Grid item xs={6} columns={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          <Grid container spacing={2}>
+            {/* Main Content */}
+            <Grid item xs={8} container>
+              <Typography variant="h2" sx={{ mt: 4 }}>
+                Return Book
+              </Typography>
+              <Paper sx={{ padding: 5, bgcolor: "azure", width: "100%" }}>
+                <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
+                  Type in the name of the book you want to Return!
+                </Typography>
+                <div />
+                <div>
+                  <form onSubmit={handleSubmit}>
+                    <label>
+                      Book ID:
+                      <input
+                        type="text"
+                        placeholder={null === data ? "Book Title" : data.title}
+                        value={query}
+                        onChange={e => {
+                          setQuery(e.target.value);
+                        }}
+                      />
+                    </label>
+                    <input type="submit" value="Search" />
+                  </form>
 
-              {/* <form onSubmit={handleUserSubmit}>
+                  {/* <form onSubmit={handleUserSubmit}>
                 <label>
                   User ID:
                   <input
@@ -188,44 +193,44 @@ const ReturnBook = props => {
                 </label>
                 <input type="submit" value="Search" />
               </form> */}
-            </div>
-            <div>
-              {/* <br />
+                </div>
+                <div>
+                  {/* <br />
               {JSON.stringify(data)}
               {JSON.stringify(userdata)}
               <br /> */}
-              {/* Book Edit Form */}
-              <Typography variant="h5" sx={{ mt: 4 }}>
-                Book Data{null === data ? "" : " - " + data.title}
-                <br />
-                InStock: {String(data.instock)}
-              </Typography>
-              <Typography variant="h6" sx={{ mt: 4 }}>
-                Name:{data.title}
-                <br />
-                ISBN:{data.isbn}
-                <br />
-                <br />
-                DUE DATE: {new Date(data.due_date).toLocaleDateString()}
-                <br />
-              </Typography>
-              <Typography variant="h5" sx={{ mt: 4 }}>
-                User Data-
-              </Typography>
-              <Typography variant="h6" sx={{ mt: 4 }}>
-                User Name:{userdata.firstname} {userdata.lastname}
-                <br />
-              </Typography>{" "}
-              <Typography variant="h6" sx={{ mt: 4 }}>
-                Email: {userdata.email}
-                <br />
-              </Typography>{" "}
-              <Typography variant="h6" sx={{ mt: 4 }}>
-                BALANCE: ${userdata.balance}
-                <br />
-                <br />
-              </Typography>
-              {/* <form onSubmit={submitEditBook}>
+                  {/* Book Edit Form */}
+                  <Typography variant="h5" sx={{ mt: 4 }}>
+                    Book Data{null === data ? "" : " - " + data.title}
+                    <br />
+                    InStock: {String(data.instock)}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mt: 4 }}>
+                    Name:{data.title}
+                    <br />
+                    ISBN:{data.isbn}
+                    <br />
+                    <br />
+                    DUE DATE: {new Date(data.due_date).toLocaleDateString()}
+                    <br />
+                  </Typography>
+                  <Typography variant="h5" sx={{ mt: 4 }}>
+                    User Data-
+                  </Typography>
+                  <Typography variant="h6" sx={{ mt: 4 }}>
+                    User Name:{userdata.firstname} {userdata.lastname}
+                    <br />
+                  </Typography>{" "}
+                  <Typography variant="h6" sx={{ mt: 4 }}>
+                    Email: {userdata.email}
+                    <br />
+                  </Typography>{" "}
+                  <Typography variant="h6" sx={{ mt: 4 }}>
+                    BALANCE: ${userdata.balance}
+                    <br />
+                    <br />
+                  </Typography>
+                  {/* <form onSubmit={submitEditBook}>
                 <label>
                   Publisher:
                   <input
@@ -300,31 +305,45 @@ const ReturnBook = props => {
                 <br />
                 <input type="submit" value="Edit Books" />
               </form> */}
-            </div>
-            <Button
-              variant="contained"
-              onClick={() => {
-                ReturnBook();
-              }}>
-              Return Book
-            </Button>
-            <br /> <br /> <br />
-            <Button
-              variant="contained"
-              onClick={() => {
-                navigate("/");
-              }}>
-              Home
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => {
-                navigate("/employee/emphome");
-              }}>
-              Emp Landing
-            </Button>
-          </Container>
-
+                </div>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    ReturnBook();
+                  }}>
+                  Return Book
+                </Button>
+              </Paper>
+            </Grid>
+            <Grid item xs={4} alignItems={"center"}>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="65vh">
+                <Img
+                  alt="Book Image"
+                  onError={e => console.log("e", e)}
+                  src={data.img}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+          <br /> <br /> <br />
+          <Button
+            variant="contained"
+            onClick={() => {
+              navigate("/");
+            }}>
+            Home
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              navigate("/employee/emphome");
+            }}>
+            Emp Landing
+          </Button>
           {/* Footer */}
         </Grid>
         <SideBar />
@@ -334,4 +353,10 @@ const ReturnBook = props => {
   );
 };
 
+const Img = styled("img")({
+  margin: "auto",
+  display: "block",
+  maxWidth: "80%",
+  maxHeight: "80%"
+});
 export default ReturnBook;

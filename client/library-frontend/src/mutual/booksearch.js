@@ -289,7 +289,7 @@ function Item(props) {
           backgroundColor: theme =>
             theme.palette.mode === "dark" ? "#1A2027" : "#fff"
         }}>
-        <Grid container spacing={2}>
+        <Grid container direction="column" spacing={2}>
           <Grid item>
             <ButtonBase
               sx={{ width: 128, height: 128 }}
@@ -363,8 +363,8 @@ const SearchBar = ({ setSearchQuery }) =>
 const Img = styled("img")({
   margin: "auto",
   display: "block",
-  maxWidth: "100%",
-  maxHeight: "100%"
+  maxWidth: "115%",
+  maxHeight: "115%"
 });
 
 export default BookSearch;
