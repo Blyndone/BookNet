@@ -14,18 +14,23 @@ import Events from "./mutual/events";
 import UserHome from "./user/userhome";
 import BookSearch from "./mutual/booksearch";
 import "./App.css";
+import AddBooks from "./employee/addbooks";
 
 function App() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState(localStorage.getItem("role") || "");
-  const [loggedIn, setLoggedIn] = useState(localStorage.getItem("loggedIn") === "true");
+  const [loggedIn, setLoggedIn] = useState(
+    localStorage.getItem("loggedIn") === "true"
+  );
 
-  useEffect(() => {
-    // Save role and loggedIn state to localStorage whenever they change
-    localStorage.setItem("role", role);
-    localStorage.setItem("loggedIn", loggedIn);
-  }, [role, loggedIn]);
-
+  useEffect(
+    () => {
+      // Save role and loggedIn state to localStorage whenever they change
+      localStorage.setItem("role", role);
+      localStorage.setItem("loggedIn", loggedIn);
+    },
+    [role, loggedIn]
+  );
 
   useEffect(() => {
     // Fetch the user email and token from local storage
@@ -63,23 +68,54 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public routes */}
-          <Route path="/" element={<Home email={email} loggedIn={loggedIn} />} />
-          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
-          <Route path="/signUp" element={<SignUp setLoggedIn={setLoggedIn}  setEmail={setEmail}/>} />
-          <Route path="/home" element={<LandingPage setLoggedIn={setLoggedIn} />} />
-          <Route path="/userhome" element={<UserHome setLoggedIn={setLoggedIn} />} />
-          <Route path="/profile" element={<Profile setLoggedIn={setLoggedIn} />} />
-          <Route path="/booksearch" element={<BookSearch setLoggedIn={setLoggedIn} />} />
-          <Route path="/events" element={<Events setLoggedIn={setLoggedIn} />} />
-
+          <Route
+            path="/"
+            element={<Home email={email} loggedIn={loggedIn} />}
+          />
+          <Route
+            path="/login"
+            element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+          />
+          <Route
+            path="/signUp"
+            element={<SignUp setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+          />
+          <Route
+            path="/home"
+            element={<LandingPage setLoggedIn={setLoggedIn} />}
+          />
+          <Route
+            path="/userhome"
+            element={<UserHome setLoggedIn={setLoggedIn} />}
+          />
+          <Route
+            path="/profile"
+            element={<Profile setLoggedIn={setLoggedIn} />}
+          />
+          <Route
+            path="/addbooks"
+            element={<AddBooks setLoggedIn={setLoggedIn} />}
+          />
+          <Route
+            path="/booksearch"
+            element={<BookSearch setLoggedIn={setLoggedIn} />}
+          />
+          <Route
+            path="/events"
+            element={<Events setLoggedIn={setLoggedIn} />}
+          />
           {/* Private routes for employees */}
-          <Route element={<PrivateRoutes isLoggedIn={loggedIn} role={role} />}>
-            <Route path="employee">
-              <Route path="emphome" element={<EmpHome />} />
-              <Route path="editbook" element={<EditBook />} />
-              <Route path="checkoutbook" element={<CheckoutBook />} />
-              <Route path="returnbook" element={<ReturnBook />} />
-            </Route>
+          {/* UNCOMMENT  =================================================*/}
+          {/* <Route element={<PrivateRoutes isLoggedIn={loggedIn} role={role} />}> */}
+          <Route path="employee">
+            <Route path="emphome" element={<EmpHome />} />
+            <Route path="editbook" element={<EditBook />} />
+            <Route path="checkoutbook" element={<CheckoutBook />} />
+            <Route path="returnbook" element={<ReturnBook />} />
+            <Route path="addbooks" element={<AddBooks />} />
+            {/* </Route> */}
+
+            {/* UNCOMMENT  =================================================*/}
           </Route>
         </Routes>
       </BrowserRouter>

@@ -33,25 +33,36 @@ const Header = props => {
           <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
             Book.net
           </Typography>
-          <TextField
-            label="Search"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment>
-                  <IconButton>
-                    <SearchIcon />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
+          <form
+            onSubmit={() => {
+              navigate("/booksearch", { state: { q: "harry" } });
+            }}>
+            <TextField
+              label="Search"
+              type=""
+              onChange={e => {
+                console.log(e.target.value);
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment>
+                    <IconButton type="submit">
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+          </form>
           <Button color="inherit" onClick={onButtonClick}>
             Log Out
           </Button>
-          <Button 
-          color="inherit" 
-          onClick={() => { navigate("/profile"); }}>
-          Profile
+          <Button
+            color="inherit"
+            onClick={() => {
+              navigate("/profile");
+            }}>
+            Profile
           </Button>
         </Toolbar>
       </AppBar>

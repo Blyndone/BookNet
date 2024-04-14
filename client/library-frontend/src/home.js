@@ -76,6 +76,19 @@ const Home = props => {
                     Your email address is {email}
                   </div>
                 : <div />}
+
+              <input
+                className={"inputButton"}
+                type="button"
+                onClick={signUpClick}
+                value={loggedIn ? "Log out" : "Sign Up"}
+              />
+              <input
+                className={"inputButton"}
+                type="button"
+                onClick={signUpClick}
+                value={loggedIn ? "Log out" : "Sign Up"}
+              />
             </div>
           </div>
         </Grid>

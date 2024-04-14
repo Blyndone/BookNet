@@ -14,7 +14,7 @@ import Footer from ".././component/footer";
 import SideBar from ".././component/sidebar";
 import Box from "@mui/material/Box";
 
-const EditBook = props => {
+const AddBooks = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
   const [data, setData] = useState({});
@@ -26,51 +26,52 @@ const EditBook = props => {
     // window.alert(query);
     // if (!query) return;
 
-    async function fetchData() {
-      if (query.length == 0) {
-        return;
-      }
+    // async function fetchData() {
+    //   if (query.length == 0) {
+    //     return;
+    //   }
 
-      let querystring = "?query=" + query + "&limit=1&offset=0";
-      const response = await fetch(
-        `http://localhost:3006/books/index/` + querystring
-      );
-      const res = await response.json();
-      // const results = data[0];
-      // setData(res);
+    //   let querystring = "?query=" + query + "&limit=1&offset=0";
+    //   const response = await fetch(
+    //     `http://localhost:3006/books/index/` + querystring
+    //   );
+    //   const res = await response.json();
+    //   // const results = data[0];
+    //   // setData(res);
 
-      return res;
-    }
+    //   return res;
+    // }
 
-    fetchData()
-      .then(res => {
-        setData(res[0]);
-      })
-      .catch(err => console.log(err));
+    // fetchData()
+    //   .then(res => {
+    //     setData(res[0]);
+    //   })
+    //   .catch(err => console.log(err));
   };
 
-  const submitEditBook = e => {
+  const submitPostBook = e => {
     e.preventDefault();
 
-    async function patchbook() {
-      fetch(`http://localhost:3006/books/`, {
-        method: "PATCH",
+    async function postbook() {
+      fetch(`http://localhost:3006/book/`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          book_id: data.book_id,
           title: data.title,
-          publishyear: data.publishyear,
+          author_name: data.author_name,
+          publish_year: data.publish_year,
           isbn: data.isbn,
           genre: data.genre,
           img: data.img,
-          description: data.description
+          description: data.description,
+          count: data.count
         })
       });
     }
 
-    patchbook();
+    postbook();
   };
 
   return (
@@ -88,75 +89,70 @@ const EditBook = props => {
             {/* Main Content */}
             <Grid item xs={8} container>
               <Typography variant="h2" sx={{ mt: 4 }}>
-                Edit Book
+                Add Books
               </Typography>
               <Paper sx={{ padding: 5, bgcolor: "azure" }}>
                 <div>
                   <div>
                     <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-                      Type in the name of the book you want to edit!
+                      Type in information of the book you want to add!
                     </Typography>
                     <div />
-                    <div>
-                      <form onSubmit={handleSubmit}>
-                        <label>
-                          Book ID:
-                          <input
-                            type="number"
-                            placeholder={
-                              null === data ? "BookID" : data.book_id
-                            }
-                            value={query}
-                            onChange={e => {
-                              setQuery(e.target.value);
-                            }}
-                          />
-                        </label>
-                        <input type="submit" value="Search" />
-                      </form>
-                    </div>
+
                     <div>
                       <Typography variant="h5" sx={{ mt: 4 }}>
-                        Book Edit Form{null === data ? "" : " - " + data.title}
+                        Book Entry Form
                         <br />
                         <br />
                       </Typography>
-
-                      <label>
-                        Book Title:
-                        <input
-                          type="text"
-                          placeholder={
-                            null === data ? "Book Title" : data.title
-                          }
-                          value={data.title}
-                          onChange={e => {
-                            setData({ ...data, title: e.target.value });
-                          }}
-                        />
-                      </label>
-                      <br />
-                      <br />
-                      <form onSubmit={submitEditBook}>
+                      <form onSubmit={submitPostBook}>
                         <label>
-                          Published Year:
+                          Count:
                           <input
-                            type="text"
-                            value={data.publishyear}
+                            type="number"
+                            value={data.count}
                             onChange={e => {
-                              setData({
-                                ...data,
-                                publishyear: e.target.value
-                              });
+                              setData({ ...data, count: e.target.value });
                             }}
                           />
                         </label>
                         <br />
                         <br />
                         <label>
-                          ISBN:
+                          Book Title:
                           <input
                             type="text"
+                            placeholder={
+                              null === data ? "Book Title" : data.title
+                            }
+                            value={data.title}
+                            onChange={e => {
+                              setData({ ...data, title: e.target.value });
+                            }}
+                          />
+                        </label>
+                        <br />
+                        <br />
+                        <label>
+                          Author Name:
+                          <input
+                            type="text"
+                            placeholder={
+                              null === data ? "Author Name" : data.author_name
+                            }
+                            value={data.author_name}
+                            onChange={e => {
+                              setData({ ...data, author_name: e.target.value });
+                            }}
+                          />
+                        </label>
+                        <br />
+                        <br />
+
+                        <label>
+                          ISBN:
+                          <input
+                            type="number"
                             value={data.isbn}
                             onChange={e => {
                               setData({ ...data, isbn: e.target.value });
@@ -169,11 +165,11 @@ const EditBook = props => {
                           Publication Year:
                           <input
                             type="text"
-                            value={data.publication_year}
+                            value={data.publish_year}
                             onChange={e => {
                               setData({
                                 ...data,
-                                publication_year: e.target.value
+                                publish_year: e.target.value
                               });
                             }}
                           />
@@ -222,7 +218,7 @@ const EditBook = props => {
                         </label>
                         <br />
                         <br />
-                        <input type="submit" value="Edit Books" />
+                        <input type="submit" value="Add Book" />
                       </form>
                     </div>
                   </div>
@@ -275,5 +271,5 @@ const Img = styled("img")({
   maxHeight: "800%"
 });
 
-export default EditBook;
+export default AddBooks;
 /////////////////////////////////////////////////////////////////
