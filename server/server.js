@@ -59,7 +59,7 @@ app.get('/books/bookbuddy/', async (req, res) => {
     console.log("get:books/bookbuddy")
 
 
-    let { userid } = req.query
+    let { userid, offset } = req.query
     console.log("params", userid)
     if (userid.length <= 0){
         userid = '.*'
@@ -94,7 +94,7 @@ app.get('/books/bookbuddy/', async (req, res) => {
                 1
         )
     SELECT
-        *
+    DISTINCT *
     FROM
         TESTBOOKS
     WHERE
@@ -114,8 +114,10 @@ app.get('/books/bookbuddy/', async (req, res) => {
     ORDER BY
         CHECKOUT_COUNT DESC
     LIMIT
-        5`;
-        const books = await pool.query(querystring, [userid])
+        5
+    Offset
+        $2`;
+        const books = await pool.query(querystring, [userid, offset])
         res.json(books.rows)
         console.log(books.rows)
     } catch (err) {
@@ -179,7 +181,7 @@ app.get('/books/popgenre/', async (req, res) => {
                 )
             )
         SELECT
-            *
+        DISTINCT *
         FROM
             TESTBOOKS B1
             JOIN NOTREAD B2 ON B1.BOOK_ID = B2.BOOKS

@@ -56,7 +56,9 @@ const UserHome = props => {
   const [saveddata, setSavedData] = useState("");
 
   const [page, setPage] = useState(0);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(5);
+
+  const [offset, setOffset] = useState(0);
 
   const submitQuery = e => {
     e.preventDefault();
@@ -65,8 +67,8 @@ const UserHome = props => {
   };
 
   const RetrieveBooks = async e => {
-    const userid = 1;
-    const offset = 0;
+    const userid = 4;
+
     if (e) {
       e.preventDefault();
     }
@@ -74,7 +76,7 @@ const UserHome = props => {
     // // if (!query) return;
 
     async function bookBuddy() {
-      let querystring = "?userid=" + userid;
+      let querystring = "?userid=" + userid + "&offset=" + offset;
       const response = await fetch(
         `http://localhost:3006/books/bookbuddy/` + querystring
       );
@@ -86,7 +88,7 @@ const UserHome = props => {
     }
 
     async function popGenre() {
-      let querystring = "?userid=" + userid + "&offset=" + limit;
+      let querystring = "?userid=" + userid + "&offset=" + offset;
       const response = await fetch(
         `http://localhost:3006/books/popgenre/` + querystring
       );
@@ -98,7 +100,7 @@ const UserHome = props => {
     }
 
     async function bookBuddy3() {
-      let querystring = "?userid=" + "2";
+      let querystring = "?userid=" + userid;
       const response = await fetch(
         `http://localhost:3006/books/bookbuddy/` + querystring
       );
@@ -182,21 +184,47 @@ const UserHome = props => {
               </form>
             </div>
             <div>
-              <ArrowBackIcon
-                onClick={() => {
-                  setPage(page > 1 ? page - 1 : 0);
-                  console.log(page);
-                  RetrieveBooks();
-                }}
-              />
-              <Typography>PAGE NAVIGATION</Typography>{" "}
-              <ArrowForwardIcon
-                onClick={() => {
-                  setPage(data1.length < limit ? page : page + 1);
-                  console.log(page);
-                  RetrieveBooks();
-                }}
-              />
+              <Paper
+                sx={{
+                  p: 2,
+                  margin: 2,
+                  maxWidth: "100%",
+                  flexGrow: 1,
+                  backgroundColor: "azure"
+                }}>
+                <Grid container justifyContent={"center"}>
+                  <Grid item>
+                    <ArrowBackIcon
+                      color={page > 0 ? "black" : "disabled"}
+                      fontSize="large"
+                      onClick={() => {
+                        if (page > 0) {
+                          setPage(page - 1);
+                          setOffset(offset - 5);
+
+                          RetrieveBooks();
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6} textAlign={"center"}>
+                    <Typography variant="h6">PAGE NAVIGATION</Typography>
+                  </Grid>
+                  <Grid item>
+                    <ArrowForwardIcon
+                      color={page < 5 ? "black" : "disabled"}
+                      fontSize="large"
+                      onClick={() => {
+                        if (page < 5) {
+                          setPage(page + 1);
+                          setOffset(offset + 5);
+                          RetrieveBooks();
+                        }
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </Paper>
             </div>
             <Typography>
               {/* {JSON.stringify(data)} */}
@@ -204,7 +232,12 @@ const UserHome = props => {
             <Container>
               {data1.length < 1
                 ? <Typography>No Books Found!</Typography>
-                : <ListItem items={data1} />}
+                : <ListItem items={data1} label={"BUDDY RECCOMENDATIONS"} />}
+            </Container>
+            <Container>
+              {data2.length < 1
+                ? <Typography>No Books Found!</Typography>
+                : <ListItem items={data2} label={"GENRE RECCOMENDATIONS"} />}
             </Container>
 
             <Button
@@ -232,18 +265,18 @@ const UserHome = props => {
   );
 };
 
-function ListItem(items) {
+function ListItem(props) {
   const [open, setOpen] = React.useState(false);
 
   const [bookdata, setBookData] = React.useState({
     title: ""
   });
 
-  if (items.length == 0) {
+  if (props.items.length == 0) {
     console.log("ZERO RECORDS");
   } else {
     try {
-      items = Object(items.items);
+      const items = Object(props.items.items);
 
       return (
         <div>
@@ -252,8 +285,11 @@ function ListItem(items) {
             onClose={() => setOpen(false)}
             bookdata={bookdata}
           />
-          <ul style={{ listStyleType: "none" }}>
-            {items.map(item =>
+          <Typography variant="h5" gutterBottom textAlign={"center"}>
+            {props.label}
+          </Typography>
+          <Grid container spacing={1} xs>
+            {props.items.map(item =>
               <Item
                 key={item.book_id.toString()}
                 value={item}
@@ -261,7 +297,7 @@ function ListItem(items) {
                 setBookData={setBookData}
               />
             )}
-          </ul>
+          </Grid>
         </div>
       );
     } catch (err) {
@@ -325,12 +361,12 @@ function ListItem(items) {
 function Item(props) {
   const { setOpen, setBookData } = props;
   return (
-    <li>
+    <Grid item m={2}>
       <Paper
         sx={{
           p: 2,
-          margin: 2,
-          maxWidth: 800,
+          maxWidth: 180,
+          height: 450,
           flexGrow: 1,
           backgroundColor: theme =>
             theme.palette.mode === "dark" ? "#1A2027" : "#fff"
@@ -362,13 +398,6 @@ function Item(props) {
                 <Typography variant="body2" gutterBottom>
                   Genre: {props.value.genre}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  ISBN: {props.value.isbn}
-                </Typography>{" "}
-                <Typography variant="body2" color="text.secondary">
-                  Year Published: {props.value.publishyear}{" "}
-                  {props.value.publication_year}
-                </Typography>
               </Grid>
               <Grid item>
                 {/* <Typography sx={{ cursor: "pointer" }} variant="body2">
@@ -384,7 +413,7 @@ function Item(props) {
           </Grid>
         </Grid>
       </Paper>
-    </li>
+    </Grid>
   );
 }
 
