@@ -185,7 +185,7 @@ const CheckoutBook = props => {
                 <br />
               </Typography>{" "}
               <Typography variant="h6" sx={{ mt: 4 }}>
-                Balance:0.00
+                Balance: ${userdata.balance}
                 <br /> <br /> <br />
               </Typography>
               {/* <form onSubmit={submitEditBook}>

@@ -158,7 +158,7 @@ app.get('/user/:id', async (req, res) => {
     try {
         const { id } = req.params;
         console.log(id)
-        const query = 'SELECT * FROM users WHERE id = $1';
+        const query = 'SELECT * FROM testusers WHERE id = $1';
         const books = await pool.query(query, [id])
         res.json(books.rows)
         console.log(books.rows)
@@ -174,7 +174,7 @@ app.get('/stockuser/:id', async (req, res) => {
     try {
         const { id } = req.params;
         console.log(id)
-        const query = 'SELECT * FROM users U JOIN teststock S on U.id=S.user_id where s.id = $1';
+        const query = 'SELECT * FROM testusers U JOIN teststock S on U.id=S.user_id where s.id = $1';
         const users = await pool.query(query, [id])
         res.json(users.rows)
         console.log(users.rows)
@@ -287,18 +287,23 @@ app.patch('/checkoutbook/', async (req, res) => {
     } = req.body
     console.log("Checking Out:", stockid, 'User: ', user_id)
 
-    
+    var tmpdate = new Date();
+    var duration = 7;
+    tmpdate.setTime(tmpdate.getTime() + duration * 86400000);
+    const due_date = tmpdate.toISOString().slice(0, 19).replace('T', ' ');
 
+
+    console.log(due_date)
     try {
             const query = `
             UPDATE teststock 
             SET 
-            instock=false, user_id = $1
+            instock=false, user_id = $1, due_date = $3
             WHERE id = $2
             `
 
             console.log(stockid)
-            const booksupdated = await pool.query(query, [user_id , stockid])
+            const booksupdated = await pool.query(query, [user_id , stockid, due_date])
             console.log(booksupdated.rows)
 
 
@@ -340,23 +345,33 @@ app.patch('/checkoutbook/', async (req, res) => {
 app.patch('/returnbook/', async (req, res) => {
     console.log(req.body)
     const {
-        stockid
+        stockid, balance, user_id
     } = req.body
     console.log("Returning Book", stockid)
     
 
     try {
-            const query = `
+            const query1 = `
             UPDATE teststock 
             SET 
-            instock=true, user_id = NULL
-            WHERE id = $1
+            instock=true, user_id = NULL, due_date = NULL
+            WHERE id = $1;`
+
+            const query2 =`
+            UPDATE testusers
+            SET
+            balance = $1
+            WHERE id = $2;
             `
             const values = [stockid]
             console.log(values)
-            const booksupdated = await pool.query(query, values)
+            const booksupdated = await pool.query(query1, values)
             console.log(booksupdated.rows)
 
+            const values2 = [ balance, user_id]
+            console.log(values2)
+            const usersupdated = await pool.query(query2, values2)
+            console.log(booksupdated.rows)
 
             res.status(200).json({
                 books: stockid,
@@ -386,7 +401,7 @@ app.post("/signup", async (req, res) => {
 
     try {
         // Check if user already exists
-        const existingUserQuery = 'SELECT * FROM users WHERE email = $1';
+        const existingUserQuery = 'SELECT * FROM testusers WHERE email = $1';
         const existingUserResult = await pool.query(existingUserQuery, [email]);
 
         if (existingUserResult.rows.length > 0) {
@@ -401,7 +416,7 @@ app.post("/signup", async (req, res) => {
 
 
         // Insert new user into the database
-        const insertUserQuery = 'INSERT INTO users( firstName, lastName, email, password, role) VALUES($1, $2, $3, $4, $5) RETURNING *';
+        const insertUserQuery = 'INSERT INTO testusers( firstName, lastName, email, password, role) VALUES($1, $2, $3, $4, $5) RETURNING *';
         const insertedUserResult = await pool.query(insertUserQuery, [firstName, lastName, email, hashedPassword, role]);
 
         const newUser = insertedUserResult.rows[0];
@@ -439,7 +454,7 @@ app.post("/login", async (req, res) => {
     } = req.body;
 
     try {
-        const getUserQuery = 'SELECT * FROM users WHERE email = $1';
+        const getUserQuery = 'SELECT * FROM testusers WHERE email = $1';
         const userResult = await pool.query(getUserQuery, [email]);
         const user = userResult.rows[0];
 
@@ -515,7 +530,7 @@ app.post('/check-account', async (req, res) => {
         } = req.body;
 
         // Check if user exists in the database
-        const getUserQuery = 'SELECT * FROM users WHERE email = $1';
+        const getUserQuery = 'SELECT * FROM testusers WHERE email = $1';
         const result = await pool.query(getUserQuery, [email]);
 
         const user = result.rows;

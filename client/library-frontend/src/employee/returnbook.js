@@ -109,6 +109,16 @@ const ReturnBook = props => {
     if (data.length == 0) {
       return;
     }
+    const d1 = new Date(data.due_date);
+    const d2 = Date.now();
+    const fee = 10.0;
+
+    let late = false;
+    if (d1 > d2) {
+      window.alert("LATE");
+      late = true;
+    }
+
     async function patchbook() {
       fetch(`http://localhost:3006/returnbook/`, {
         method: "PATCH",
@@ -116,13 +126,16 @@ const ReturnBook = props => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          stockid: data.book_id
+          stockid: data.book_id,
+          user_id: userdata.id,
+          balance: parseFloat(userdata.balance) + fee
         })
       });
     }
 
     patchbook();
     setData({ ...data, instock: true });
+    setUserData({});
   };
 
   return (
@@ -192,9 +205,12 @@ const ReturnBook = props => {
                 <br />
                 ISBN:{data.isbn}
                 <br />
+                <br />
+                DUE DATE: {new Date(data.due_date).toLocaleDateString()}
+                <br />
               </Typography>
               <Typography variant="h5" sx={{ mt: 4 }}>
-                User Data{null === data ? "" : " - " + data.title}
+                User Data-
               </Typography>
               <Typography variant="h6" sx={{ mt: 4 }}>
                 User Name:{userdata.firstname} {userdata.lastname}
@@ -205,7 +221,7 @@ const ReturnBook = props => {
                 <br />
               </Typography>{" "}
               <Typography variant="h6" sx={{ mt: 4 }}>
-                BALANCE: {}
+                BALANCE: ${userdata.balance}
                 <br />
                 <br />
               </Typography>
