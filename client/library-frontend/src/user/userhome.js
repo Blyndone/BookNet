@@ -148,41 +148,8 @@ const UserHome = props => {
               USER HOME
             </Typography>
             <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-              Delivering awesome solutions for you!
+              Your Book Reccomendations!
             </Typography>
-
-            <div
-              style={{
-                display: "flex",
-                alignSelf: "center",
-                justifyContent: "center",
-                flexDirection: "column",
-                padding: 20
-              }}>
-              <form
-                id="search-bar"
-                onSubmit={e => {
-                  submitQuery(e);
-                }}>
-                <label>
-                  <TextField
-                    id="search-bar"
-                    className="text"
-                    value={query}
-                    onInput={e => {
-                      setQuery(e.target.value);
-                    }}
-                    label="Enter a Book Name!"
-                    variant="outlined"
-                    placeholder="Search..."
-                    size="small"
-                  />
-                  <IconButton id="search-bar" type="submit" aria-label="search">
-                    <SearchIcon style={{ fill: "blue" }} />
-                  </IconButton>
-                </label>
-              </form>
-            </div>
             <div>
               <Paper
                 sx={{

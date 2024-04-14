@@ -180,30 +180,59 @@ const BookSearch = props => {
                     label="Enter a Book Name!"
                     variant="outlined"
                     placeholder="Search..."
-                    size="small"
+                    size="large"
+                    fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <IconButton
+                          id="search-bar"
+                          type="submit"
+                          aria-label="search">
+                          <SearchIcon style={{ fill: "blue" }} />
+                        </IconButton>
+                      )
+                    }}
                   />
-                  <IconButton id="search-bar" type="submit" aria-label="search">
-                    <SearchIcon style={{ fill: "blue" }} />
-                  </IconButton>
                 </label>
               </form>
             </div>
             <div>
-              <ArrowBackIcon
-                onClick={() => {
-                  setPage(page > 1 ? page - 1 : 0);
-                  console.log(page);
-                  RetrieveBooks();
-                }}
-              />
-              <Typography>PAGE NAVIGATION</Typography>{" "}
-              <ArrowForwardIcon
-                onClick={() => {
-                  setPage(data.length < limit ? page : page + 1);
-                  console.log(page);
-                  RetrieveBooks();
-                }}
-              />
+              <Paper
+                sx={{
+                  p: 2,
+                  margin: 2,
+                  maxWidth: "100%",
+                  flexGrow: 1,
+                  backgroundColor: "azure"
+                }}>
+                <Grid container justifyContent={"center"}>
+                  <Grid item>
+                    <ArrowBackIcon
+                      color={page > 0 ? "black" : "disabled"}
+                      fontSize="large"
+                      onClick={() => {
+                        setPage(page > 0 ? page - 1 : 0);
+                        console.log(page);
+                        RetrieveBooks();
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6} textAlign={"center"}>
+                    <Typography>PAGE NAVIGATION</Typography>
+                  </Grid>
+                  <Grid item>
+                    <ArrowForwardIcon
+                      color={data.length < limit ? "disabled" : "black"}
+                      fontSize="large"
+                      onClick={() => {
+                        setPage(data.length < limit ? page : page + 1);
+                        console.log(page);
+                        RetrieveBooks();
+                      }}
+                    />{" "}
+                  </Grid>
+                </Grid>
+              </Paper>
             </div>
             <Typography>
               {/* {JSON.stringify(data)} */}
