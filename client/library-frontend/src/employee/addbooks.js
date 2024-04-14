@@ -49,28 +49,29 @@ const AddBooks = props => {
     //   .catch(err => console.log(err));
   };
 
-  const submitEditBook = e => {
+  const submitPostBook = e => {
     e.preventDefault();
 
-    async function patchbook() {
-      fetch(`http://localhost:3006/books/`, {
-        method: "PATCH",
+    async function postbook() {
+      fetch(`http://localhost:3006/book/`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
           title: data.title,
           author_name: data.author_name,
-          publishyear: data.publishyear,
+          publish_year: data.publish_year,
           isbn: data.isbn,
           genre: data.genre,
           img: data.img,
-          description: data.description
+          description: data.description,
+          count: data.count
         })
       });
     }
 
-    patchbook();
+    postbook();
   };
 
   return (
@@ -104,7 +105,7 @@ const AddBooks = props => {
                         <br />
                         <br />
                       </Typography>
-                      <form onSubmit={handleSubmit}>
+                      <form onSubmit={submitPostBook}>
                         <label>
                           Count:
                           <input
@@ -149,21 +150,6 @@ const AddBooks = props => {
                         <br />
 
                         <label>
-                          Published Year:
-                          <input
-                            type="number"
-                            value={data.publishyear}
-                            onChange={e => {
-                              setData({
-                                ...data,
-                                publishyear: e.target.value
-                              });
-                            }}
-                          />
-                        </label>
-                        <br />
-                        <br />
-                        <label>
                           ISBN:
                           <input
                             type="number"
@@ -178,12 +164,12 @@ const AddBooks = props => {
                         <label>
                           Publication Year:
                           <input
-                            type="number"
-                            value={data.publication_year}
+                            type="text"
+                            value={data.publish_year}
                             onChange={e => {
                               setData({
                                 ...data,
-                                publication_year: e.target.value
+                                publish_year: e.target.value
                               });
                             }}
                           />
@@ -232,7 +218,7 @@ const AddBooks = props => {
                         </label>
                         <br />
                         <br />
-                        <input type="submit" value="Edit Books" />
+                        <input type="submit" value="Add Book" />
                       </form>
                     </div>
                   </div>
