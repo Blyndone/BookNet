@@ -33,9 +33,7 @@ const EmpHome = props => {
               <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
                 Delivering awesome solutions for you!
               </Typography>
-
               <div />
-
               <Button
                 variant="contained"
                 onClick={() => {
@@ -64,6 +62,13 @@ const EmpHome = props => {
                 }}>
                 Return Book
               </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  navigate("/addbooks");
+                }}>
+                Add Books
+              </Button>{" "}
               <Button
                 variant="contained"
                 onClick={() => {

@@ -710,42 +710,50 @@ app.post('/check-account', async (req, res) => {
     }
 });
 
-app.post('/book_insert', async (req,res) => {
+app.post('/book', async (req,res) => {
+    // console.log(req)
+    const {title, author_name, isbn, publish_year, genre, img, description, count} = req.body;
+    try {  
+        
+    const authorquery = 'INSERT INTO TESTAUTHORS  (AUTHOR_NAME)  SELECT $1   WHERE  NOT EXISTS (  SELECT *  FROM   TESTAUTHORS WHERE AUTHOR_NAME = $2) RETURNING id';
+    const insertId = await pool.query(authorquery, [author_name, author_name]);
+   let author_id = ''
+    console.log("# of Inserted Author Rows:", insertId.rowCount)
+    if (insertId.rowCount !=0 ){
+        console.log('RowID:', insertId.rows[0].id)
+        author_id =  insertId.rows[0].id
+    }else{
 
-    const {title, author_id, publisher, isbn, publication_year, genre, img, count , instock} = req.body;
-    try {
-        const queryResult =
-            // Search for the isbn
-            await pool.query('SELECT isbn FROM books WHERE isbn = $1', [isbn]);
+       
+        const aquery = 'SELECT id FROM testauthors where author_name = $1';
 
-            const id_count = await pool.query('SELECT COUNT(*) FROM books');
-            let rowCount = parseInt(id_count.rows[0].count);
-            rowCount+=1;
+        const authorquery = await pool.query(aquery, [author_name]);
+        author_id =  authorquery.rows[0].id
+    }
+    const bquery =`INSERT INTO testbooks (title, author,  publishyear, isbn, genre, img, checkout_count, description)
+                 VALUES ($1, $2, $3, $4, $5, $6, 0, $7)  RETURNING book_id`
+    const bookinsert = await pool.query(bquery, [title, author_id, publish_year, isbn, genre, img,description])
+    
+    console.log(bookinsert.rows)
 
-        // If the result of the query is null, insert book
-        if (queryResult.rows.length === 0) {
-            const insert_query
-                = await pool.query('INSERT INTO books (book_id, title, author_id, publisher, isbn, publication_year, genre, img, count, instock) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-                [rowCount, title, author_id, publisher, isbn, publication_year, genre, img, count, instock]);
-
-                
-
+    const stockquery = `INSERT INTO teststock (book_id, instock, book_condition)
+    VALUES($1, 'true', 'Good') RETURNING id;`
+    let bid = bookinsert.rows[0].book_id
+    console.log(bid)
+    let loopcount =parseInt(count)
+    
+    while(loopcount >0){
+    const stockinsert = await pool.query(stockquery, [bid])
+    console.log(stockinsert)
+        loopcount= loopcount -1
+    }
+    
             // 200 Message
             return res.status(200).json({
                 message: 'A new book has been added.'
             });
-        }
-        else {
-            // Update the count for the existing book
-            await pool.query(
-                'UPDATE books SET count = count + $1 WHERE isbn = $2',
-                [count, isbn]
-            );
-            // Send response indicating the book already exists
-            return res.status(409).json({
-                message: 'Book with the same ISBN already exists.'
-            });
-        }
+        
+
     }
     catch (error) {
         console.error("Error adding book:", error);

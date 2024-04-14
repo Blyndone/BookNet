@@ -14,6 +14,7 @@ import Events from "./mutual/events";
 import UserHome from "./user/userhome";
 import BookSearch from "./mutual/booksearch";
 import "./App.css";
+import AddBooks from "./employee/addbooks";
 
 function App() {
   const [email, setEmail] = useState("");
@@ -92,6 +93,10 @@ function App() {
             element={<Profile setLoggedIn={setLoggedIn} />}
           />
           <Route
+            path="/addbooks"
+            element={<AddBooks setLoggedIn={setLoggedIn} />}
+          />
+          <Route
             path="/booksearch"
             element={<BookSearch setLoggedIn={setLoggedIn} />}
           />
@@ -99,7 +104,6 @@ function App() {
             path="/events"
             element={<Events setLoggedIn={setLoggedIn} />}
           />
-
           {/* Private routes for employees */}
           {/* UNCOMMENT  =================================================*/}
           {/* <Route element={<PrivateRoutes isLoggedIn={loggedIn} role={role} />}> */}
@@ -108,6 +112,7 @@ function App() {
             <Route path="editbook" element={<EditBook />} />
             <Route path="checkoutbook" element={<CheckoutBook />} />
             <Route path="returnbook" element={<ReturnBook />} />
+            <Route path="addbooks" element={<AddBooks />} />
             {/* </Route> */}
 
             {/* UNCOMMENT  =================================================*/}
