@@ -79,6 +79,11 @@ app.get('/books/bookbuddy/', async (req, res) => {
 
     let { userid, offset } = req.query
     console.log("params", userid)
+    if (userid === undefined || offset === undefined) {
+        console.log('Missing parameters');
+        return res.status(400).json({ message: 'Missing parameters' });
+    }
+
     if (userid.length <= 0){
         userid = '.*'
     }
@@ -615,6 +620,7 @@ app.patch('/returnbook/', async (req, res) => {
 
 
 app.post("/signup", async (req, res) => {
+    console.log('POST /signup called');
     const {
         firstName,
         lastName,
@@ -622,45 +628,51 @@ app.post("/signup", async (req, res) => {
         password,
         role
     } = req.body;
+    console.log('Received data:', { firstName, lastName, email, role });
 
     try {
         // Check if user already exists
         const existingUserQuery = 'SELECT * FROM testusers WHERE email = $1';
+        console.log('Executing query:', existingUserQuery);
         const existingUserResult = await pool.query(existingUserQuery, [email]);
+        console.log('Query result:', existingUserResult.rows);
 
         if (existingUserResult.rows.length > 0) {
+            console.log('User already exists');
             return res.status(400).json({
-                message: "User already exists"
+                message: "User already exists",
+                userExists: true
             });
         }
 
         // Hash the password
+        console.log('Hashing password');
         const hashedPassword = await bcrypt.hash(password, 10);
-
-
 
         // Insert new user into the database
         const insertUserQuery = 'INSERT INTO testusers( firstName, lastName, email, password, role) VALUES($1, $2, $3, $4, $5) RETURNING *';
+        console.log('Executing query:', insertUserQuery);
         const insertedUserResult = await pool.query(insertUserQuery, [firstName, lastName, email, hashedPassword, role]);
+        console.log('Query result:', insertedUserResult.rows);
 
         const newUser = insertedUserResult.rows[0];
 
-        // if (role === 'employee') {
-        //     const insertEmployeeQuery = 'INSERT INTO employee(user_id, position) VALUES($1, $2)';
-        //     await pool.query(insertEmployeeQuery, [newUser.id, 'worker']);
-        // }
+        let loginData = {
+            id: newUser.id,
+            email: newUser.email,
+            role: newUser.role,
+            signInTime: Date.now(),
+        };
+        console.log('Login data:', loginData);
 
-  let loginData = {
-    id: newUser.id,
-    email: newUser.email,
-    role: newUser.role,
-    signInTime: Date.now(),
-};
         const token = jwt.sign(loginData, jwtSecretKey);
+        console.log('Generated token:', token);
         res.status(200).json({
             message: "success",
             token,
-            role: newUser.role
+            role: newUser.role,
+            id: newUser.id,
+            email: newUser.email,
         });
     } catch (error) {
         console.error("Error during signup:", error);
@@ -749,22 +761,22 @@ app.post('/verify', (req, res) => {
 })
 
 app.post('/check-account', async (req, res) => {
+    console.log('POST /check-account called');
     try {
-        const {
-            email
-        } = req.body;
+        const { email } = req.body;
+        console.log('Received email:', email);
 
         // Check if user exists in the database
         const getUserQuery = 'SELECT * FROM testusers WHERE email = $1';
+        console.log('Executing query:', getUserQuery);
         const result = await pool.query(getUserQuery, [email]);
 
         const user = result.rows;
-
-        console.log(user);
+        console.log('Query result:', user);
 
         res.status(200).json({
-            status: user.length === 1 ? "User exists" : "User does not exist",
-            userExists: user.length === 1,
+            status: user.length > 1 ? "User exists" : "User does not exist",
+            userExists: user.length > 1,
         });
     } catch (error) {
         console.error("Error checking account:", error);

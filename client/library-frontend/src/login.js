@@ -117,6 +117,10 @@ const Login = (props) => {
               props.setLoggedIn(true)
               props.setEmail(email)
               props.setUserID(r.id)
+
+              console.log(r.role)
+              console.log(r.role === "employee")
+              console.log(r.id)
               if (r.role === "employee") {
                   navigate("/employee/emphome", props);
               } else {

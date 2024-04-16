@@ -24,7 +24,7 @@ CREATE TABLE testusers (
     email VARCHAR(100),
     password VARCHAR(255),
     role VARCHAR(50),
-    balance DECIMAL(5,2)
+    balance DECIMAL(5,2) DEFAULT 0.0
 );
 
 

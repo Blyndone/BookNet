@@ -2,20 +2,97 @@ import React from "react";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-
+import { TextField, emphasize } from "@mui/material";
+import { useState, useEffect } from "react";
+import Paper from "@mui/material/Paper";
 import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Header from ".././component/header";
 import Footer from ".././component/footer";
 import SideBar from ".././component/sidebar";
-
+import { Box } from "@mui/system";
 const Profile = props => {
-  const { loggedIn, email } = props;
+  console.log("LOCAL", localStorage.getItem("user"));
+  console.log("PROPS", props);
+
+  const [loggedIn, setLoggedIn] = useState(props.loggedIn);
+  const [email, setEmail] = useState(props.email);
+  const [userid, setUserId] = useState(props.userid);
+
+  useEffect(() => {
+    if (
+      !loggedIn ||
+      loggedIn === "" ||
+      !email ||
+      email === "" ||
+      !userid ||
+      userid === ""
+    ) {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+
+      if (storedUser) {
+        setUserId(storedUser.id);
+      }
+    }
+  }, []);
+
   const navigate = useNavigate();
+  const [userdata, setUserData] = useState({
+    id: "",
+    firstname: "",
+    lastname: ""
+  });
+
+  const getUserData = () => {
+    // console.log(e);
+    // e.preventDefault();
+    // window.alert(userquery);
+    // if (!query) return;
+
+    async function fetchData() {
+      if (userid.length == 0) {
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3006/user/` + userid);
+      const res = await response.json();
+      // const results = data[0];
+      return res;
+    }
+
+    fetchData()
+      .then(res => {
+        console.log("Response: ", res);
+        setUserData(res[0]);
+      })
+      .catch(err => console.log(err));
+  };
+
+  useEffect(
+    () => {
+      console.log("logged in", loggedIn);
+      if (!loggedIn || !userid || userid === "") {
+        console.log("not logged in");
+        console.log("userid", userid);
+        console.log("loggedIn", loggedIn);
+
+        // navigate("/login");
+      } else {
+        getUserData();
+      }
+    },
+    [userid]
+  );
+
+  function capitalize(s) {
+    return (
+      s &&
+      s.split(" ").map(word => word[0].toUpperCase() + word.slice(1)).join(" ")
+    );
+  }
+
   return (
-    <Grid container direction="column" spacing={2}>
+    <Grid container direction="column" spacing={2} style={{ height: "100%" }}>
       {" "}{/* Set container direction to column */}
       <Grid item>
         {" "}{/* Header takes full width of the column */}
@@ -25,65 +102,111 @@ const Profile = props => {
         {" "}{/* Nested container for three columns */}
         <SideBar />
         <Grid item xs={6}>
-          <Container
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center"
-            }}>
-            <Typography variant="h2" sx={{ mt: 4 }}>
-              Profile Management
-            </Typography>
-            <Box component="form" noValidate sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-              />
+          <div>
+            {/* Main Content */}
 
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="password"
-                label="Password"
-                type="password"
-                autoComplete="current-password"
-              />
+            <Grid container direction="column" spacing={2}>
+              {/* Header row */}
+              <Grid item>
+                <Typography variant="h2" sx={{ mt: 4 }}>
+                  Hello {userdata.firstname} {userdata.lastname}
+                </Typography>
+                <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
+                  Your Profile Information
+                </Typography>
+              </Grid>
 
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="retypePassword"
-                label="Retype Password"
-                type="password"
-                autoComplete="current-password"
-              />
+              {/* Content rows */}
+              <Grid container spacing={2}>
+                <Grid
+                  item
+                  xs={6}
+                  style={{
+                    padding: "50px",
+                    display: "flex",
+                    flexDirection: "column"
+                  }}>
+                  {Object.keys(userdata).map((key, index) => {
+                    if (key === "password") {
+                      return null;
+                    }
+                    // Split the key into individual words and capitalize each word
+                    const formattedKey = capitalize(
+                      key.split(/(?=[A-Z])/).join(" ")
+                    );
+                    if (key === "balance") {
+                      return (
+                        <Box
+                          sx={{
+                            flexGrow: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "flex-end"
+                          }}>
+                          <Paper
+                            key={index}
+                            elevation={3}
+                            style={{
+                              padding: "20px",
+                              backgroundColor: "#ADD8E6"
+                            }}>
+                            <Typography variant="h4" align="center">
+                              <b>{`${formattedKey}:`}</b> ${userdata[key]}
+                            </Typography>
+                          </Paper>
+                        </Box>
+                      );
+                    } else {
+                      return (
+                        <Typography key={index} variant="h6">
+                          <b>{`${formattedKey}:`}</b> {userdata[key]}
+                        </Typography>
+                      );
+                    }
+                  })}
+                </Grid>
 
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}>
-                Edit Information
-              </Button>
-            </Box>
-
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => {
-                navigate("/home");
-              }}>
-              Home
-            </Button>
-          </Container>
+                <Grid
+                  item
+                  xs={6}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    padding: "20px"
+                  }}>
+                  <Box sx={{ height: "20px" }} /> {/* Space */}
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: "100%",
+                      padding: "16px",
+                      fontSize: "20px",
+                      marginBottom: "10px",
+                      backgroundColor: "#0000CD" // Medium Blue
+                    }}
+                    onClick={() => {
+                      navigate("/booksearch");
+                    }}>
+                    Book Search
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: "100%",
+                      padding: "16px",
+                      fontSize: "20px",
+                      backgroundColor: "#0000CD" // Medium Blue
+                    }}
+                    onClick={() => {
+                      navigate("/userhome");
+                    }}>
+                    Home
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          </div>
         </Grid>
         <SideBar />
         <Footer />

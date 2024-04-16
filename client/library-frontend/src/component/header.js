@@ -30,7 +30,21 @@ const Header = props => {
       {/* Header */}
       <AppBar position="static" style={{ backgroundColor: "B1DDF0" }}>
         <Toolbar>
-          <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h4"
+            component="div"
+            sx={{ flexGrow: 1, userSelect: "none" }}
+            onClick={() => {
+              const role = localStorage.getItem("role");
+
+              if (role === "employee") {
+                navigate("/employee/emphome");
+              } else if (role === "customer") {
+                navigate("/userhome");
+              } else {
+                navigate("/");
+              }
+            }}>
             Book.net
           </Typography>
           <form

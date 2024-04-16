@@ -25,6 +25,25 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect } from "react";
 
 const UserHome = props => {
+  const [userid, setUserId] = useState(props.userid);
+
+  useEffect(() => {
+    if (
+      !loggedIn ||
+      loggedIn === "" ||
+      !email ||
+      email === "" ||
+      !userid ||
+      userid === ""
+    ) {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+
+      if (storedUser) {
+        setUserId(storedUser.id);
+      }
+    }
+  }, []);
+
   const location = useLocation();
   const [query, setQuery] = useState(
     location.state === null ? "" : location.state.q
@@ -67,8 +86,6 @@ const UserHome = props => {
   };
 
   const RetrieveBooks = async e => {
-    const userid = 4;
-
     if (e) {
       e.preventDefault();
     }
@@ -130,7 +147,12 @@ const UserHome = props => {
     },
     [page]
   );
-
+  useEffect(
+    () => {
+      RetrieveBooks();
+    },
+    [userid]
+  );
   return (
     <Grid container direction="column" spacing={2}>
       {" "}{/* Set container direction to column */}
@@ -145,10 +167,10 @@ const UserHome = props => {
           {/* Main Content */}
           <Container>
             <Typography variant="h2" textAlign={"center"} sx={{ mt: 4 }}>
-              USER HOME
+              USER HOME for {userid}
             </Typography>
             <Typography variant="h5" textAlign={"center"} sx={{ mt: 2, mb: 4 }}>
-              Your Book Reccomendations!
+              Your Book Recomendations!
             </Typography>
             <div>
               <Paper

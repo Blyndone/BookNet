@@ -20,6 +20,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const SignUp = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordverify, setPasswordVerify] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [role, setRole] = useState('employee');
@@ -44,62 +45,89 @@ const SignUp = (props) => {
     }
     
 
-  const handleSubmit = (event) => {
-      event.preventDefault();
-      const data = new FormData(event.currentTarget);
+ const handleSubmit = (event) => {
+  console.log('handleSubmit called'); // Log when the function is called
 
-              // Set initial error values to empty
-              setEmailError("")
-              setPasswordError("")
-      
-              // Check if the user has entered both fields correctly
-              if ("" === email) {
-                  setEmailError("Please enter your email")
-                  return
-              }
-      
-              if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-                  setEmailError("Please enter a valid email")
-                  return
-              }
-      
-              if ("" === password) {
-                  setPasswordError("Please enter a password")
-                  return
-              }
-      
-              if (password.length < 7) {
-                  setPasswordError("The password must be 8 characters or longer")
-                  return
-              }
-      
-              // Check if email has an account associated with it
-              checkAccountExists(accountExists => {
-                  // If yes, log in 
-                  if (accountExists)
-                      navigate("/login")
-                  else
-                  signup()
-              })    
-      console.log({
-        email: data.get('email'),
-        password: data.get('password'),
-      });
-    };
-  
-    const checkAccountExists = (callback) => {
-      fetch("http://localhost:3006/check-account", {
-          method: "POST",
-          headers: {
-              'Content-Type': 'application/json'
-            },
-          body: JSON.stringify({email})
-      })
-      .then(r => r.json())
-      .then(r => {
-          callback(r?.userExists)
-      })
+  event.preventDefault();
+  const data = new FormData(event.currentTarget);
+
+  console.log('Form data:', data); // Log the form data
+
+  // Set initial error values to empty
+  setEmailError("");
+  setPasswordError("");
+
+  // Check if the user has entered both fields correctly
+  if ("" === email) {
+    setEmailError("Please enter your email");
+    console.log('Email error:', emailError); // Log the email error
+    return;
   }
+
+  if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+    setEmailError("Please enter a valid email");
+    console.log('Email error:', emailError); // Log the email error
+    return;
+  }
+
+  if ("" === password) {
+    setPasswordError("Please enter a password");
+    console.log('Password error:', passwordError); // Log the password error
+    return;
+  }
+
+  if (password.length < 7) {
+    setPasswordError("The password must be 8 characters or longer");
+    console.log('Password error:', passwordError); // Log the password error
+    return;
+  }
+
+  if (password !== passwordverify) {
+    setPasswordError("The passwords do not match");
+    console.log('Password error:', passwordError); // Log the password error
+    return;
+  }
+
+  // Check if email has an account associated with it
+  checkAccountExists(accountExists => {
+    console.log('Account exists:', accountExists); // Log whether the account exists
+
+    // If yes, log in 
+    if (accountExists)
+      navigate("/login");
+    else {
+      console.log("signup");
+      signup();
+    }
+  });
+
+  console.log({
+    email: data.get('email'),
+    password: data.get('password'),
+  });
+};
+  
+const checkAccountExists = (callback) => {
+    console.log('checkAccountExists called');
+    fetch("http://localhost:3006/check-account", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email})
+    })
+    .then(r => {
+        console.log('Response received', r);
+        return r.json();
+    })
+    .then(r => {
+        console.log('Response processed', r);
+        callback(r?.userExists);
+    })
+    .catch(e => {
+        console.error('Error occurred', e);
+    });
+}
       
   
 
@@ -124,10 +152,22 @@ const SignUp = (props) => {
         
           if ('success' === r.message) {
           
-    localStorage.setItem("user", JSON.stringify({email: r.email,  role: r.role, token: r.token}))
-    props.setLoggedIn(true)
-    props.setEmail(email)
-    props.setuserID(r.id)
+  let user = {email: r.email, id:r.id,  role: r.role, token: r.token};
+console.log('Setting user in local storage:', user);
+
+
+
+
+localStorage.setItem("user", JSON.stringify(user));
+
+console.log('Setting logged in status to true');
+props.setLoggedIn(true);
+
+console.log('Setting email:', email);
+props.setEmail(email);
+
+console.log('Setting user ID:', r.id);
+props.setUserID(r.id);
     
     if(role === "employee"){
         navigate("/employee/emphome")
@@ -211,6 +251,19 @@ const SignUp = (props) => {
                 id="password"
                 autoComplete="new-password"
                 onChange={ev => setPassword(ev.target.value)}
+                error={Boolean(passwordError)} // Set error to true if there is an error
+                helperText={passwordError} // Display the error message
+              />
+            </Grid>            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="passwordverify"
+                label="Verify Password"
+                type="password"
+                id="passwordverify"
+                autoComplete="new-password"
+                onChange={ev => setPasswordVerify(ev.target.value)}
                 error={Boolean(passwordError)} // Set error to true if there is an error
                 helperText={passwordError} // Display the error message
               />
