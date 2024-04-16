@@ -138,6 +138,7 @@ const ReturnBook = props => {
 
     patchbook();
     setData({ ...data, instock: true });
+
     setUserData({});
   };
 

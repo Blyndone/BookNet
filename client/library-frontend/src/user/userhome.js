@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import Header from ".././component/header";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import ButtonBase from "@mui/material/ButtonBase";
@@ -213,13 +213,25 @@ const UserHome = props => {
                   />}
             </Container>
 
-            <Button
-              variant="contained"
-              onClick={() => {
-                navigate("/");
-              }}>
-              Home
-            </Button>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  navigate("/");
+                }}
+                sx={{
+                  padding: "16px", // Increase padding to make the button larger
+                  fontSize: "20px", // Increase font size
+                  backgroundColor: "#3f51b5", // Change the background color
+                  color: "#fff", // Change the color of the text
+                  "&:hover": {
+                    backgroundColor: "#303f9f" // Change the background color on hover
+                  }
+                }}>
+                Home
+              </Button>
+            </Box>
           </Container>
 
           {/* Footer */}
@@ -362,6 +374,7 @@ const SearchBar = ({ setSearchQuery }) =>
     <TextField
       id="search-bar"
       className="text"
+      UserHome
       onInput={e => {
         setSearchQuery(e.target.value);
       }}

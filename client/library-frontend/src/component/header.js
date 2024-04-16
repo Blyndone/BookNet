@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 const Header = props => {
   const { loggedIn } = props;
   const navigate = useNavigate();
-
+  const [query, setQuery] = React.useState(""); // [1
   const onButtonClick = () => {
     if (loggedIn) {
       localStorage.removeItem("user");
@@ -35,13 +35,13 @@ const Header = props => {
           </Typography>
           <form
             onSubmit={() => {
-              navigate("/booksearch", { state: { q: "harry" } });
+              navigate("/booksearch", { state: { q: query } });
             }}>
             <TextField
               label="Search"
               type=""
               onChange={e => {
-                console.log(e.target.value);
+                setQuery(e.target.value);
               }}
               InputProps={{
                 endAdornment: (

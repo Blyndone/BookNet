@@ -311,15 +311,17 @@ function Item(props) {
     <li>
       <Paper
         sx={{
-          p: 2,
-          margin: 2,
+          p: 4, // Increase padding
+          m: 3, // Increase margin
           maxWidth: 800,
           flexGrow: 1,
+          borderRadius: 2, // Add border radius
+          boxShadow: 3, // Add box shadow
           backgroundColor: theme =>
             theme.palette.mode === "dark" ? "#1A2027" : "#fff"
         }}>
-        <Grid container direction="column" spacing={2}>
-          <Grid item>
+        <Grid container direction="row" spacing={2}>
+          <Grid item xs={3}>
             <ButtonBase
               sx={{ width: 128, height: 128 }}
               onClick={() => {
@@ -333,7 +335,7 @@ function Item(props) {
               />
             </ButtonBase>
           </Grid>
-          <Grid item xs={12} sm container>
+          <Grid item xs={8} sm container>
             <Grid item xs container direction="column" spacing={2}>
               <Grid item xs>
                 <Typography gutterBottom variant="h5" component="div">
