@@ -45,8 +45,26 @@ app.get('/books/query/', async (req, res) => {
 
     try {
 
-        const querystring = 'SELECT count(S.instock) as stockcount, B.*, A.* FROM (testbooks B Join testauthors A ON B.author = A.id) JOIN teststock S on B.book_id = S.book_id   WHERE title ~* $1  group by B.book_id, A.id order by B.book_id Limit $2 Offset $3 ';
-        const books = await pool.query(querystring, [query, limit, offset])
+       const querystring = `
+    SELECT 
+        count(S.instock) as stockcount, 
+        B.*, 
+        A.* 
+    FROM 
+        (testbooks B JOIN testauthors A ON B.author = A.id) 
+        JOIN teststock S ON B.book_id = S.book_id   
+    WHERE 
+        title ~* $1  
+    GROUP BY 
+        B.book_id, 
+        A.id 
+    ORDER BY 
+        B.book_id 
+    LIMIT 
+        $2 
+    OFFSET 
+        $3
+`; const books = await pool.query(querystring, [query, limit, offset])
         res.json(books.rows)
         console.log(books.rows)
     } catch (err) {
@@ -234,7 +252,16 @@ app.get('/books/stock/', async (req, res) => {
 
     try {
 
-        const querystring = 'Select * from testbooks B join teststock S on B.book_id = S.book_id where S.id = $1 ';
+const querystring = `
+SELECT *, 
+       A.author_name
+FROM   testbooks B
+JOIN   teststock S 
+ON     B.book_id = S.book_id
+JOIN   testauthors A 
+ON     B.author = A.id
+WHERE  S.id = $1
+`;
         const books = await pool.query(querystring, [query])
         res.json(books.rows)
         console.log(books.rows)
@@ -243,6 +270,34 @@ app.get('/books/stock/', async (req, res) => {
     }
 })
 //============================
+app.get('/book/index/', async (req, res) => {
+    console.log("get:book/index");
+
+    let { query } = req.query;
+    console.log("Received query parameter: ", query);
+    if (query.length <= 0){
+        query = '.*';
+    }
+
+    try {
+        const querystring = `
+            SELECT *, 
+                   A.author_name
+            FROM   testbooks B
+            JOIN   testauthors A 
+            ON     B.author = A.id
+            WHERE  B.book_ID = $1
+        `;
+        console.log("Executing query: ", querystring);
+        const books = await pool.query(querystring, [query]);
+        console.log("Received books: ", books.rows);
+        res.json(books.rows);
+    } catch (err) {
+        console.error("Error occurred: ", err);
+    }
+});
+
+
 
 
 
@@ -263,38 +318,33 @@ app.get('/books/index/', async (req, res) => {
 
     try {
 
-        const querystring = 'SELECT count(S.instock) as stockcount, B.*, A.* FROM (testbooks B Join testauthors A ON B.author = A.id) JOIN teststock S on B.book_id = S.book_id   WHERE S.id= $1  group by B.book_id, A.id order by B.book_id Limit $2 Offset $3 ';
-        const books = await pool.query(querystring, [query, limit, offset])
+       const querystring = `
+    SELECT 
+        count(S.instock) as stockcount, 
+        B.*, 
+        A.* 
+    FROM 
+        (testbooks B JOIN testauthors A ON B.author = A.id) 
+        JOIN teststock S ON B.book_id = S.book_id   
+    WHERE 
+        S.id = $1  
+    GROUP BY 
+        B.book_id, 
+        A.id 
+    ORDER BY 
+        B.book_id 
+    LIMIT 
+        $2 
+    OFFSET 
+        $3
+`; const books = await pool.query(querystring, [query, limit, offset])
         res.json(books.rows)
         console.log(books.rows)
     } catch (err) {
         console.error(err)
     }
 })
-// app.get('/books/:index', async (req, res) => {
-//     console.log("get:books/index")
-//     params = new URLSearchParams(decodeURI(req.params.index))
-//     console.log(params)
-//     idlist = []
-//     for (const [key, value] of params.entries()) {
-//         console.log(`${key}, ${value}`);
-//         idlist.push(parseInt(value))
-//       }
-//     console.log(idlist)
-//     // idlist = `(${idlist.map(v => JSON.stringify(v)).join(', ')})`;
-//     //  console.log(idlist)
 
-//     try {
-//         const { title } = req.params;
-//         console.log(title)
-//         const query = 'SELECT * FROM testbooks WHERE book_id = ANY($1::int[])';
-//         const books = await pool.query(query, [idlist])
-//         res.json(books.rows)
-//         console.log(books.rows)
-//     } catch (err) {
-//         console.error(err)
-//     }
-// })
 
 app.get('/books/:title', async (req, res) => {
     console.log("get:books/title")
@@ -359,47 +409,46 @@ app.get('/stockuser/:id', async (req, res) => {
 // "img": "http://images.amazon.com/images/P/0195153448.01.LZZZZZZZ.jpg",
 // "count": 5
 //  }
-
-app.patch('/books', async (req, res) => {
-    const {
-        book_id
-    } = req.body
+app.patch('/book', async (req, res) => {
+    const { book_id, author_name } = req.body;
     try {
         const query = 'SELECT * FROM testbooks WHERE book_id = $1';
-        const books = await pool.query(query, [book_id])
+        const books = await pool.query(query, [book_id]);
         if (books.rows.length > 0) {
-
             for (const [key, value] of Object.entries(req.body)) {
                 if (key == "book_id" || key == "author_id" || value.length == 0) {
-
+                    // Do nothing
                 } else {
-                    console.log(books.rows[0][key], value)
-                    books.rows[0][key] = value
+                    books.rows[0][key] = value;
                 }
-
             }
-            const merge = books.rows[0]
-
+            const merge = books.rows[0];
             const query = `
-            UPDATE testbooks 
-            SET 
-            publishyear=$1,
-            isbn=$2,
-            genre=$3,
-            img=$4,
-            description=$5        
-            WHERE book_id = $6
-            `
-            const values = [merge.publishyear, merge.isbn, merge.genre, merge.img, merge.description, book_id]
-            console.log(values)
-            const booksupdated = await pool.query(query, values)
-            console.log(booksupdated.rows)
+                UPDATE testbooks 
+                SET 
+                title=$1,
+                publishyear=$2,
+                isbn=$3,
+                genre=$4,
+                img=$5,
+                description=$6
+                WHERE book_id = $7
+            `;
+            const values = [merge.title, merge.publishyear, merge.isbn, merge.genre, merge.img, merge.description, book_id];
+            const booksupdated = await pool.query(query, values);
 
+            // Update author name in testauthors table
+            const authorQuery = `
+                UPDATE testauthors
+                SET author_name = $1
+                WHERE id = $2
+            `;
+            const authorValues = [author_name, merge.author];
+            await pool.query(authorQuery, authorValues);
 
             res.status(200).json({
                 books: merge,
-                message: 'Book Updated',
-
+                message: 'Book and author updated',
             });
         } else {
             res.status(500).json({
@@ -407,9 +456,10 @@ app.patch('/books', async (req, res) => {
             });
         }
     } catch (err) {
-        console.error(err)
+        console.error(`Error occurred: ${err}`);
     }
-})
+});
+
 
 app.get('/events', async (req, res) => {
     try {
@@ -712,7 +762,7 @@ app.post('/check-account', async (req, res) => {
 
 app.post('/book', async (req,res) => {
     // console.log(req)
-    const {title, author_name, isbn, publish_year, genre, img, description, count} = req.body;
+    const {title, author_name, isbn, publishyear, genre, img, description, count} = req.body;
     try {  
         
     const authorquery = 'INSERT INTO TESTAUTHORS  (AUTHOR_NAME)  SELECT $1   WHERE  NOT EXISTS (  SELECT *  FROM   TESTAUTHORS WHERE AUTHOR_NAME = $2) RETURNING id';
@@ -732,7 +782,7 @@ app.post('/book', async (req,res) => {
     }
     const bquery =`INSERT INTO testbooks (title, author,  publishyear, isbn, genre, img, checkout_count, description)
                  VALUES ($1, $2, $3, $4, $5, $6, 0, $7)  RETURNING book_id`
-    const bookinsert = await pool.query(bquery, [title, author_id, publish_year, isbn, genre, img,description])
+    const bookinsert = await pool.query(bquery, [title, author_id, publishyear, isbn, genre, img,description])
     
     console.log(bookinsert.rows)
 
