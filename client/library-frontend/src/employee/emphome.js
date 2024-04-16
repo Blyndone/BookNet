@@ -247,19 +247,6 @@ const EmpHome = props => {
                     }}>
                     Book Search
                   </Button>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      width: "100%",
-                      padding: "16px",
-                      fontSize: "20px",
-                      backgroundColor: "#0000CD" // Medium Blue
-                    }}
-                    onClick={() => {
-                      navigate("/home");
-                    }}>
-                    Home
-                  </Button>
                 </Grid>
               </Grid>
             </Grid>

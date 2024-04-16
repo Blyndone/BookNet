@@ -83,9 +83,10 @@ app.get('/books/bookbuddy/', async (req, res) => {
         console.log('Missing parameters');
         return res.status(400).json({ message: 'Missing parameters' });
     }
-
+console.log("user",userid)
     if (userid.length <= 0){
-        userid = '.*'
+       
+        return res.status(400).json({ message: 'Missing parameters' });
     }
     // params = new URLSearchParams(decodeURI(req.params.query))
     // let query = params.entries()
@@ -162,8 +163,10 @@ app.get('/books/popgenre/', async (req, res) => {
 
     let { userid, offset } = req.query
     console.log("params", userid)
+    console.log("user",userid)
     if (userid.length <= 0){
-        userid = '.*'
+       
+        return res.status(400).json({ message: 'Missing parameters' });
     }
     // params = new URLSearchParams(decodeURI(req.params.query))
     // let query = params.entries()

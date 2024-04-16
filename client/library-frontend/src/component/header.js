@@ -35,11 +35,11 @@ const Header = props => {
             component="div"
             sx={{ flexGrow: 1, userSelect: "none" }}
             onClick={() => {
-              const role = localStorage.getItem("role");
-
-              if (role === "employee") {
+              const user = JSON.parse(localStorage.getItem("user"));
+              console.log("USER", user);
+              if (user.role === "employee") {
                 navigate("/employee/emphome");
-              } else if (role === "customer") {
+              } else if (user.role === "customer") {
                 navigate("/userhome");
               } else {
                 navigate("/");

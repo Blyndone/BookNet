@@ -159,7 +159,7 @@ console.log('Setting user in local storage:', user);
 
 
 localStorage.setItem("user", JSON.stringify(user));
-
+console.log('Setting user in local storage:', user);
 console.log('Setting logged in status to true');
 props.setLoggedIn(true);
 

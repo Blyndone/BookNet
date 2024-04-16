@@ -79,12 +79,6 @@ const UserHome = props => {
 
   const [offset, setOffset] = useState(0);
 
-  const submitQuery = e => {
-    e.preventDefault();
-    setPage(0);
-    RetrieveBooks();
-  };
-
   const RetrieveBooks = async e => {
     if (e) {
       e.preventDefault();
@@ -93,6 +87,7 @@ const UserHome = props => {
     // // if (!query) return;
 
     async function bookBuddy() {
+      console.log("USERID", userid);
       let querystring = "?userid=" + userid + "&offset=" + offset;
       const response = await fetch(
         `http://localhost:3006/books/bookbuddy/` + querystring
@@ -105,6 +100,7 @@ const UserHome = props => {
     }
 
     async function popGenre() {
+      console.log("USERID", userid);
       let querystring = "?userid=" + userid + "&offset=" + offset;
       const response = await fetch(
         `http://localhost:3006/books/popgenre/` + querystring
@@ -143,13 +139,17 @@ const UserHome = props => {
 
   useEffect(
     () => {
-      RetrieveBooks();
+      if (userid) {
+        RetrieveBooks();
+      }
     },
     [page]
   );
   useEffect(
     () => {
-      RetrieveBooks();
+      if (userid) {
+        RetrieveBooks();
+      }
     },
     [userid]
   );
