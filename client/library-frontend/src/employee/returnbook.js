@@ -158,7 +158,7 @@ const ReturnBook = props => {
       {" "}{/* Set container direction to column */}
       <Grid item>
         {" "}{/* Header takes full width of the column */}
-        <Header loggedIn={loggedIn} />
+        <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
       </Grid>
       <Grid container spacing={2} style={{ marginLeft: "auto" }}>
         {" "}{/* Nested container for three columns */}

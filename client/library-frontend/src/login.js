@@ -112,13 +112,15 @@ const Login = (props) => {
       .then(r => r.json())
       .then(r => {
           if ('success' === r.message) {
-              localStorage.setItem("user", JSON.stringify({email, role: r.role ,loggedIn: r.loggedIn,token: r.token}))
+              localStorage.setItem("user", JSON.stringify({email: r.email, id:r.id,  role: r.role, token: r.token}))
+              console.log(r)
               props.setLoggedIn(true)
               props.setEmail(email)
+              props.setUserID(r.id)
               if (r.role === "employee") {
-                  navigate("/employee/emphome");
+                  navigate("/employee/emphome", props);
               } else {
-                  navigate("/home");
+                  navigate("/userhome");
               }
           } else {
               window.alert("Wrong email or password")

@@ -12,12 +12,24 @@ import Footer from ".././component/footer";
 import SideBar from ".././component/sidebar";
 import { Box } from "@mui/system";
 const EmpHome = props => {
-  // const { loggedIn, email } = props;
-  const loggedIn = true;
-  const email = "";
+  console.log("LOCAL", localStorage.getItem("user"));
+  console.log("PROPS", props);
+  let { loggedIn, email, userid } = props;
+
+  if (!loggedIn || !email || !userid) {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    console.log("STORED", storedUser);
+    if (storedUser) {
+      email = storedUser.email;
+      userid = storedUser.userid;
+    }
+  }
+  console.log("props", loggedIn, email, userid);
+  // const loggedIn = true;
+  // const email = "";
   const navigate = useNavigate();
   const [userdata, setUserData] = useState({
-    id: "1",
+    id: "",
     firstname: "",
     lastname: ""
   });
@@ -29,10 +41,13 @@ const EmpHome = props => {
     // if (!query) return;
 
     async function fetchData() {
-      if (userdata.id.length == 0) {
+      console.log("USERID", userid);
+      if (userid.length == 0) {
         return;
       }
-      const response = await fetch(`http://localhost:3006/user/` + userdata.id);
+      console.log("USERDATA", userid);
+      console.log("logedin", loggedIn);
+      const response = await fetch(`http://localhost:3006/user/` + userid);
       const res = await response.json();
       // const results = data[0];
       return res;
@@ -40,18 +55,21 @@ const EmpHome = props => {
 
     fetchData()
       .then(res => {
+        console.log("Response: ", res);
         setUserData(res[0]);
       })
       .catch(err => console.log(err));
   };
 
   useEffect(() => {
+    console.log("logged in", loggedIn);
     if (!loggedIn) {
-      navigate("/login");
+      // navigate("/login");
     } else {
       getUserData();
     }
   }, []);
+
   function capitalize(s) {
     return (
       s &&
@@ -64,7 +82,7 @@ const EmpHome = props => {
       {" "}{/* Set container direction to column */}
       <Grid item>
         {" "}{/* Header takes full width of the column */}
-        <Header loggedIn={loggedIn} />
+        <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
       </Grid>
       <Grid container spacing={2} style={{ marginLeft: "auto" }}>
         {" "}{/* Nested container for three columns */}

@@ -115,23 +115,29 @@ const SignUp = (props) => {
            lastName,
             email,
             password,
-            role
+            role,
+          
           })
       })
       .then(r => r.json())
       .then(r => {
+        
           if ('success' === r.message) {
-              localStorage.setItem("user", JSON.stringify({email, role: r.role, token: r.token}))
-              props.setLoggedIn(true)
-              props.setEmail(email)
-              if(role === "employee"){
-                navigate("/emphome")
-              }else{
-                navigate("/home")
-              }
-          } else {
-              window.alert("Wrong email or password")
-          }
+          
+    localStorage.setItem("user", JSON.stringify({email: r.email,  role: r.role, token: r.token}))
+    props.setLoggedIn(true)
+    props.setEmail(email)
+    props.setuserID(r.id)
+    
+    if(role === "employee"){
+        navigate("/employee/emphome")
+    }else{
+        navigate("/userhome")
+    }
+} else {
+    window.alert("Wrong email or password")
+}
+          
       })
       .catch(error => {
         console.error("Signup error:", error);
@@ -221,12 +227,12 @@ const SignUp = (props) => {
                 <FormControlLabel value="customer" control={<Radio />} label="Customer" />
               </RadioGroup>
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}
                 label="I want to receive inspiration, marketing promotions and updates via email."
               />
-            </Grid>
+            </Grid> */}
           </Grid>
           <Button
             type="submit"

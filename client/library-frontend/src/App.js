@@ -17,6 +17,7 @@ import "./App.css";
 import AddBooks from "./employee/addbooks";
 
 function App() {
+  const [userid, setUserID] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState(localStorage.getItem("role") || "");
   const [loggedIn, setLoggedIn] = useState(
@@ -74,11 +75,23 @@ function App() {
           />
           <Route
             path="/login"
-            element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+            element={
+              <Login
+                setLoggedIn={setLoggedIn}
+                setEmail={setEmail}
+                setUserID={setUserID}
+              />
+            }
           />
           <Route
             path="/signUp"
-            element={<SignUp setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+            element={
+              <SignUp
+                setLoggedIn={setLoggedIn}
+                setEmail={setEmail}
+                setUserID={setUserID}
+              />
+            }
           />
           <Route
             path="/home"
@@ -110,14 +123,36 @@ function App() {
           />
           {/* Private routes for employees */}
           {/* UNCOMMENT  =================================================*/}
-          {/* <Route element={<PrivateRoutes isLoggedIn={loggedIn} role={role} />}> */}
-          <Route path="employee">
-            <Route path="emphome" element={<EmpHome />} />
-            <Route path="editbook" element={<EditBook />} />
-            <Route path="checkoutbook" element={<CheckoutBook />} />
-            <Route path="returnbook" element={<ReturnBook />} />
-            <Route path="addbooks" element={<AddBooks />} />
-            {/* </Route> */}
+          <Route element={<PrivateRoutes isLoggedIn={loggedIn} role={role} />}>
+            <Route path="employee">
+              <Route
+                path="emphome"
+                element={
+                  <EmpHome
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
+              />
+              <Route
+                path="editbook"
+                element={<EditBook setLoggedIn={setLoggedIn} />}
+              />
+              <Route
+                path="checkoutbook"
+                element={<CheckoutBook setLoggedIn={setLoggedIn} />}
+              />
+              <Route
+                path="returnbook"
+                element={<ReturnBook setLoggedIn={setLoggedIn} />}
+              />
+              <Route
+                path="addbooks"
+                element={<AddBooks setLoggedIn={setLoggedIn} />}
+              />
+            </Route>
 
             {/* UNCOMMENT  =================================================*/}
           </Route>

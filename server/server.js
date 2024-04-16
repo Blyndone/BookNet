@@ -362,17 +362,31 @@ app.get('/books/:title', async (req, res) => {
 })
 
 
+// Define a GET route handler for '/user/:id'
 app.get('/user/:id', async (req, res) => {
+    // Log a message indicating that this route handler has been entered
     console.log("get:user/id")
 
     try {
+        // Extract the 'id' parameter from the request parameters
         const { id } = req.params;
+        // Log the 'id' parameter
         console.log(id)
+
+        // Define a SQL query that selects all columns from the 'testusers' table where the 'id' column matches a parameter
         const query = 'SELECT * FROM testusers WHERE id = $1';
-        const books = await pool.query(query, [id])
-        res.json(books.rows)
-        console.log(books.rows)
+
+        // Execute the SQL query, passing the 'id' parameter as the value to match
+        // Use the 'await' keyword to wait for the query to complete before moving on to the next line of code
+        const user = await pool.query(query, [id])
+
+        // Send the rows returned by the query as a JSON response
+        res.json(user.rows)
+
+        // Log the rows returned by the query
+        console.log(user.rows)
     } catch (err) {
+        // If any errors occur during the execution of the try block, catch them and log them to the console
         console.error(err)
     }
 })
@@ -631,17 +645,17 @@ app.post("/signup", async (req, res) => {
 
         const newUser = insertedUserResult.rows[0];
 
-        if (role === 'employee') {
-            const insertEmployeeQuery = 'INSERT INTO employee(user_id, position) VALUES($1, $2)';
-            await pool.query(insertEmployeeQuery, [newUser.id, 'worker']);
-        }
+        // if (role === 'employee') {
+        //     const insertEmployeeQuery = 'INSERT INTO employee(user_id, position) VALUES($1, $2)';
+        //     await pool.query(insertEmployeeQuery, [newUser.id, 'worker']);
+        // }
 
-        let loginData = {
-            email: newUser.email,
-            role: newUser.role,
-            signInTime: Date.now(),
-        };
-
+  let loginData = {
+    id: newUser.id,
+    email: newUser.email,
+    role: newUser.role,
+    signInTime: Date.now(),
+};
         const token = jwt.sign(loginData, jwtSecretKey);
         res.status(200).json({
             message: "success",
@@ -682,17 +696,18 @@ app.post("/login", async (req, res) => {
             });
         }
 
-        let loginData = {
-            email: user.email,
-            role: user.role,
-            signInTime: Date.now(),
-        };
-
+  let loginData = {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    signInTime: Date.now(),
+};
         const token = jwt.sign(loginData, jwtSecretKey);
         res.status(200).json({
             message: "success",
             token,
             role: user.role,
+            id:user.id,
             loggedIn: true
         });
     } catch (error) {
