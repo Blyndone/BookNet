@@ -14,19 +14,28 @@ import { Box } from "@mui/system";
 const EmpHome = props => {
   console.log("LOCAL", localStorage.getItem("user"));
   console.log("PROPS", props);
-  let { loggedIn, email, userid } = props;
 
-  if (!loggedIn || !email || !userid) {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    console.log("STORED", storedUser);
-    if (storedUser) {
-      email = storedUser.email;
-      userid = storedUser.userid;
+  const [loggedIn, setLoggedIn] = useState(props.loggedIn);
+  const [email, setEmail] = useState(props.email);
+  const [userid, setUserId] = useState(props.userid);
+
+  useEffect(() => {
+    if (
+      !loggedIn ||
+      loggedIn === "" ||
+      !email ||
+      email === "" ||
+      !userid ||
+      userid === ""
+    ) {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+
+      if (storedUser) {
+        setUserId(storedUser.id);
+      }
     }
-  }
-  console.log("props", loggedIn, email, userid);
-  // const loggedIn = true;
-  // const email = "";
+  }, []);
+
   const navigate = useNavigate();
   const [userdata, setUserData] = useState({
     id: "",
@@ -41,12 +50,10 @@ const EmpHome = props => {
     // if (!query) return;
 
     async function fetchData() {
-      console.log("USERID", userid);
       if (userid.length == 0) {
         return;
       }
-      console.log("USERDATA", userid);
-      console.log("logedin", loggedIn);
+
       const response = await fetch(`http://localhost:3006/user/` + userid);
       const res = await response.json();
       // const results = data[0];
@@ -61,14 +68,21 @@ const EmpHome = props => {
       .catch(err => console.log(err));
   };
 
-  useEffect(() => {
-    console.log("logged in", loggedIn);
-    if (!loggedIn) {
-      // navigate("/login");
-    } else {
-      getUserData();
-    }
-  }, []);
+  useEffect(
+    () => {
+      console.log("logged in", loggedIn);
+      if (!loggedIn || !userid || userid === "") {
+        console.log("not logged in");
+        console.log("userid", userid);
+        console.log("loggedIn", loggedIn);
+
+        // navigate("/login");
+      } else {
+        getUserData();
+      }
+    },
+    [userid]
+  );
 
   function capitalize(s) {
     return (

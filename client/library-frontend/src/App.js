@@ -71,7 +71,14 @@ function App() {
           {/* Public routes */}
           <Route
             path="/"
-            element={<Home email={email} loggedIn={loggedIn} />}
+            element={
+              <Home
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/login"
@@ -80,6 +87,10 @@ function App() {
                 setLoggedIn={setLoggedIn}
                 setEmail={setEmail}
                 setUserID={setUserID}
+                setRole={setRole}
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
               />
             }
           />
@@ -90,36 +101,89 @@ function App() {
                 setLoggedIn={setLoggedIn}
                 setEmail={setEmail}
                 setUserID={setUserID}
+                setRole={setRole}
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
               />
             }
           />
           <Route
             path="/home"
-            element={<LandingPage setLoggedIn={setLoggedIn} />}
+            element={
+              <LandingPage
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/userhome"
-            element={<UserHome setLoggedIn={setLoggedIn} />}
+            element={
+              <UserHome
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/profile"
-            element={<Profile setLoggedIn={setLoggedIn} />}
+            element={
+              <Profile
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/addbooks"
-            element={<AddBooks setLoggedIn={setLoggedIn} />}
+            element={
+              <AddBooks
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />{" "}
           <Route
             path="/editbook"
-            element={<EditBook setLoggedIn={setLoggedIn} />}
+            element={
+              <EditBook
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/booksearch"
-            element={<BookSearch setLoggedIn={setLoggedIn} />}
+            element={
+              <BookSearch
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/events"
-            element={<Events setLoggedIn={setLoggedIn} />}
+            element={
+              <Events
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           {/* Private routes for employees */}
           {/* UNCOMMENT  =================================================*/}
@@ -138,19 +202,47 @@ function App() {
               />
               <Route
                 path="editbook"
-                element={<EditBook setLoggedIn={setLoggedIn} />}
+                element={
+                  <EditBook
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
               />
               <Route
                 path="checkoutbook"
-                element={<CheckoutBook setLoggedIn={setLoggedIn} />}
+                element={
+                  <CheckoutBook
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
               />
               <Route
                 path="returnbook"
-                element={<ReturnBook setLoggedIn={setLoggedIn} />}
+                element={
+                  <ReturnBook
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
               />
               <Route
                 path="addbooks"
-                element={<AddBooks setLoggedIn={setLoggedIn} />}
+                element={
+                  <AddBooks
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
               />
             </Route>
 

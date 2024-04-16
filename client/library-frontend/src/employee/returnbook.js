@@ -40,11 +40,13 @@ const ReturnBook = props => {
 
   useEffect(
     () => {
-      const timeoutId = setTimeout(() => {
-        handleSubmit();
-      }, 500);
+      if (query !== "" && userquery !== "") {
+        const timeoutId = setTimeout(() => {
+          handleSubmit();
+        }, 500);
 
-      return () => clearTimeout(timeoutId); // Clear the timeout if the component is unmounted
+        return () => clearTimeout(timeoutId); // Clear the timeout if the component is unmounted
+      }
     },
     [query, userquery]
   );
