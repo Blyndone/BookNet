@@ -29,8 +29,20 @@ const CheckoutBook = props => {
   const [query, setQuery] = useState("");
   const [userquery, setUserQuery] = useState("");
 
+  useEffect(
+    () => {
+      const timeoutId = setTimeout(() => {
+        handleSubmit();
+        handleUserSubmit();
+      }, 500);
+
+      return () => clearTimeout(timeoutId); // Clear the timeout if the component is unmounted
+    },
+    [query, userquery]
+  );
+
   const handleSubmit = e => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     // window.alert(query);
     // if (!query) return;
 
@@ -57,8 +69,8 @@ const CheckoutBook = props => {
   };
 
   const handleUserSubmit = e => {
-    console.log(e);
-    e.preventDefault();
+    if (e) e.preventDefault();
+
     // window.alert(userquery);
     // if (!query) return;
 
@@ -116,41 +128,69 @@ const CheckoutBook = props => {
               <Typography variant="h2" sx={{ mt: 4 }}>
                 Checkout Book
               </Typography>
-              <Paper sx={{ padding: 5, bgcolor: "azure", width: "100%" }}>
+              <Paper
+                sx={{
+                  padding: 5,
+                  bgcolor:
+                    userdata.balance > 0
+                      ? "#e08585"
+                      : !data.instock ? "#00cccc" : "azure",
+                  width: "100%"
+                }}>
                 <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
                   Type in the ID of the book you want to Checkout, and the User
                   ID!
                 </Typography>
                 <div />
                 <div>
-                  <form onSubmit={handleSubmit}>
-                    <label>
-                      Book ID:
-                      <input
-                        type="number"
-                        placeholder={null === data ? "Book Title" : data.title}
+                  <form
+                    onSubmit={e => {
+                      handleSubmit(e);
+                      handleUserSubmit(e);
+                    }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px"
+                      }}>
+                      <TextField
+                        label="Book ID"
+                        type="text"
+                        placeholder={data === null ? "Book ID" : data.id}
                         value={query}
                         onChange={e => {
-                          setQuery(e.target.value);
+                          const val = e.target.value;
+                          if (
+                            val === "" ||
+                            (Number.isInteger(Number(val)) && Number(val) > 0)
+                          ) {
+                            setQuery(val);
+                          }
                         }}
                       />
-                    </label>
-                    <input type="submit" value="Search" />
-                  </form>
-
-                  <form onSubmit={handleUserSubmit}>
-                    <label>
-                      User ID:
-                      <input
-                        type="number"
-                        placeholder={null === data ? "UserID" : userdata.id}
+                      <TextField
+                        label="User ID"
+                        type="text"
+                        placeholder={data === null ? "User ID" : userdata.id}
                         value={userquery}
                         onChange={e => {
-                          setUserQuery(e.target.value);
+                          const val = e.target.value;
+                          if (
+                            val === "" ||
+                            (Number.isInteger(Number(val)) && Number(val) > 0)
+                          ) {
+                            setUserQuery(val);
+                          }
                         }}
                       />
-                    </label>
-                    <input type="submit" value="Search" />
+                      {/* <Button
+                        type="submit"
+                        variant="contained"
+                        sx={{ backgroundColor: "#0000CD" }}>
+                        Search
+                      </Button> */}
+                    </Box>
                   </form>
                 </div>
                 <div>
@@ -158,7 +198,9 @@ const CheckoutBook = props => {
                     Book Data {null === data ? "" : " - " + data.title}
                     <br />
                     InStock:{" "}
-                    {data.instock == true ? "In Stock" : "Out of Stock"}
+                    {data.instock === true
+                      ? "In Stock"
+                      : data.instock === false ? "Out of Stock" : ""}
                   </Typography>
                   <Typography variant="body1" sx={{ mt: 4 }}>
                     Name:{data.title}
@@ -194,13 +236,36 @@ const CheckoutBook = props => {
                     <br /> <br /> <br />
                   </Typography>
                 </div>
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    CheckoutBook();
-                  }}>
-                  CHECKOUT
-                </Button>
+                {userdata.balance > 0
+                  ? <Button
+                      variant="contained"
+                      sx={{
+                        width: "100%",
+                        padding: "16px",
+                        fontSize: "20px",
+                        marginBottom: "10px",
+                        backgroundColor: "#A52A2A" // Dull Red
+                      }}
+                      onClick={() => {
+                        alert("Please pay your balance first");
+                      }}>
+                      PAY NOW
+                    </Button>
+                  : data.instock &&
+                    <Button
+                      variant="contained"
+                      sx={{
+                        width: "100%",
+                        padding: "16px",
+                        fontSize: "20px",
+                        marginBottom: "10px",
+                        backgroundColor: "#0000CD" // Medium Blue
+                      }}
+                      onClick={() => {
+                        CheckoutBook();
+                      }}>
+                      CHECKOUT
+                    </Button>}
               </Paper>
             </Grid>
             <Grid item xs={4} alignItems={"center"}>
@@ -217,16 +282,32 @@ const CheckoutBook = props => {
               </Box>
             </Grid>
           </Grid>
-          <br /> <br /> <br />
+
           <Button
             variant="contained"
+            sx={{
+              width: "40%",
+              margin: "30px",
+              padding: "16px",
+              fontSize: "20px",
+              marginBottom: "10px",
+              backgroundColor: "#0000CD" // Medium Blue
+            }}
             onClick={() => {
-              navigate("/");
+              navigate("/employee/returnbook");
             }}>
-            Home
+            Return Book
           </Button>
           <Button
             variant="contained"
+            sx={{
+              width: "40%",
+              margin: "30px",
+              padding: "16px",
+              fontSize: "20px",
+              marginBottom: "10px",
+              backgroundColor: "#0000CD" // Medium Blue
+            }}
             onClick={() => {
               navigate("/employee/emphome");
             }}>

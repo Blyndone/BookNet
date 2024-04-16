@@ -196,7 +196,7 @@ const EmpHome = props => {
                       backgroundColor: "#0000CD" // Medium Blue
                     }}
                     onClick={() => {
-                      navigate("/editbooks");
+                      navigate("/editbook");
                     }}>
                     Edit Book
                   </Button>
@@ -211,7 +211,7 @@ const EmpHome = props => {
                       backgroundColor: "#0000CD" // Medium Blue
                     }}
                     onClick={() => {
-                      navigate("/searchbooks");
+                      navigate("/booksearch");
                     }}>
                     Book Search
                   </Button>

@@ -95,6 +95,10 @@ function App() {
           <Route
             path="/addbooks"
             element={<AddBooks setLoggedIn={setLoggedIn} />}
+          />{" "}
+          <Route
+            path="/editbook"
+            element={<AddBooks setLoggedIn={setLoggedIn} />}
           />
           <Route
             path="/booksearch"
