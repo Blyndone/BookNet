@@ -1,14 +1,18 @@
+DROP TABLE IF EXISTS teststock;
+DROP TABLE IF EXISTS testreservations;
+DROP TABLE IF EXISTS testusers;
 DROP TABLE IF EXISTS testbooks;
 DROP TABLE IF EXISTS testauthors;
-DROP TABLE IF EXISTS teststock;
-DROP TABLE IF EXISTS testusers;
-DROP TABLE IF EXISTS testreservations;
 
+CREATE TABLE testauthors (
+    id SERIAL PRIMARY KEY NOT NULL,
+    author_name VARCHAR(255) NOT NULL
+);
 
 CREATE TABLE testbooks (
-    book_id SERIAL PRIMARY KEY     NOT NULL,
+    book_id SERIAL PRIMARY KEY NOT NULL,
     title VARCHAR(255) NOT NULL,
-    author INT NOT NULL,
+    author INT NOT NULL REFERENCES testauthors(id),
     publishyear INT,
     isbn INT,
     genre VARCHAR(100),
@@ -28,29 +32,20 @@ CREATE TABLE testusers (
 );
 
 
-
-CREATE TABLE testauthors (
-    id SERIAL PRIMARY KEY    NOT NULL,
-    author_name VARCHAR(255) NOT NULL
-
-);
-
 CREATE TABLE teststock (
-    id SERIAL PRIMARY KEY    NOT NULL,
-    book_id INT NOT NULL,
+    id SERIAL PRIMARY KEY NOT NULL,
+    book_id INT NOT NULL REFERENCES testbooks(book_id),
     instock BOOLEAN,
     book_condition VARCHAR(255),
-    user_id INT,
+    user_id INT REFERENCES testusers(id),
     due_date DATE
 );
 
-
 CREATE TABLE testreservations (
-    id SERIAL PRIMARY KEY    NOT NULL,
-    book_id INT ,
-    user_id INT
+    id SERIAL PRIMARY KEY NOT NULL,
+    book_id INT REFERENCES testbooks(book_id),
+    user_id INT REFERENCES testusers(id)
 );
-
 INSERT INTO testusers (firstname, lastname, email, password, role, balance) 
 VALUES 
     ('Ron', 'Weasley', 'RWeasley@gmail.com', '$2b$10$KWMcPcm/nn29gdYOcXGM6OuMA.qSqVY4d8oI.JChmUHaggB.nq4FO', 'customer', 0.00),

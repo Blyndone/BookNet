@@ -2,7 +2,6 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
 
 import { TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -12,18 +11,28 @@ import Grid from '@mui/material/Grid';
 import Header from '.././component/header';
 import Footer from '.././component/footer';
 import SideBar from '.././component/sidebar';
-
+import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 
-const CheckoutBook = (props) => {
+const DeleteBook = (props) => {
   useEffect(() => {
-    document.title = `Book.net: Checkout Book`;
+    document.title = `Book.net: Return Books`;
   }, []);
 
   const { loggedIn, email } = props;
   const navigate = useNavigate();
-  const [data, setData] = useState({});
+  const [data, setData] = useState({
+    book_id: '',
+    title: '',
+    author_id: '',
+    publisher: '',
+    isbn: '',
+    publication_year: '',
+    genre: '',
+    img: '',
+    count: '',
+  });
   const [userdata, setUserData] = useState({
     id: '',
     firstname: '',
@@ -34,16 +43,17 @@ const CheckoutBook = (props) => {
   const [userquery, setUserQuery] = useState('');
 
   useEffect(() => {
-    if (query !== '' && userquery !== '') {
+    if (query !== '') {
       const timeoutId = setTimeout(() => {
         handleSubmit();
-        handleUserSubmit();
       }, 500);
 
       return () => clearTimeout(timeoutId); // Clear the timeout if the component is unmounted
+    } else {
+      setData({});
+      setUserData({});
     }
-  }, [query, userquery]);
-
+  }, [query]);
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
     // window.alert(query);
@@ -53,70 +63,69 @@ const CheckoutBook = (props) => {
       if (query.length == 0) {
         return;
       }
+
       let querystring = '?query=' + query;
       const response = await fetch(
         `http://localhost:3006/books/stock/` + querystring,
       );
       const res = await response.json();
       // const results = data[0];
-      // setData(res);
-
       return res;
     }
 
-    fetchData()
-      .then((res) => {
-
-     if (res[0]) {
-  setData(res[0]);
-}
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const handleUserSubmit = (e) => {
-    if (e) e.preventDefault();
-
-    // window.alert(userquery);
-    // if (!query) return;
-
-    async function fetchData() {
-      if (userquery.length == 0) {
+    async function fetchuser() {
+      if (query.length == 0) {
         return;
       }
-      const response = await fetch(`http://localhost:3006/user/` + userquery);
+      const response = await fetch(`http://localhost:3006/stockuser/` + query);
       const res = await response.json();
       // const results = data[0];
       return res;
     }
 
+    fetchuser()
+      .then((res) => {
+        if (res.length != 0) {
+          setUserData(res[0]);
+        } else {
+          setUserData({});
+        }
+      })
+      .catch((err) => console.log(err));
+
     fetchData()
       .then((res) => {
-             if (res[0]) {
-               setUserData(res[0]);
-             }
+        if (res.length != 0) {
+          setData(res[0]);
+        }
       })
       .catch((err) => console.log(err));
   };
-  const CheckoutBook = () => {
-    if (!data || data.length == 0 || userdata.length == 0) {
+
+  const deleteBook = () => {
+    if (data.length == 0) {
       return;
     }
+
+
     async function patchbook() {
-      fetch(`http://localhost:3006/checkoutbook/`, {
-        method: 'PATCH',
+      console.log('data', data);
+      
+      fetch(`http://localhost:3006/deletebook/`, {
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          stockid: data.id,
-          user_id: userdata.id,
+          stockid: data.id,        
         }),
       });
     }
 
     patchbook();
-    setData({ ...data, instock: false });
+    setData({});
+
+    setUserData({});
   };
 
   return (
@@ -135,33 +144,28 @@ const CheckoutBook = (props) => {
         <Grid item xs={6} columns={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid container spacing={2}>
             {/* Main Content */}
-            <Grid item xs={8} container>
+            <Grid item xs={8} container alignItems="flex-start">
               <Typography variant="h2" sx={{ mt: 4 }}>
-                Checkout Book
+                Delete Books
               </Typography>
               <Paper
                 sx={{
                   padding: 5,
                   bgcolor:
-                    userdata.balance > 0
-                      ? '#e08585'
-                      : data.instock || Object.keys(data).length == 0
+                    data.instock || Object.keys(data).length == 0
                       ? 'azure'
                       : '#00cccc',
                   width: '100%',
+                  height: '90%',
                 }}
               >
                 <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-                  Type in the Stock ID and User ID to checkout a book!
+                  Type in the Stock ID of the book you want to return!
                 </Typography>
                 <div />
                 <div>
-                  <form
-                    onSubmit={(e) => {
-                      handleSubmit(e);
-                      handleUserSubmit(e);
-                    }}
-                  >
+                  {/* ... rest of your code ... */}
+                  <form onSubmit={handleSubmit}>
                     <Box
                       sx={{
                         display: 'flex',
@@ -184,33 +188,10 @@ const CheckoutBook = (props) => {
                           }
                         }}
                       />
-                      <TextField
-                        label="User ID"
-                        type="text"
-                        placeholder={data === null ? 'User ID' : userdata.id}
-                        value={userquery}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (
-                            val === '' ||
-                            (Number.isInteger(Number(val)) && Number(val) > 0)
-                          ) {
-                            setUserQuery(val);
-                          }
-                        }}
-                      />
-                      {/* <Button
-                        type="submit"
-                        variant="contained"
-                        sx={{ backgroundColor: "#00008B" }}>
-                        Search
-                      </Button> */}
                     </Box>
                   </form>
-                </div>
-                <div>
                   <Typography variant="h5" sx={{ mt: 4 }}>
-                  Book Data{data == null || Object.keys(data).length === 0 ? '' : ' - ' + data.title}
+                    Book Data{null === data ? '' : ' - ' + data.title}
                     <br />
                     InStock:{' '}
                     {data.instock === true
@@ -219,57 +200,45 @@ const CheckoutBook = (props) => {
                       ? 'Out of Stock'
                       : ''}
                   </Typography>
-                  <Typography variant="body1" sx={{ mt: 4 }}>
+                  <Typography variant="h6" sx={{ mt: 4 }}>
                     Name:{data.title}
                     <br />
                     ISBN:{data.isbn}
                     <br />
-                    Year Published:{data.publishyear}
                     <br />
-                    Genre:{data.genre}
-                    <br />
-                    Description: <br />
-                    {data.description}
-                    <br />
-                    <br />
-                    Book Condition: {data.book_condition}
+                    DUE DATE:{' '}
+                    {isNaN(new Date(data.due_date).getTime())
+                      ? ''
+                      : new Date(data.due_date).toLocaleDateString()}
                     <br />
                   </Typography>
-                  <Typography variant="h5" sx={{ mt: 4 }}>
-                    User Data
-                    {null === userdata ? '' : ' - ' + userdata.firstname}
-                  </Typography>
-                  <Typography variant="h6" sx={{ mt: 4 }}>
-                    Name: {userdata.firstname} {userdata.lastname}
-                    <br />
-                  </Typography>{' '}
-                  <Typography variant="h6" sx={{ mt: 4 }}>
-                    Email: {userdata.email}
-                    <br />
-                  </Typography>{' '}
-                  <Typography variant="h6" sx={{ mt: 4 }}>
-                    Balance: ${userdata.balance}
-                    <br /> <br /> <br />
-                  </Typography>
+                  {userdata && Object.keys(userdata).length !== 0 && (
+                    <>
+                      <Typography variant="h5" sx={{ mt: 4 }}>
+                        User Data-
+                      </Typography>
+                      <Typography variant="h6" sx={{ mt: 4 }}>
+                        User Name:{userdata.firstname} {userdata.lastname}
+                        <br />
+                      </Typography>{' '}
+                      <Typography variant="h6" sx={{ mt: 4 }}>
+                        Email: {userdata.email}
+                        <br />
+                      </Typography>{' '}
+                      <Typography variant="h6" sx={{ mt: 4 }}>
+                        BALANCE: ${userdata.balance}
+                        <br />
+                        <br />
+                      </Typography>
+                    </>
+                  )}
                 </div>
-                {userdata.balance > 0 ? (
-                  <Button
-                    variant="contained"
-                    sx={{
-                      width: '100%',
-                      padding: '16px',
-                      fontSize: '20px',
-                      marginBottom: '10px',
-                      backgroundColor: '#A52A2A', // Dull Red
-                    }}
-                    onClick={() => {
-                      alert('Please pay your balance first');
-                    }}
-                  >
-                    PAY NOW
-                  </Button>
-                ) : (
-                  data.instock && (
+                <Grid
+                  item
+                  xs={12}
+                  style={{ display: 'flex', justifyContent: 'flex-end' }}
+                >
+                  {Object.keys(data).length !== 0 && !data.instock && (
                     <Button
                       variant="contained"
                       sx={{
@@ -280,13 +249,15 @@ const CheckoutBook = (props) => {
                         backgroundColor: '#00008B', // Medium Blue
                       }}
                       onClick={() => {
-                        CheckoutBook();
+                        deleteBook();
+                        setQuery('');
+                        setData({});
                       }}
                     >
-                      CHECKOUT
+                      Delete Book
                     </Button>
-                  )
-                )}
+                  )}
+                </Grid>
               </Paper>
             </Grid>
             <Grid item xs={4} alignItems={'center'}>
@@ -316,10 +287,10 @@ const CheckoutBook = (props) => {
               backgroundColor: '#00008B', // Medium Blue
             }}
             onClick={() => {
-              navigate('/employee/returnbook');
+              navigate('/employee/checkoutbook');
             }}
           >
-            Return Book
+            Checkout Book
           </Button>
           <Button
             variant="contained"
@@ -345,10 +316,11 @@ const CheckoutBook = (props) => {
     </Grid>
   );
 };
+
 const Img = styled('img')({
   margin: 'auto',
   display: 'block',
   maxWidth: '80%',
   maxHeight: '80%',
 });
-export default CheckoutBook;
+export default DeleteBook;

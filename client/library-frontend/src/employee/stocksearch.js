@@ -134,7 +134,10 @@ const StockSearch = (props) => {
                   />
 
                   {Object.keys(data).length != 0 ? (
-                    <TableContainer component={Paper}>
+                    <TableContainer
+                      component={Paper}
+                      style={{ marginTop: '20px', padding: 10 }}
+                    >
                       <div
                         style={{
                           display: 'flex',
@@ -172,7 +175,7 @@ const StockSearch = (props) => {
                           <NavigateNextIcon fontSize="large" />
                         </IconButton>
                       </div>
-                      <Typography variant="h5" sx={{ mt: 4 }}>
+                      <Typography variant="h5" sx={{ mt: 4 }} align="center">
                         Global Stock Search
                         <br />
                       </Typography>
