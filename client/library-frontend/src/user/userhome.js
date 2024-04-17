@@ -1,42 +1,46 @@
-import React from "react";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import Header from ".././component/header";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import ButtonBase from "@mui/material/ButtonBase";
-import { styled } from "@mui/material/styles";
+import React from 'react';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
+import Header from '.././component/header';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import ButtonBase from '@mui/material/ButtonBase';
+import { styled } from '@mui/material/styles';
 
-import Footer from ".././component/footer";
-import SideBar from ".././component/sidebar";
+import Footer from '.././component/footer';
+import SideBar from '.././component/sidebar';
 
-import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton"; // Import IconButton component
-import SearchIcon from "@mui/icons-material/Search"; // Import SearchIcon
-import InputAdornment from "@mui/material/InputAdornment";
-import BasicModal from "../component/BasicModal";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton'; // Import IconButton component
+import SearchIcon from '@mui/icons-material/Search'; // Import SearchIcon
+import InputAdornment from '@mui/material/InputAdornment';
+import BasicModal from '../component/BasicModal';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-const UserHome = props => {
+const UserHome = (props) => {
   const [userid, setUserId] = useState(props.userid);
+
+  useEffect(() => {
+    document.title = `Book.net: User Home Page`;
+  }, []);
 
   useEffect(() => {
     if (
       !loggedIn ||
-      loggedIn === "" ||
+      loggedIn === '' ||
       !email ||
-      email === "" ||
+      email === '' ||
       !userid ||
-      userid === ""
+      userid === ''
     ) {
-      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const storedUser = JSON.parse(localStorage.getItem('user'));
 
       if (storedUser) {
         setUserId(storedUser.id);
@@ -46,7 +50,7 @@ const UserHome = props => {
 
   const location = useLocation();
   const [query, setQuery] = useState(
-    location.state === null ? "" : location.state.q
+    location.state === null ? '' : location.state.q,
   );
   // try {
   //   const q = location.state.q;
@@ -69,17 +73,17 @@ const UserHome = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
 
-  const [data1, setData1] = useState("");
-  const [data2, setData2] = useState("");
-  const [data3, setData3] = useState("");
-  const [saveddata, setSavedData] = useState("");
+  const [data1, setData1] = useState('');
+  const [data2, setData2] = useState('');
+  const [data3, setData3] = useState('');
+  const [saveddata, setSavedData] = useState('');
 
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(5);
 
   const [offset, setOffset] = useState(0);
 
-  const RetrieveBooks = async e => {
+  const RetrieveBooks = async (e) => {
     if (e) {
       e.preventDefault();
     }
@@ -87,10 +91,10 @@ const UserHome = props => {
     // // if (!query) return;
 
     async function bookBuddy() {
-      console.log("USERID", userid);
-      let querystring = "?userid=" + userid + "&offset=" + offset;
+      console.log('USERID', userid);
+      let querystring = '?userid=' + userid + '&offset=' + offset;
       const response = await fetch(
-        `http://localhost:3006/books/bookbuddy/` + querystring
+        `http://localhost:3006/books/bookbuddy/` + querystring,
       );
       const res = await response.json();
       // const results = data[0];
@@ -100,10 +104,10 @@ const UserHome = props => {
     }
 
     async function popGenre() {
-      console.log("USERID", userid);
-      let querystring = "?userid=" + userid + "&offset=" + offset;
+      console.log('USERID', userid);
+      let querystring = '?userid=' + userid + '&offset=' + offset;
       const response = await fetch(
-        `http://localhost:3006/books/popgenre/` + querystring
+        `http://localhost:3006/books/popgenre/` + querystring,
       );
       const res = await response.json();
       // const results = data[0];
@@ -113,9 +117,9 @@ const UserHome = props => {
     }
 
     async function bookBuddy3() {
-      let querystring = "?userid=" + userid;
+      let querystring = '?userid=' + userid;
       const response = await fetch(
-        `http://localhost:3006/books/bookbuddy/` + querystring
+        `http://localhost:3006/books/bookbuddy/` + querystring,
       );
       const res = await response.json();
       // const results = data[0];
@@ -125,51 +129,48 @@ const UserHome = props => {
     }
 
     bookBuddy()
-      .then(res => {
+      .then((res) => {
         setData1(res);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
 
     popGenre()
-      .then(res => {
+      .then((res) => {
         setData2(res);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  useEffect(
-    () => {
-      if (userid) {
-        RetrieveBooks();
-      }
-    },
-    [page]
-  );
-  useEffect(
-    () => {
-      if (userid) {
-        RetrieveBooks();
-      }
-    },
-    [userid]
-  );
+  useEffect(() => {
+    if (userid) {
+      RetrieveBooks();
+    }
+  }, [page]);
+  useEffect(() => {
+    if (userid) {
+      RetrieveBooks();
+    }
+  }, [userid]);
   return (
     <Grid container direction="column" spacing={2}>
-      {" "}{/* Set container direction to column */}
+      {' '}
+      {/* Set container direction to column */}
       <Grid item>
-        {" "}{/* Header takes full width of the column */}
+        {' '}
+        {/* Header takes full width of the column */}
         <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
       </Grid>
-      <Grid container spacing={2} style={{ marginLeft: "auto" }}>
-        {" "}{/* Nested container for three columns */}
+      <Grid container spacing={2} style={{ marginLeft: 'auto' }}>
+        {' '}
+        {/* Nested container for three columns */}
         <SideBar />
         <Grid item xs={6}>
           {/* Main Content */}
           <Container>
-            <Typography variant="h2" textAlign={"center"} sx={{ mt: 4 }}>
+            <Typography variant="h2" textAlign={'center'} sx={{ mt: 4 }}>
               USER HOME for {email}
             </Typography>
-            <Typography variant="h5" textAlign={"center"} sx={{ mt: 2, mb: 4 }}>
+            <Typography variant="h5" textAlign={'center'} sx={{ mt: 2, mb: 4 }}>
               Your Book Recomendations!
             </Typography>
             <div>
@@ -177,14 +178,15 @@ const UserHome = props => {
                 sx={{
                   p: 2,
                   margin: 2,
-                  maxWidth: "100%",
+                  maxWidth: '100%',
                   flexGrow: 1,
-                  backgroundColor: "azure"
-                }}>
-                <Grid container justifyContent={"center"}>
+                  backgroundColor: 'azure',
+                }}
+              >
+                <Grid container justifyContent={'center'}>
                   <Grid item>
                     <ArrowBackIcon
-                      color={page > 0 ? "black" : "disabled"}
+                      color={page > 0 ? 'black' : 'disabled'}
                       fontSize="large"
                       onClick={() => {
                         if (page > 0) {
@@ -196,12 +198,12 @@ const UserHome = props => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={6} textAlign={"center"}>
+                  <Grid item xs={6} textAlign={'center'}>
                     <Typography variant="h5">More Recomendations</Typography>
                   </Grid>
                   <Grid item>
                     <ArrowForwardIcon
-                      color={page < 5 ? "black" : "disabled"}
+                      color={page < 5 ? 'black' : 'disabled'}
                       fontSize="large"
                       onClick={() => {
                         if (page < 5) {
@@ -215,42 +217,45 @@ const UserHome = props => {
                 </Grid>
               </Paper>
             </div>
-            <Typography>
-              {/* {JSON.stringify(data)} */}
-            </Typography>
+            <Typography>{/* {JSON.stringify(data)} */}</Typography>
             <Container>
-              {data1.length < 1
-                ? <Typography>No Books Found!</Typography>
-                : <ListItem
-                    items={data1}
-                    label={'"Book Buddy" Recomendations!'}
-                  />}
+              {data1.length < 1 ? (
+                <Typography>No Books Found!</Typography>
+              ) : (
+                <ListItem
+                  items={data1}
+                  label={'"Book Buddy" Recomendations!'}
+                />
+              )}
             </Container>
             <Container>
-              {data2.length < 1
-                ? <Typography>No Books Found!</Typography>
-                : <ListItem
-                    items={data2}
-                    label={"Top Books in your Favorite Genres!"}
-                  />}
+              {data2.length < 1 ? (
+                <Typography>No Books Found!</Typography>
+              ) : (
+                <ListItem
+                  items={data2}
+                  label={'Top Books in your Favorite Genres!'}
+                />
+              )}
             </Container>
 
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
               <Button
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  navigate("/");
+                  navigate('/');
                 }}
                 sx={{
-                  padding: "16px", // Increase padding to make the button larger
-                  fontSize: "20px", // Increase font size
-                  backgroundColor: "#3f51b5", // Change the background color
-                  color: "#fff", // Change the color of the text
-                  "&:hover": {
-                    backgroundColor: "#303f9f" // Change the background color on hover
-                  }
-                }}>
+                  padding: '16px', // Increase padding to make the button larger
+                  fontSize: '20px', // Increase font size
+                  backgroundColor: '#3f51b5', // Change the background color
+                  color: '#fff', // Change the color of the text
+                  '&:hover': {
+                    backgroundColor: '#303f9f', // Change the background color on hover
+                  },
+                }}
+              >
                 Home
               </Button>
             </Box>
@@ -276,11 +281,11 @@ function ListItem(props) {
   const [open, setOpen] = React.useState(false);
 
   const [bookdata, setBookData] = React.useState({
-    title: ""
+    title: '',
   });
 
   if (props.items.length == 0) {
-    console.log("ZERO RECORDS");
+    console.log('ZERO RECORDS');
   } else {
     try {
       const items = Object(props.items.items);
@@ -292,18 +297,18 @@ function ListItem(props) {
             onClose={() => setOpen(false)}
             bookdata={bookdata}
           />
-          <Typography variant="h5" gutterBottom textAlign={"center"}>
+          <Typography variant="h5" gutterBottom textAlign={'center'}>
             {props.label}
           </Typography>
           <Grid container spacing={1} xs>
-            {props.items.map(item =>
+            {props.items.map((item) => (
               <Item
                 key={item.book_id.toString()}
                 value={item}
                 setOpen={setOpen}
                 setBookData={setBookData}
               />
-            )}
+            ))}
           </Grid>
         </div>
       );
@@ -323,9 +328,10 @@ function Item(props) {
           maxWidth: 180,
           height: 410,
           flexGrow: 1,
-          backgroundColor: theme =>
-            theme.palette.mode === "dark" ? "#1A2027" : "#fff"
-        }}>
+          backgroundColor: (theme) =>
+            theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+        }}
+      >
         <Grid container spacing={2}>
           <Grid item>
             <ButtonBase
@@ -333,10 +339,11 @@ function Item(props) {
               onClick={() => {
                 setBookData(props.value);
                 setOpen(true);
-              }}>
+              }}
+            >
               <Img
                 alt="book image"
-                onError={e => console.log("e", e)}
+                onError={(e) => console.log('e', e)}
                 src={props.value.img}
               />
             </ButtonBase>
@@ -346,7 +353,7 @@ function Item(props) {
               <Grid item xs>
                 <Typography gutterBottom variant="h5" component="div">
                   {props.value.title.length > 20
-                    ? props.value.title.slice(0, 20) + "..."
+                    ? props.value.title.slice(0, 20) + '...'
                     : props.value.title}
                 </Typography>
                 <Typography variant="h6" gutterBottom>
@@ -354,15 +361,16 @@ function Item(props) {
                 </Typography>
                 <Typography variant="body3" gutterBottom>
                   {props.value.author_name.length > 18
-                    ? props.value.author_name.slice(0, 18) + "..."
+                    ? props.value.author_name.slice(0, 18) + '...'
                     : props.value.author_name}
                 </Typography>
                 <Typography variant="h6" gutterBottom>
-                  Genre:<br />
+                  Genre:
+                  <br />
                 </Typography>
                 <Typography variant="body3" gutterBottom>
                   {props.value.genre.length > 15
-                    ? props.value.genre.slice(0, 15) + "..."
+                    ? props.value.genre.slice(0, 15) + '...'
                     : props.value.genre}
 
                   <br />
@@ -379,7 +387,8 @@ function Item(props) {
               container
               direction="row"
               alignItems="flex-end"
-              justify="center">
+              justify="center"
+            >
               <Typography variant="subtitle1" component="div">
                 Instock count: {props.value.stockcount}
               </Typography>
@@ -391,13 +400,13 @@ function Item(props) {
   );
 }
 
-const SearchBar = ({ setSearchQuery }) =>
+const SearchBar = ({ setSearchQuery }) => (
   <form>
     <TextField
       id="search-bar"
       className="text"
       UserHome
-      onInput={e => {
+      onInput={(e) => {
         setSearchQuery(e.target.value);
       }}
       label="Enter a city name"
@@ -406,15 +415,16 @@ const SearchBar = ({ setSearchQuery }) =>
       size="small"
     />
     <IconButton type="submit" aria-label="search">
-      <SearchIcon style={{ fill: "blue" }} />
+      <SearchIcon style={{ fill: 'blue' }} />
     </IconButton>
-  </form>;
+  </form>
+);
 
-const Img = styled("img")({
-  margin: "auto",
-  display: "block",
-  maxWidth: "115%",
-  maxHeight: "115%"
+const Img = styled('img')({
+  margin: 'auto',
+  display: 'block',
+  maxWidth: '115%',
+  maxHeight: '115%',
 });
 
 export default UserHome;

@@ -1,11 +1,11 @@
-import React from "react";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import Header from ".././component/header";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
+import Header from '.././component/header';
+import { useNavigate } from 'react-router-dom';
 
-const Events = props => {
+const Events = (props) => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
   return (
@@ -25,8 +25,9 @@ const Events = props => {
         <Button
           variant="contained"
           onClick={() => {
-            navigate("/");
-          }}>
+            navigate('/');
+          }}
+        >
           Home
         </Button>
       </Container>

@@ -1,33 +1,37 @@
-import React from "react";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import Header from ".././component/header";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import React from 'react';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
+import Header from '.././component/header';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import ButtonBase from "@mui/material/ButtonBase";
-import { styled } from "@mui/material/styles";
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import ButtonBase from '@mui/material/ButtonBase';
+import { styled } from '@mui/material/styles';
 
-import Footer from ".././component/footer";
-import SideBar from ".././component/sidebar";
+import Footer from '.././component/footer';
+import SideBar from '.././component/sidebar';
 
-import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton"; // Import IconButton component
-import SearchIcon from "@mui/icons-material/Search"; // Import SearchIcon
-import InputAdornment from "@mui/material/InputAdornment";
-import BasicModal from "../component/BasicModal";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton'; // Import IconButton component
+import SearchIcon from '@mui/icons-material/Search'; // Import SearchIcon
+import InputAdornment from '@mui/material/InputAdornment';
+import BasicModal from '../component/BasicModal';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-const BookSearch = props => {
+const BookSearch = (props) => {
+  useEffect(() => {
+    document.title = `Book.net: Book Search Page`;
+  }, []);
+
   const location = useLocation();
   const [query, setQuery] = useState(
-    location.state === null ? "" : location.state.q
+    location.state === null ? '' : location.state.q,
   );
   // try {
   //   const q = location.state.q;
@@ -50,19 +54,19 @@ const BookSearch = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
 
-  const [data, setData] = useState("");
-  const [saveddata, setSavedData] = useState("");
+  const [data, setData] = useState('');
+  const [saveddata, setSavedData] = useState('');
 
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
 
-  const submitQuery = e => {
+  const submitQuery = (e) => {
     e.preventDefault();
     setPage(0);
     RetrieveBooks();
   };
 
-  const RetrieveBooks = async e => {
+  const RetrieveBooks = async (e) => {
     if (e) {
       e.preventDefault();
     }
@@ -76,9 +80,9 @@ const BookSearch = props => {
       // console.log("saveddata", saveddata);
 
       let querystring =
-        "?query=" + query + "&limit=" + limit + "&offset=" + limit * page;
+        '?query=' + query + '&limit=' + limit + '&offset=' + limit * page;
       const response = await fetch(
-        `http://localhost:3006/books/query/` + querystring
+        `http://localhost:3006/books/query/` + querystring,
       );
       const res = await response.json();
       // const results = data[0];
@@ -88,58 +92,60 @@ const BookSearch = props => {
     }
 
     fetchData()
-      .then(res => {
+      .then((res) => {
         setData(res);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  useEffect(
-    () => {
-      RetrieveBooks();
-    },
-    [page]
-  );
+  useEffect(() => {
+    RetrieveBooks();
+  }, [page]);
 
   return (
     <Grid container direction="column" spacing={2}>
-      {" "}{/* Set container direction to column */}
+      {' '}
+      {/* Set container direction to column */}
       <Grid item>
-        {" "}{/* Header takes full width of the column */}
+        {' '}
+        {/* Header takes full width of the column */}
         <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
       </Grid>
-      <Grid container spacing={2} style={{ marginLeft: "auto" }}>
-        {" "}{/* Nested container for three columns */}
+      <Grid container spacing={2} style={{ marginLeft: 'auto' }}>
+        {' '}
+        {/* Nested container for three columns */}
         <SideBar />
         <Grid item xs={6}>
           {/* Main Content */}
           <Container>
             <Typography variant="h2" sx={{ mt: 4 }}>
-              BOOK SEARCH
+              Book Search
             </Typography>
             <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-              Delivering awesome solutions for you!
+              Type the name of a Book, Author, or Genre to search for a book!
             </Typography>
 
             <div
               style={{
-                display: "flex",
-                alignSelf: "center",
-                justifyContent: "center",
-                flexDirection: "column",
-                padding: 20
-              }}>
+                display: 'flex',
+                alignSelf: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                padding: 20,
+              }}
+            >
               <form
                 id="search-bar"
-                onSubmit={e => {
+                onSubmit={(e) => {
                   submitQuery(e);
-                }}>
+                }}
+              >
                 <label>
                   <TextField
                     id="search-bar"
                     className="text"
                     value={query}
-                    onInput={e => {
+                    onInput={(e) => {
                       setQuery(e.target.value);
                     }}
                     label="Enter a Book Name!"
@@ -152,10 +158,11 @@ const BookSearch = props => {
                         <IconButton
                           id="search-bar"
                           type="submit"
-                          aria-label="search">
-                          <SearchIcon style={{ fill: "blue" }} />
+                          aria-label="search"
+                        >
+                          <SearchIcon style={{ fill: 'blue' }} />
                         </IconButton>
-                      )
+                      ),
                     }}
                   />
                 </label>
@@ -166,14 +173,15 @@ const BookSearch = props => {
                 sx={{
                   p: 2,
                   margin: 2,
-                  maxWidth: "100%",
+                  maxWidth: '100%',
                   flexGrow: 1,
-                  backgroundColor: "azure"
-                }}>
-                <Grid container justifyContent={"center"}>
+                  backgroundColor: 'azure',
+                }}
+              >
+                <Grid container justifyContent={'center'}>
                   <Grid item>
                     <ArrowBackIcon
-                      color={page > 0 ? "black" : "disabled"}
+                      color={page > 0 ? 'black' : 'disabled'}
                       fontSize="large"
                       onClick={() => {
                         setPage(page > 0 ? page - 1 : 0);
@@ -182,37 +190,38 @@ const BookSearch = props => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={6} textAlign={"center"}>
+                  <Grid item xs={6} textAlign={'center'}>
                     <Typography variant="h5">Page Navigation</Typography>
                   </Grid>
                   <Grid item>
                     <ArrowForwardIcon
-                      color={data.length < limit ? "disabled" : "black"}
+                      color={data.length < limit ? 'disabled' : 'black'}
                       fontSize="large"
                       onClick={() => {
                         setPage(data.length < limit ? page : page + 1);
                         console.log(page);
                         RetrieveBooks();
                       }}
-                    />{" "}
+                    />{' '}
                   </Grid>
                 </Grid>
               </Paper>
             </div>
-            <Typography>
-              {/* {JSON.stringify(data)} */}
-            </Typography>
+            <Typography>{/* {JSON.stringify(data)} */}</Typography>
             <Container>
-              {data.length < 1
-                ? <Typography>No Books Found!</Typography>
-                : <ListItem items={data} />}
+              {data.length < 1 ? (
+                <Typography>No Books Found!</Typography>
+              ) : (
+                <ListItem items={data} />
+              )}
             </Container>
 
             <Button
               variant="contained"
               onClick={() => {
-                navigate("/");
-              }}>
+                navigate('/');
+              }}
+            >
               Home
             </Button>
           </Container>
@@ -237,11 +246,11 @@ function ListItem(items) {
   const [open, setOpen] = React.useState(false);
 
   const [bookdata, setBookData] = React.useState({
-    title: ""
+    title: '',
   });
 
   if (items.length == 0) {
-    console.log("ZERO RECORDS");
+    console.log('ZERO RECORDS');
   } else {
     try {
       items = Object(items.items);
@@ -253,15 +262,15 @@ function ListItem(items) {
             onClose={() => setOpen(false)}
             bookdata={bookdata}
           />
-          <ul style={{ listStyleType: "none" }}>
-            {items.map(item =>
+          <ul style={{ listStyleType: 'none' }}>
+            {items.map((item) => (
               <Item
                 key={item.book_id.toString()}
                 value={item}
                 setOpen={setOpen}
                 setBookData={setBookData}
               />
-            )}
+            ))}
           </ul>
         </div>
       );
@@ -282,9 +291,10 @@ function Item(props) {
           flexGrow: 1,
           borderRadius: 2, // Add border radius
           boxShadow: 3, // Add box shadow
-          backgroundColor: theme =>
-            theme.palette.mode === "dark" ? "#1A2027" : "#fff"
-        }}>
+          backgroundColor: (theme) =>
+            theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+        }}
+      >
         <Grid container direction="row" spacing={2}>
           <Grid item xs={3}>
             <ButtonBase
@@ -292,10 +302,11 @@ function Item(props) {
               onClick={() => {
                 setBookData(props.value);
                 setOpen(true);
-              }}>
+              }}
+            >
               <Img
                 alt="book image"
-                onError={e => console.log("e", e)}
+                onError={(e) => console.log('e', e)}
                 src={props.value.img}
               />
             </ButtonBase>
@@ -308,15 +319,15 @@ function Item(props) {
                 </Typography>
                 <Typography variant="body3" gutterBottom>
                   Author: {props.value.author_name}
-                </Typography>{" "}
+                </Typography>{' '}
                 <Typography variant="body2" gutterBottom>
                   Genre: {props.value.genre}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   ISBN: {props.value.isbn}
-                </Typography>{" "}
+                </Typography>{' '}
                 <Typography variant="body2" color="text.secondary">
-                  Year Published: {props.value.publishyear}{" "}
+                  Year Published: {props.value.publishyear}{' '}
                   {props.value.publication_year}
                 </Typography>
               </Grid>
@@ -338,12 +349,12 @@ function Item(props) {
   );
 }
 
-const SearchBar = ({ setSearchQuery }) =>
+const SearchBar = ({ setSearchQuery }) => (
   <form>
     <TextField
       id="search-bar"
       className="text"
-      onInput={e => {
+      onInput={(e) => {
         setSearchQuery(e.target.value);
       }}
       label="Enter a city name"
@@ -352,15 +363,16 @@ const SearchBar = ({ setSearchQuery }) =>
       size="small"
     />
     <IconButton type="submit" aria-label="search">
-      <SearchIcon style={{ fill: "blue" }} />
+      <SearchIcon style={{ fill: 'blue' }} />
     </IconButton>
-  </form>;
+  </form>
+);
 
-const Img = styled("img")({
-  margin: "auto",
-  display: "block",
-  maxWidth: "115%",
-  maxHeight: "115%"
+const Img = styled('img')({
+  margin: 'auto',
+  display: 'block',
+  maxWidth: '115%',
+  maxHeight: '115%',
 });
 
 export default BookSearch;

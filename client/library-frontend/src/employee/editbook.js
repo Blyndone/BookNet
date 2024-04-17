@@ -1,44 +1,45 @@
-import React from "react";
+import React from 'react';
 
-import Container from "@mui/material/Container";
-import { styled } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
-import { FormControl } from "@mui/base/FormControl";
-import { useState, useEffect } from "react";
-import Grid from "@mui/material/Grid";
-import Header from ".././component/header";
-import Footer from ".././component/footer";
-import SideBar from ".././component/sidebar";
+import Container from '@mui/material/Container';
+import { styled } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
+import { FormControl } from '@mui/base/FormControl';
+import { useState, useEffect } from 'react';
+import Grid from '@mui/material/Grid';
+import Header from '.././component/header';
+import Footer from '.././component/footer';
+import SideBar from '.././component/sidebar';
 
-import { TextField, Button, Typography, Paper, Box } from "@mui/material";
+import { TextField, Button, Typography, Paper, Box } from '@mui/material';
 
-const EditBook = props => {
+const EditBook = (props) => {
+  useEffect(() => {
+    document.title = `Book.net: Edit Books`;
+  }, []);
+
   const { loggedIn, email } = props;
   const navigate = useNavigate();
   const [data, setData] = useState({
-    title: "",
-    author_name: "",
-    isbn: "",
-    publishyear: "",
-    genre: "",
-    img: "",
-    description: ""
+    title: '',
+    author_name: '',
+    isbn: '',
+    publishyear: '',
+    genre: '',
+    img: '',
+    description: '',
   });
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
 
-  useEffect(
-    () => {
-      const timeoutId = setTimeout(() => {
-        handleSubmit();
-      }, 500);
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      handleSubmit();
+    }, 500);
 
-      return () => clearTimeout(timeoutId); // Clear the timeout if the component is unmounted
-    },
-    [query]
-  );
+    return () => clearTimeout(timeoutId); // Clear the timeout if the component is unmounted
+  }, [query]);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     if (e) e.preventDefault();
     // window.alert(query);
     // if (!query) return;
@@ -47,9 +48,9 @@ const EditBook = props => {
       if (query.length == 0) {
         return;
       }
-      let querystring = "?query=" + query;
+      let querystring = '?query=' + query;
       const response = await fetch(
-        `http://localhost:3006/book/index/` + querystring
+        `http://localhost:3006/book/index/` + querystring,
       );
       const res = await response.json();
       // const results = data[0];
@@ -57,29 +58,29 @@ const EditBook = props => {
 
       return res;
     }
-    fetchData().then(res => {
+    fetchData().then((res) => {
       if (res !== undefined && res.length > 0) {
         setData(res[0]);
         console.log(res[0]);
       } else {
-        console.log("No data received");
+        console.log('No data received');
       }
     });
   };
 
-  const submitPostBook = e => {
+  const submitPostBook = (e) => {
     e.preventDefault();
 
     async function postbook() {
       function validateData(data) {
         const fields = [
-          "title",
-          "author_name",
-          "publishyear",
-          "isbn",
-          "genre",
-          "img",
-          "description"
+          'title',
+          'author_name',
+          'publishyear',
+          'isbn',
+          'genre',
+          'img',
+          'description',
         ];
         for (let field of fields) {
           if (!data[field]) {
@@ -91,9 +92,9 @@ const EditBook = props => {
       }
       if (validateData(data)) {
         fetch(`http://localhost:3006/book/`, {
-          method: "PATCH",
+          method: 'PATCH',
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             book_id: query,
@@ -104,18 +105,18 @@ const EditBook = props => {
             genre: data.genre,
             img: data.img,
             description: data.description,
-            count: data.count
-          })
+            count: data.count,
+          }),
         });
         alert(`${data.title} has been edited!.`);
         setData({
-          title: "",
-          author_name: "",
-          isbn: "",
-          publishyear: "",
-          genre: "",
-          img: "",
-          description: ""
+          title: '',
+          author_name: '',
+          isbn: '',
+          publishyear: '',
+          genre: '',
+          img: '',
+          description: '',
         });
       }
     }
@@ -125,13 +126,16 @@ const EditBook = props => {
 
   return (
     <Grid container direction="column" spacing={2}>
-      {" "}{/* Set container direction to column */}
+      {' '}
+      {/* Set container direction to column */}
       <Grid item>
-        {" "}{/* Header takes full width of the column */}
+        {' '}
+        {/* Header takes full width of the column */}
         <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
       </Grid>
-      <Grid container spacing={2} style={{ marginLeft: "auto" }}>
-        {" "}{/* Nested container for three columns */}
+      <Grid container spacing={2} style={{ marginLeft: 'auto' }}>
+        {' '}
+        {/* Nested container for three columns */}
         <SideBar />
         <Grid item xs={6} columns={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid container spacing={2}>
@@ -142,20 +146,20 @@ const EditBook = props => {
                   Edit Books
                 </Typography>
               </Grid>
-              <Paper sx={{ padding: 5, bgcolor: "azure" }}>
+              <Paper sx={{ padding: 5, bgcolor: 'azure' }}>
                 <Box>
                   <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-                    Type in information of the book you want to edit!
+                    Enter the Book ID of the book you want to edit!
                   </Typography>
                   <TextField
                     label="Book ID"
                     type="text"
-                    placeholder={data === null ? "Book ID" : data.id}
+                    placeholder={data === null ? 'Book ID' : data.id}
                     value={query}
-                    onChange={e => {
+                    onChange={(e) => {
                       const val = e.target.value;
                       if (
-                        val === "" ||
+                        val === '' ||
                         (Number.isInteger(Number(val)) && Number(val) > 0)
                       ) {
                         setQuery(val);
@@ -163,17 +167,19 @@ const EditBook = props => {
                     }}
                   />
                   <Typography variant="h5" sx={{ mt: 4 }}>
-                    Book Edit Form<br />
+                    Book Edit Form
+                    <br />
                   </Typography>
                   <form onSubmit={submitPostBook}>
                     <Box
-                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                    >
                       <TextField
                         label="Book Title"
                         type="text"
-                        placeholder={null === data ? "Book Title" : data.title}
+                        placeholder={null === data ? 'Book Title' : data.title}
                         value={data.title}
-                        onChange={e => {
+                        onChange={(e) => {
                           setData({ ...data, title: e.target.value });
                         }}
                       />
@@ -181,10 +187,10 @@ const EditBook = props => {
                         label="Author Name"
                         type="text"
                         placeholder={
-                          null === data ? "Author Name" : data.author_name
+                          null === data ? 'Author Name' : data.author_name
                         }
                         value={data.author_name}
-                        onChange={e => {
+                        onChange={(e) => {
                           setData({ ...data, author_name: e.target.value });
                         }}
                       />
@@ -192,7 +198,7 @@ const EditBook = props => {
                         label="ISBN"
                         type="number"
                         value={data.isbn}
-                        onChange={e => {
+                        onChange={(e) => {
                           setData({ ...data, isbn: e.target.value });
                         }}
                       />
@@ -200,7 +206,7 @@ const EditBook = props => {
                         label="Publication Year"
                         type="text"
                         value={data.publishyear}
-                        onChange={e => {
+                        onChange={(e) => {
                           setData({ ...data, publishyear: e.target.value });
                         }}
                       />
@@ -208,7 +214,7 @@ const EditBook = props => {
                         label="Genre"
                         type="text"
                         value={data.genre}
-                        onChange={e => {
+                        onChange={(e) => {
                           setData({ ...data, genre: e.target.value });
                         }}
                       />
@@ -216,7 +222,7 @@ const EditBook = props => {
                         label="Image"
                         type="text"
                         value={data.img}
-                        onChange={e => {
+                        onChange={(e) => {
                           setData({ ...data, img: e.target.value });
                         }}
                       />
@@ -225,7 +231,7 @@ const EditBook = props => {
                         multiline
                         rows={6}
                         value={data.description}
-                        onChange={e => {
+                        onChange={(e) => {
                           setData({ ...data, description: e.target.value });
                         }}
                       />
@@ -233,13 +239,14 @@ const EditBook = props => {
                         type="submit"
                         variant="contained"
                         sx={{
-                          width: "80%",
-                          margin: "30px",
-                          padding: "16px",
-                          fontSize: "20px",
-                          marginBottom: "10px",
-                          backgroundColor: "#0000CD" // Medium Blue
-                        }}>
+                          width: '80%',
+                          margin: '30px',
+                          padding: '16px',
+                          fontSize: '20px',
+                          marginBottom: '10px',
+                          backgroundColor: '#00008B', // Medium Blue
+                        }}
+                      >
                         Edit Book
                       </Button>
                     </Box>
@@ -247,15 +254,16 @@ const EditBook = props => {
                 </Box>
               </Paper>
             </Grid>
-            <Grid item xs={4} alignItems={"center"}>
+            <Grid item xs={4} alignItems={'center'}>
               <Box
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                minHeight="65vh">
+                minHeight="65vh"
+              >
                 <Img
                   alt="Book Image"
-                  onError={e => console.log("e", e)}
+                  onError={(e) => console.log('e', e)}
                   src={data.img}
                 />
               </Box>
@@ -265,16 +273,17 @@ const EditBook = props => {
           <Button
             variant="contained"
             sx={{
-              width: "80%",
-              margin: "30px",
-              padding: "16px",
-              fontSize: "20px",
-              marginBottom: "10px",
-              backgroundColor: "#0000CD"
+              width: '80%',
+              margin: '30px',
+              padding: '16px',
+              fontSize: '20px',
+              marginBottom: '10px',
+              backgroundColor: '#00008B',
             }} // Medium Blue
             onClick={() => {
-              navigate("/employee/emphome");
-            }}>
+              navigate('/employee/emphome');
+            }}
+          >
             Employee Home
           </Button>
           {/* Footer */}
@@ -286,11 +295,11 @@ const EditBook = props => {
   );
 };
 
-const Img = styled("img")({
-  margin: "auto",
-  display: "block",
-  maxWidth: "80%",
-  maxHeight: "800%"
+const Img = styled('img')({
+  margin: 'auto',
+  display: 'block',
+  maxWidth: '80%',
+  maxHeight: '800%',
 });
 
 export default EditBook;
