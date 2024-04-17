@@ -425,6 +425,27 @@ app.get('/stockuser/:id', async (req, res) => {
   }
 });
 
+app.get('/checkedout/:id', async (req, res) => {
+  console.log('checkedout/id');
+
+  try {
+    const { id } = req.params;
+    console.log(id);
+   const query = `
+  SELECT * 
+  FROM testusers U 
+  JOIN teststock S ON U.id = S.user_id 
+  JOIN testbooks B ON B.book_id = S.book_id
+  JOIN testauthors A ON B.author = A.id
+  WHERE S.user_id = $1
+`;    const users = await pool.query(query, [id]);
+    res.json(users.rows);
+    console.log(users.rows);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 app.patch('/user/payment/', async (req, res) => {
   const { amount, id } = req.body;
   console.log('user/payment:', amount, id);
@@ -441,14 +462,14 @@ app.patch('/user/payment/', async (req, res) => {
 
     const newBalance = Math.max(0, user.rows[0].balance - amount);
 
-const updated = 'UPDATE testusers SET balance = $1 WHERE id = $2 RETURNING balance, id';
+    const updated =
+      'UPDATE testusers SET balance = $1 WHERE id = $2 RETURNING balance, id';
     const updateduser = await pool.query(updated, [newBalance, id]);
 
     res.status(200).json({
       user: updateduser.rows,
       message: 'User updated',
     });
-
 
     console.log(updateduser.rows[0]);
   } catch (err) {
