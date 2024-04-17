@@ -15,8 +15,10 @@ import UserHome from "./user/userhome";
 import BookSearch from "./mutual/booksearch";
 import "./App.css";
 import AddBooks from "./employee/addbooks";
+import StockSearch from "./employee/stocksearch";
 
 function App() {
+  const [userid, setUserID] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState(localStorage.getItem("role") || "");
   const [loggedIn, setLoggedIn] = useState(
@@ -70,50 +72,191 @@ function App() {
           {/* Public routes */}
           <Route
             path="/"
-            element={<Home email={email} loggedIn={loggedIn} />}
+            element={
+              <Home
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/login"
-            element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+            element={
+              <Login
+                setLoggedIn={setLoggedIn}
+                setEmail={setEmail}
+                setUserID={setUserID}
+                setRole={setRole}
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+              />
+            }
           />
           <Route
             path="/signUp"
-            element={<SignUp setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+            element={
+              <SignUp
+                setLoggedIn={setLoggedIn}
+                setEmail={setEmail}
+                setUserID={setUserID}
+                setRole={setRole}
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+              />
+            }
           />
           <Route
             path="/home"
-            element={<LandingPage setLoggedIn={setLoggedIn} />}
+            element={
+              <LandingPage
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/userhome"
-            element={<UserHome setLoggedIn={setLoggedIn} />}
+            element={
+              <UserHome
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/profile"
-            element={<Profile setLoggedIn={setLoggedIn} />}
+            element={
+              <Profile
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/addbooks"
-            element={<AddBooks setLoggedIn={setLoggedIn} />}
+            element={
+              <AddBooks
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
+          />{" "}
+          <Route
+            path="/editbook"
+            element={
+              <EditBook
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/booksearch"
-            element={<BookSearch setLoggedIn={setLoggedIn} />}
+            element={
+              <BookSearch
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           <Route
             path="/events"
-            element={<Events setLoggedIn={setLoggedIn} />}
+            element={
+              <Events
+                loggedIn={loggedIn}
+                email={email}
+                userid={userid}
+                setLoggedIn={setLoggedIn}
+              />
+            }
           />
           {/* Private routes for employees */}
           {/* UNCOMMENT  =================================================*/}
-          {/* <Route element={<PrivateRoutes isLoggedIn={loggedIn} role={role} />}> */}
-          <Route path="employee">
-            <Route path="emphome" element={<EmpHome />} />
-            <Route path="editbook" element={<EditBook />} />
-            <Route path="checkoutbook" element={<CheckoutBook />} />
-            <Route path="returnbook" element={<ReturnBook />} />
-            <Route path="addbooks" element={<AddBooks />} />
-            {/* </Route> */}
+          <Route element={<PrivateRoutes isLoggedIn={loggedIn} role={role} />}>
+            <Route path="employee">
+              <Route
+                path="emphome"
+                element={
+                  <EmpHome
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
+              />
+              <Route
+                path="editbook"
+                element={
+                  <EditBook
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
+              />
+              <Route
+                path="checkoutbook"
+                element={
+                  <CheckoutBook
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
+              />
+              <Route
+                path="returnbook"
+                element={
+                  <ReturnBook
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
+              />
+              <Route
+                path="addbooks"
+                element={
+                  <AddBooks
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
+              />{" "}
+              <Route
+                path="stocksearch"
+                element={
+                  <StockSearch
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
+              />
+            </Route>
 
             {/* UNCOMMENT  =================================================*/}
           </Route>

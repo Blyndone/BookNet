@@ -43,10 +43,30 @@ app.get('/books/query/', async (req, res) => {
     // console.log(query.next().value.query)
 
 
+    
+
     try {
 
-        const querystring = 'SELECT count(S.instock) as stockcount, B.*, A.* FROM (testbooks B Join testauthors A ON B.author = A.id) JOIN teststock S on B.book_id = S.book_id   WHERE title ~* $1  group by B.book_id, A.id order by B.book_id Limit $2 Offset $3 ';
-        const books = await pool.query(querystring, [query, limit, offset])
+       const querystring = `
+    SELECT 
+        count(S.instock) as stockcount, 
+        B.*, 
+        A.* 
+    FROM 
+        (testbooks B JOIN testauthors A ON B.author = A.id) 
+        JOIN teststock S ON B.book_id = S.book_id   
+    WHERE 
+        B.title ~* $1 OR A.author_name ~* $1 OR B.genre ~* $1
+    GROUP BY 
+        B.book_id, 
+        A.id 
+    ORDER BY 
+        B.book_id 
+    LIMIT 
+        $2 
+    OFFSET 
+        $3
+`; const books = await pool.query(querystring, [query, limit, offset])
         res.json(books.rows)
         console.log(books.rows)
     } catch (err) {
@@ -61,8 +81,14 @@ app.get('/books/bookbuddy/', async (req, res) => {
 
     let { userid, offset } = req.query
     console.log("params", userid)
+    if (userid === undefined || offset === undefined) {
+        console.log('Missing parameters');
+        return res.status(400).json({ message: 'Missing parameters' });
+    }
+console.log("user",userid)
     if (userid.length <= 0){
-        userid = '.*'
+       
+        return res.status(400).json({ message: 'Missing parameters' });
     }
     // params = new URLSearchParams(decodeURI(req.params.query))
     // let query = params.entries()
@@ -139,8 +165,10 @@ app.get('/books/popgenre/', async (req, res) => {
 
     let { userid, offset } = req.query
     console.log("params", userid)
+    console.log("user",userid)
     if (userid.length <= 0){
-        userid = '.*'
+       
+        return res.status(400).json({ message: 'Missing parameters' });
     }
     // params = new URLSearchParams(decodeURI(req.params.query))
     // let query = params.entries()
@@ -234,7 +262,53 @@ app.get('/books/stock/', async (req, res) => {
 
     try {
 
-        const querystring = 'Select * from testbooks B join teststock S on B.book_id = S.book_id where S.id = $1 ';
+const querystring = `
+SELECT *, 
+       A.author_name
+FROM   testbooks B
+JOIN   teststock S 
+ON     B.book_id = S.book_id
+JOIN   testauthors A 
+ON     B.author = A.id
+WHERE  S.id = $1
+`;
+        const books = await pool.query(querystring, [query])
+        res.json(books.rows)
+        console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+// ==========================
+
+app.get('/books/stocksearch/', async (req, res) => {
+    console.log("get:books/stocsearch")
+
+
+    let { query } = req.query
+    console.log("params", query)
+    if (query.length <= 0){
+        query = '.*'
+    }
+
+
+
+    try {
+
+const querystring = `
+SELECT
+	B.book_id, B.title, A.author_name, B.genre, S.id , S.instock, s.book_condition,  U.firstname, U.lastname, s.due_date
+FROM
+	TESTBOOKS B
+	JOIN TESTAUTHORS A ON B.AUTHOR = A.ID
+	JOIN TESTSTOCK S ON S.BOOK_ID = B.BOOK_ID
+	Left JOIN TESTUSERS U ON S.USER_ID = U.ID
+WHERE
+	B.TITLE ~* $1 OR B.GENRE ~* $1 OR A.AUTHOR_NAME ~* $1
+ORDER BY
+    B.BOOK_ID, S.ID
+`;
         const books = await pool.query(querystring, [query])
         res.json(books.rows)
         console.log(books.rows)
@@ -243,6 +317,34 @@ app.get('/books/stock/', async (req, res) => {
     }
 })
 //============================
+app.get('/book/index/', async (req, res) => {
+    console.log("get:book/index");
+
+    let { query } = req.query;
+    console.log("Received query parameter: ", query);
+    if (query.length <= 0){
+        query = '.*';
+    }
+
+    try {
+        const querystring = `
+            SELECT *, 
+                   A.author_name
+            FROM   testbooks B
+            JOIN   testauthors A 
+            ON     B.author = A.id
+            WHERE  B.book_ID = $1
+        `;
+        console.log("Executing query: ", querystring);
+        const books = await pool.query(querystring, [query]);
+        console.log("Received books: ", books.rows);
+        res.json(books.rows);
+    } catch (err) {
+        console.error("Error occurred: ", err);
+    }
+});
+
+
 
 
 
@@ -263,38 +365,33 @@ app.get('/books/index/', async (req, res) => {
 
     try {
 
-        const querystring = 'SELECT count(S.instock) as stockcount, B.*, A.* FROM (testbooks B Join testauthors A ON B.author = A.id) JOIN teststock S on B.book_id = S.book_id   WHERE S.id= $1  group by B.book_id, A.id order by B.book_id Limit $2 Offset $3 ';
-        const books = await pool.query(querystring, [query, limit, offset])
+       const querystring = `
+    SELECT 
+        count(S.instock) as stockcount, 
+        B.*, 
+        A.* 
+    FROM 
+        (testbooks B JOIN testauthors A ON B.author = A.id) 
+        JOIN teststock S ON B.book_id = S.book_id   
+    WHERE 
+        S.id = $1  
+    GROUP BY 
+        B.book_id, 
+        A.id 
+    ORDER BY 
+        B.book_id 
+    LIMIT 
+        $2 
+    OFFSET 
+        $3
+`; const books = await pool.query(querystring, [query, limit, offset])
         res.json(books.rows)
         console.log(books.rows)
     } catch (err) {
         console.error(err)
     }
 })
-// app.get('/books/:index', async (req, res) => {
-//     console.log("get:books/index")
-//     params = new URLSearchParams(decodeURI(req.params.index))
-//     console.log(params)
-//     idlist = []
-//     for (const [key, value] of params.entries()) {
-//         console.log(`${key}, ${value}`);
-//         idlist.push(parseInt(value))
-//       }
-//     console.log(idlist)
-//     // idlist = `(${idlist.map(v => JSON.stringify(v)).join(', ')})`;
-//     //  console.log(idlist)
 
-//     try {
-//         const { title } = req.params;
-//         console.log(title)
-//         const query = 'SELECT * FROM testbooks WHERE book_id = ANY($1::int[])';
-//         const books = await pool.query(query, [idlist])
-//         res.json(books.rows)
-//         console.log(books.rows)
-//     } catch (err) {
-//         console.error(err)
-//     }
-// })
 
 app.get('/books/:title', async (req, res) => {
     console.log("get:books/title")
@@ -312,17 +409,31 @@ app.get('/books/:title', async (req, res) => {
 })
 
 
+// Define a GET route handler for '/user/:id'
 app.get('/user/:id', async (req, res) => {
+    // Log a message indicating that this route handler has been entered
     console.log("get:user/id")
 
     try {
+        // Extract the 'id' parameter from the request parameters
         const { id } = req.params;
+        // Log the 'id' parameter
         console.log(id)
+
+        // Define a SQL query that selects all columns from the 'testusers' table where the 'id' column matches a parameter
         const query = 'SELECT * FROM testusers WHERE id = $1';
-        const books = await pool.query(query, [id])
-        res.json(books.rows)
-        console.log(books.rows)
+
+        // Execute the SQL query, passing the 'id' parameter as the value to match
+        // Use the 'await' keyword to wait for the query to complete before moving on to the next line of code
+        const user = await pool.query(query, [id])
+
+        // Send the rows returned by the query as a JSON response
+        res.json(user.rows)
+
+        // Log the rows returned by the query
+        console.log(user.rows)
     } catch (err) {
+        // If any errors occur during the execution of the try block, catch them and log them to the console
         console.error(err)
     }
 })
@@ -359,47 +470,46 @@ app.get('/stockuser/:id', async (req, res) => {
 // "img": "http://images.amazon.com/images/P/0195153448.01.LZZZZZZZ.jpg",
 // "count": 5
 //  }
-
-app.patch('/books', async (req, res) => {
-    const {
-        book_id
-    } = req.body
+app.patch('/book', async (req, res) => {
+    const { book_id, author_name } = req.body;
     try {
         const query = 'SELECT * FROM testbooks WHERE book_id = $1';
-        const books = await pool.query(query, [book_id])
+        const books = await pool.query(query, [book_id]);
         if (books.rows.length > 0) {
-
             for (const [key, value] of Object.entries(req.body)) {
                 if (key == "book_id" || key == "author_id" || value.length == 0) {
-
+                    // Do nothing
                 } else {
-                    console.log(books.rows[0][key], value)
-                    books.rows[0][key] = value
+                    books.rows[0][key] = value;
                 }
-
             }
-            const merge = books.rows[0]
-
+            const merge = books.rows[0];
             const query = `
-            UPDATE testbooks 
-            SET 
-            publishyear=$1,
-            isbn=$2,
-            genre=$3,
-            img=$4,
-            description=$5        
-            WHERE book_id = $6
-            `
-            const values = [merge.publishyear, merge.isbn, merge.genre, merge.img, merge.description, book_id]
-            console.log(values)
-            const booksupdated = await pool.query(query, values)
-            console.log(booksupdated.rows)
+                UPDATE testbooks 
+                SET 
+                title=$1,
+                publishyear=$2,
+                isbn=$3,
+                genre=$4,
+                img=$5,
+                description=$6
+                WHERE book_id = $7
+            `;
+            const values = [merge.title, merge.publishyear, merge.isbn, merge.genre, merge.img, merge.description, book_id];
+            const booksupdated = await pool.query(query, values);
 
+            // Update author name in testauthors table
+            const authorQuery = `
+                UPDATE testauthors
+                SET author_name = $1
+                WHERE id = $2
+            `;
+            const authorValues = [author_name, merge.author];
+            await pool.query(authorQuery, authorValues);
 
             res.status(200).json({
                 books: merge,
-                message: 'Book Updated',
-
+                message: 'Book and author updated',
             });
         } else {
             res.status(500).json({
@@ -407,9 +517,10 @@ app.patch('/books', async (req, res) => {
             });
         }
     } catch (err) {
-        console.error(err)
+        console.error(`Error occurred: ${err}`);
     }
-})
+});
+
 
 app.get('/events', async (req, res) => {
     try {
@@ -551,6 +662,7 @@ app.patch('/returnbook/', async (req, res) => {
 
 
 app.post("/signup", async (req, res) => {
+    console.log('POST /signup called');
     const {
         firstName,
         lastName,
@@ -558,45 +670,51 @@ app.post("/signup", async (req, res) => {
         password,
         role
     } = req.body;
+    console.log('Received data:', { firstName, lastName, email, role });
 
     try {
         // Check if user already exists
         const existingUserQuery = 'SELECT * FROM testusers WHERE email = $1';
+        console.log('Executing query:', existingUserQuery);
         const existingUserResult = await pool.query(existingUserQuery, [email]);
+        console.log('Query result:', existingUserResult.rows);
 
         if (existingUserResult.rows.length > 0) {
+            console.log('User already exists');
             return res.status(400).json({
-                message: "User already exists"
+                message: "User already exists",
+                userExists: true
             });
         }
 
         // Hash the password
+        console.log('Hashing password');
         const hashedPassword = await bcrypt.hash(password, 10);
-
-
 
         // Insert new user into the database
         const insertUserQuery = 'INSERT INTO testusers( firstName, lastName, email, password, role) VALUES($1, $2, $3, $4, $5) RETURNING *';
+        console.log('Executing query:', insertUserQuery);
         const insertedUserResult = await pool.query(insertUserQuery, [firstName, lastName, email, hashedPassword, role]);
+        console.log('Query result:', insertedUserResult.rows);
 
         const newUser = insertedUserResult.rows[0];
 
-        if (role === 'employee') {
-            const insertEmployeeQuery = 'INSERT INTO employee(user_id, position) VALUES($1, $2)';
-            await pool.query(insertEmployeeQuery, [newUser.id, 'worker']);
-        }
-
         let loginData = {
+            id: newUser.id,
             email: newUser.email,
             role: newUser.role,
             signInTime: Date.now(),
         };
+        console.log('Login data:', loginData);
 
         const token = jwt.sign(loginData, jwtSecretKey);
+        console.log('Generated token:', token);
         res.status(200).json({
             message: "success",
             token,
-            role: newUser.role
+            role: newUser.role,
+            id: newUser.id,
+            email: newUser.email,
         });
     } catch (error) {
         console.error("Error during signup:", error);
@@ -613,38 +731,44 @@ app.post("/login", async (req, res) => {
         password
     } = req.body;
 
+    console.log(`Attempting to log in user with email: ${email}`); // Log the email of the user attempting to log in
+    console.log('password:', password)
     try {
         const getUserQuery = 'SELECT * FROM testusers WHERE email = $1';
         const userResult = await pool.query(getUserQuery, [email]);
         const user = userResult.rows[0];
 
         if (!user) {
+            console.log(`User with email: ${email} not found`); // Log when a user is not found
             return res.status(401).json({
                 message: "User not found"
             });
         }
-
+       
         const passwordMatch = await bcrypt.compare(password, user.password);
-
+        console.log('passwordMatch:', passwordMatch)
         if (!passwordMatch) {
+            console.log(`Invalid password for user with email: ${email}`); // Log when an invalid password is entered
             return res.status(401).json({
                 message: "Invalid password"
             });
         }
 
         let loginData = {
+            id: user.id,
             email: user.email,
             role: user.role,
             signInTime: Date.now(),
         };
-
         const token = jwt.sign(loginData, jwtSecretKey);
         res.status(200).json({
             message: "success",
             token,
             role: user.role,
+            id:user.id,
             loggedIn: true
         });
+        console.log(`User with email: ${email} successfully logged in`); // Log when a user successfully logs in
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).json({
@@ -652,7 +776,6 @@ app.post("/login", async (req, res) => {
         });
     }
 });
-
 // The verify endpoint that checks if a given JWT token is valid
 app.post('/verify', (req, res) => {
     const tokenHeaderKey = "jwt-token";
@@ -684,22 +807,22 @@ app.post('/verify', (req, res) => {
 })
 
 app.post('/check-account', async (req, res) => {
+    console.log('POST /check-account called');
     try {
-        const {
-            email
-        } = req.body;
+        const { email } = req.body;
+        console.log('Received email:', email);
 
         // Check if user exists in the database
         const getUserQuery = 'SELECT * FROM testusers WHERE email = $1';
+        console.log('Executing query:', getUserQuery);
         const result = await pool.query(getUserQuery, [email]);
 
         const user = result.rows;
-
-        console.log(user);
+        console.log('Query result:', user);
 
         res.status(200).json({
-            status: user.length === 1 ? "User exists" : "User does not exist",
-            userExists: user.length === 1,
+            status: user.length > 1 ? "User exists" : "User does not exist",
+            userExists: user.length >= 1,
         });
     } catch (error) {
         console.error("Error checking account:", error);
@@ -712,7 +835,7 @@ app.post('/check-account', async (req, res) => {
 
 app.post('/book', async (req,res) => {
     // console.log(req)
-    const {title, author_name, isbn, publish_year, genre, img, description, count} = req.body;
+    const {title, author_name, isbn, publishyear, genre, img, description, count} = req.body;
     try {  
         
     const authorquery = 'INSERT INTO TESTAUTHORS  (AUTHOR_NAME)  SELECT $1   WHERE  NOT EXISTS (  SELECT *  FROM   TESTAUTHORS WHERE AUTHOR_NAME = $2) RETURNING id';
@@ -732,7 +855,7 @@ app.post('/book', async (req,res) => {
     }
     const bquery =`INSERT INTO testbooks (title, author,  publishyear, isbn, genre, img, checkout_count, description)
                  VALUES ($1, $2, $3, $4, $5, $6, 0, $7)  RETURNING book_id`
-    const bookinsert = await pool.query(bquery, [title, author_id, publish_year, isbn, genre, img,description])
+    const bookinsert = await pool.query(bquery, [title, author_id, publishyear, isbn, genre, img,description])
     
     console.log(bookinsert.rows)
 

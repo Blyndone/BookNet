@@ -14,6 +14,7 @@ import SideBar from ".././component/sidebar";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
+
 const ReturnBook = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
@@ -37,8 +38,20 @@ const ReturnBook = props => {
   const [query, setQuery] = useState("");
   const [userquery, setUserQuery] = useState("");
 
+  useEffect(
+    () => {
+      if (query !== "" && userquery !== "") {
+        const timeoutId = setTimeout(() => {
+          handleSubmit();
+        }, 500);
+
+        return () => clearTimeout(timeoutId); // Clear the timeout if the component is unmounted
+      }
+    },
+    [query, userquery]
+  );
   const handleSubmit = e => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     // window.alert(query);
     // if (!query) return;
 
@@ -138,6 +151,7 @@ const ReturnBook = props => {
 
     patchbook();
     setData({ ...data, instock: true });
+
     setUserData({});
   };
 
@@ -146,7 +160,7 @@ const ReturnBook = props => {
       {" "}{/* Set container direction to column */}
       <Grid item>
         {" "}{/* Header takes full width of the column */}
-        <Header loggedIn={loggedIn} />
+        <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
       </Grid>
       <Grid container spacing={2} style={{ marginLeft: "auto" }}>
         {" "}{/* Nested container for three columns */}
@@ -158,52 +172,55 @@ const ReturnBook = props => {
               <Typography variant="h2" sx={{ mt: 4 }}>
                 Return Book
               </Typography>
-              <Paper sx={{ padding: 5, bgcolor: "azure", width: "100%" }}>
+              <Paper
+                sx={{
+                  padding: 5,
+                  bgcolor: !data.instock ? "#00cccc" : "azure",
+                  width: "100%"
+                }}>
                 <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
                   Type in the name of the book you want to Return!
                 </Typography>
                 <div />
                 <div>
+                  {/* ... rest of your code ... */}
                   <form onSubmit={handleSubmit}>
-                    <label>
-                      Book ID:
-                      <input
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px"
+                      }}>
+                      <TextField
+                        label="Book ID"
                         type="text"
-                        placeholder={null === data ? "Book Title" : data.title}
+                        placeholder={data === null ? "Book ID" : data.id}
                         value={query}
                         onChange={e => {
-                          setQuery(e.target.value);
+                          const val = e.target.value;
+                          if (
+                            val === "" ||
+                            (Number.isInteger(Number(val)) && Number(val) > 0)
+                          ) {
+                            setQuery(val);
+                          }
                         }}
                       />
-                    </label>
-                    <input type="submit" value="Search" />
+                      {/* <Button
+                        type="submit"
+                        variant="contained"
+                        sx={{ backgroundColor: "#0000CD" }}>
+                        Search
+                      </Button> */}
+                    </Box>
                   </form>
-
-                  {/* <form onSubmit={handleUserSubmit}>
-                <label>
-                  User ID:
-                  <input
-                    type="text"
-                    placeholder={null === data ? "UserID" : userdata.id}
-                    value={userquery}
-                    onChange={e => {
-                      setUserQuery(e.target.value);
-                    }}
-                  />
-                </label>
-                <input type="submit" value="Search" />
-              </form> */}
-                </div>
-                <div>
-                  {/* <br />
-              {JSON.stringify(data)}
-              {JSON.stringify(userdata)}
-              <br /> */}
-                  {/* Book Edit Form */}
                   <Typography variant="h5" sx={{ mt: 4 }}>
                     Book Data{null === data ? "" : " - " + data.title}
                     <br />
-                    InStock: {String(data.instock)}
+                    InStock:{" "}
+                    {data.instock === true
+                      ? "In Stock"
+                      : data.instock === false ? "Out of Stock" : ""}
                   </Typography>
                   <Typography variant="h6" sx={{ mt: 4 }}>
                     Name:{data.title}
@@ -211,7 +228,10 @@ const ReturnBook = props => {
                     ISBN:{data.isbn}
                     <br />
                     <br />
-                    DUE DATE: {new Date(data.due_date).toLocaleDateString()}
+                    DUE DATE:{" "}
+                    {isNaN(new Date(data.due_date).getTime())
+                      ? ""
+                      : new Date(data.due_date).toLocaleDateString()}
                     <br />
                   </Typography>
                   <Typography variant="h5" sx={{ mt: 4 }}>
@@ -230,89 +250,35 @@ const ReturnBook = props => {
                     <br />
                     <br />
                   </Typography>
-                  {/* <form onSubmit={submitEditBook}>
-                <label>
-                  Publisher:
-                  <input
-                    type="text"
-                    value={data.publisher}
-                    onChange={e => {
-                      setData({ ...data, publisher: e.target.value });
-                    }}
-                  />
-                </label>
-                <br />
-                <br />
-                <label>
-                  ISBN:
-                  <input
-                    type="text"
-                    value={data.isbn}
-                    onChange={e => {
-                      setData({ ...data, isbn: e.target.value });
-                    }}
-                  />
-                </label>
-                <br />
-                <br />
-                <label>
-                  Publication Year:
-                  <input
-                    type="text"
-                    value={data.publication_year}
-                    onChange={e => {
-                      setData({ ...data, publication_year: e.target.value });
-                    }}
-                  />
-                </label>
-                <br />
-                <br />
-                <label>
-                  Genre:
-                  <input
-                    type="text"
-                    value={data.genre}
-                    onChange={e => {
-                      setData({ ...data, genre: e.target.value });
-                    }}
-                  />
-                </label>
-                <br />
-                <br />
-                <label>
-                  Image:
-                  <input
-                    type="text"
-                    value={data.img}
-                    onChange={e => {
-                      setData({ ...data, img: e.target.value });
-                    }}
-                  />
-                </label>
-                <br />
-                <br />
-                <label>
-                  Count:
-                  <input
-                    type="text"
-                    value={data.count}
-                    onChange={e => {
-                      setData({ ...data, count: e.target.value });
-                    }}
-                  />
-                </label>
-                <br />
-                <br />
-                <input type="submit" value="Edit Books" />
-              </form> */}
                 </div>
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    ReturnBook();
-                  }}>
-                  Return Book
-                </Button>
+                {!data.instock &&
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: "100%",
+                      padding: "16px",
+                      fontSize: "20px",
+                      marginBottom: "10px",
+                      backgroundColor: "#0000CD" // Medium Blue
+                    }}
+                    onClick={() => {
+                      ReturnBook();
+                      setQuery("");
+                      setData({
+                        book_id: "",
+                        title: "",
+                        author_id: "",
+                        publisher: "",
+                        isbn: "",
+                        publication_year: "",
+                        genre: "",
+                        img: "",
+                        count: "",
+                        instock: ""
+                      });
+                    }}>
+                    Return Book
+                  </Button>}
               </Paper>
             </Grid>
             <Grid item xs={4} alignItems={"center"}>
@@ -329,16 +295,32 @@ const ReturnBook = props => {
               </Box>
             </Grid>
           </Grid>
-          <br /> <br /> <br />
+
           <Button
             variant="contained"
+            sx={{
+              width: "40%",
+              margin: "30px",
+              padding: "16px",
+              fontSize: "20px",
+              marginBottom: "10px",
+              backgroundColor: "#0000CD" // Medium Blue
+            }}
             onClick={() => {
-              navigate("/");
+              navigate("/employee/checkoutbook");
             }}>
-            Home
+            Checkout Book
           </Button>
           <Button
             variant="contained"
+            sx={{
+              width: "40%",
+              margin: "30px",
+              padding: "16px",
+              fontSize: "20px",
+              marginBottom: "10px",
+              backgroundColor: "#0000CD" // Medium Blue
+            }}
             onClick={() => {
               navigate("/employee/emphome");
             }}>

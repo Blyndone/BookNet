@@ -1,10 +1,7 @@
 import React from "react";
-import Typography from "@mui/material/Typography";
+
 import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
-import { TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FormControl } from "@mui/base/FormControl";
 import { useState, useEffect } from "react";
@@ -12,17 +9,37 @@ import Grid from "@mui/material/Grid";
 import Header from ".././component/header";
 import Footer from ".././component/footer";
 import SideBar from ".././component/sidebar";
-import Box from "@mui/material/Box";
+
+import { TextField, Button, Typography, Paper, Box } from "@mui/material";
 
 const EditBook = props => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
-  const [data, setData] = useState({});
+  const [data, setData] = useState({
+    title: "",
+    author_name: "",
+    isbn: "",
+    publishyear: "",
+    genre: "",
+    img: "",
+    description: ""
+  });
 
   const [query, setQuery] = useState("");
 
+  useEffect(
+    () => {
+      const timeoutId = setTimeout(() => {
+        handleSubmit();
+      }, 500);
+
+      return () => clearTimeout(timeoutId); // Clear the timeout if the component is unmounted
+    },
+    [query]
+  );
+
   const handleSubmit = e => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     // window.alert(query);
     // if (!query) return;
 
@@ -30,10 +47,9 @@ const EditBook = props => {
       if (query.length == 0) {
         return;
       }
-
-      let querystring = "?query=" + query + "&limit=1&offset=0";
+      let querystring = "?query=" + query;
       const response = await fetch(
-        `http://localhost:3006/books/index/` + querystring
+        `http://localhost:3006/book/index/` + querystring
       );
       const res = await response.json();
       // const results = data[0];
@@ -41,36 +57,70 @@ const EditBook = props => {
 
       return res;
     }
-
-    fetchData()
-      .then(res => {
+    fetchData().then(res => {
+      if (res !== undefined && res.length > 0) {
         setData(res[0]);
-      })
-      .catch(err => console.log(err));
+        console.log(res[0]);
+      } else {
+        console.log("No data received");
+      }
+    });
   };
 
-  const submitEditBook = e => {
+  const submitPostBook = e => {
     e.preventDefault();
 
-    async function patchbook() {
-      fetch(`http://localhost:3006/books/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          book_id: data.book_id,
-          title: data.title,
-          publishyear: data.publishyear,
-          isbn: data.isbn,
-          genre: data.genre,
-          img: data.img,
-          description: data.description
-        })
-      });
+    async function postbook() {
+      function validateData(data) {
+        const fields = [
+          "title",
+          "author_name",
+          "publishyear",
+          "isbn",
+          "genre",
+          "img",
+          "description"
+        ];
+        for (let field of fields) {
+          if (!data[field]) {
+            alert(`Please fill out the ${field} field.`);
+            return false;
+          }
+        }
+        return true;
+      }
+      if (validateData(data)) {
+        fetch(`http://localhost:3006/book/`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            book_id: query,
+            title: data.title,
+            author_name: data.author_name,
+            publishyear: data.publishyear,
+            isbn: data.isbn,
+            genre: data.genre,
+            img: data.img,
+            description: data.description,
+            count: data.count
+          })
+        });
+        alert(`${data.title} has been edited!.`);
+        setData({
+          title: "",
+          author_name: "",
+          isbn: "",
+          publishyear: "",
+          genre: "",
+          img: "",
+          description: ""
+        });
+      }
     }
 
-    patchbook();
+    postbook();
   };
 
   return (
@@ -78,7 +128,7 @@ const EditBook = props => {
       {" "}{/* Set container direction to column */}
       <Grid item>
         {" "}{/* Header takes full width of the column */}
-        <Header loggedIn={loggedIn} />
+        <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
       </Grid>
       <Grid container spacing={2} style={{ marginLeft: "auto" }}>
         {" "}{/* Nested container for three columns */}
@@ -87,147 +137,114 @@ const EditBook = props => {
           <Grid container spacing={2}>
             {/* Main Content */}
             <Grid item xs={8} container>
-              <Typography variant="h2" sx={{ mt: 4 }}>
-                Edit Book
-              </Typography>
+              <Grid item xs={12}>
+                <Typography variant="h2" sx={{ mt: 4 }}>
+                  Edit Books
+                </Typography>
+              </Grid>
               <Paper sx={{ padding: 5, bgcolor: "azure" }}>
-                <div>
-                  <div>
-                    <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-                      Type in the name of the book you want to edit!
-                    </Typography>
-                    <div />
-                    <div>
-                      <form onSubmit={handleSubmit}>
-                        <label>
-                          Book ID:
-                          <input
-                            type="number"
-                            placeholder={
-                              null === data ? "BookID" : data.book_id
-                            }
-                            value={query}
-                            onChange={e => {
-                              setQuery(e.target.value);
-                            }}
-                          />
-                        </label>
-                        <input type="submit" value="Search" />
-                      </form>
-                    </div>
-                    <div>
-                      <Typography variant="h5" sx={{ mt: 4 }}>
-                        Book Edit Form{null === data ? "" : " - " + data.title}
-                        <br />
-                        <br />
-                      </Typography>
-
-                      <label>
-                        Book Title:
-                        <input
-                          type="text"
-                          placeholder={
-                            null === data ? "Book Title" : data.title
-                          }
-                          value={data.title}
-                          onChange={e => {
-                            setData({ ...data, title: e.target.value });
-                          }}
-                        />
-                      </label>
-                      <br />
-                      <br />
-                      <form onSubmit={submitEditBook}>
-                        <label>
-                          Published Year:
-                          <input
-                            type="text"
-                            value={data.publishyear}
-                            onChange={e => {
-                              setData({
-                                ...data,
-                                publishyear: e.target.value
-                              });
-                            }}
-                          />
-                        </label>
-                        <br />
-                        <br />
-                        <label>
-                          ISBN:
-                          <input
-                            type="text"
-                            value={data.isbn}
-                            onChange={e => {
-                              setData({ ...data, isbn: e.target.value });
-                            }}
-                          />
-                        </label>
-                        <br />
-                        <br />
-                        <label>
-                          Publication Year:
-                          <input
-                            type="text"
-                            value={data.publication_year}
-                            onChange={e => {
-                              setData({
-                                ...data,
-                                publication_year: e.target.value
-                              });
-                            }}
-                          />
-                        </label>
-                        <br />
-                        <br />
-                        <label>
-                          Genre:
-                          <input
-                            type="text"
-                            value={data.genre}
-                            onChange={e => {
-                              setData({ ...data, genre: e.target.value });
-                            }}
-                          />
-                        </label>
-                        <br />
-                        <br />
-                        <label>
-                          Image:
-                          <input
-                            type="text"
-                            value={data.img}
-                            onChange={e => {
-                              setData({ ...data, img: e.target.value });
-                            }}
-                          />
-                        </label>
-                        <br />
-                        <br />
-                        <label>
-                          Description: <br />
-                          <textarea
-                            rows={6}
-                            cols={100}
-                            resize={"none"}
-                            type="text"
-                            value={data.description}
-                            onChange={e => {
-                              setData({
-                                ...data,
-                                description: e.target.value
-                              });
-                            }}
-                          />
-                        </label>
-                        <br />
-                        <br />
-                        <input type="submit" value="Edit Books" />
-                      </form>
-                    </div>
-                  </div>
-                  <div />
-                </div>
+                <Box>
+                  <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
+                    Type in information of the book you want to edit!
+                  </Typography>
+                  <TextField
+                    label="Book ID"
+                    type="text"
+                    placeholder={data === null ? "Book ID" : data.id}
+                    value={query}
+                    onChange={e => {
+                      const val = e.target.value;
+                      if (
+                        val === "" ||
+                        (Number.isInteger(Number(val)) && Number(val) > 0)
+                      ) {
+                        setQuery(val);
+                      }
+                    }}
+                  />
+                  <Typography variant="h5" sx={{ mt: 4 }}>
+                    Book Edit Form<br />
+                  </Typography>
+                  <form onSubmit={submitPostBook}>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      <TextField
+                        label="Book Title"
+                        type="text"
+                        placeholder={null === data ? "Book Title" : data.title}
+                        value={data.title}
+                        onChange={e => {
+                          setData({ ...data, title: e.target.value });
+                        }}
+                      />
+                      <TextField
+                        label="Author Name"
+                        type="text"
+                        placeholder={
+                          null === data ? "Author Name" : data.author_name
+                        }
+                        value={data.author_name}
+                        onChange={e => {
+                          setData({ ...data, author_name: e.target.value });
+                        }}
+                      />
+                      <TextField
+                        label="ISBN"
+                        type="number"
+                        value={data.isbn}
+                        onChange={e => {
+                          setData({ ...data, isbn: e.target.value });
+                        }}
+                      />
+                      <TextField
+                        label="Publication Year"
+                        type="text"
+                        value={data.publishyear}
+                        onChange={e => {
+                          setData({ ...data, publishyear: e.target.value });
+                        }}
+                      />
+                      <TextField
+                        label="Genre"
+                        type="text"
+                        value={data.genre}
+                        onChange={e => {
+                          setData({ ...data, genre: e.target.value });
+                        }}
+                      />
+                      <TextField
+                        label="Image"
+                        type="text"
+                        value={data.img}
+                        onChange={e => {
+                          setData({ ...data, img: e.target.value });
+                        }}
+                      />
+                      <TextField
+                        label="Description"
+                        multiline
+                        rows={6}
+                        value={data.description}
+                        onChange={e => {
+                          setData({ ...data, description: e.target.value });
+                        }}
+                      />
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        sx={{
+                          width: "80%",
+                          margin: "30px",
+                          padding: "16px",
+                          fontSize: "20px",
+                          marginBottom: "10px",
+                          backgroundColor: "#0000CD" // Medium Blue
+                        }}>
+                        Edit Book
+                      </Button>
+                    </Box>
+                  </form>
+                </Box>
               </Paper>
             </Grid>
             <Grid item xs={4} alignItems={"center"}>
@@ -244,20 +261,21 @@ const EditBook = props => {
               </Box>
             </Grid>
           </Grid>
-          <br /> <br /> <br />
+
           <Button
             variant="contained"
-            onClick={() => {
-              navigate("/");
-            }}>
-            Home
-          </Button>
-          <Button
-            variant="contained"
+            sx={{
+              width: "80%",
+              margin: "30px",
+              padding: "16px",
+              fontSize: "20px",
+              marginBottom: "10px",
+              backgroundColor: "#0000CD"
+            }} // Medium Blue
             onClick={() => {
               navigate("/employee/emphome");
             }}>
-            Emp Landing
+            Employee Home
           </Button>
           {/* Footer */}
         </Grid>

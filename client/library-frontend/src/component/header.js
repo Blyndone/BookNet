@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 const Header = props => {
   const { loggedIn } = props;
   const navigate = useNavigate();
-
+  const [query, setQuery] = React.useState(""); // [1
   const onButtonClick = () => {
     if (loggedIn) {
       localStorage.removeItem("user");
@@ -30,18 +30,32 @@ const Header = props => {
       {/* Header */}
       <AppBar position="static" style={{ backgroundColor: "B1DDF0" }}>
         <Toolbar>
-          <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h4"
+            component="div"
+            sx={{ flexGrow: 1, userSelect: "none" }}
+            onClick={() => {
+              const user = JSON.parse(localStorage.getItem("user"));
+              console.log("USER", user);
+              if (user.role === "employee") {
+                navigate("/employee/emphome");
+              } else if (user.role === "customer") {
+                navigate("/userhome");
+              } else {
+                navigate("/");
+              }
+            }}>
             Book.net
           </Typography>
           <form
             onSubmit={() => {
-              navigate("/booksearch", { state: { q: "harry" } });
+              navigate("/booksearch", { state: { q: query } });
             }}>
             <TextField
               label="Search"
               type=""
               onChange={e => {
-                console.log(e.target.value);
+                setQuery(e.target.value);
               }}
               InputProps={{
                 endAdornment: (

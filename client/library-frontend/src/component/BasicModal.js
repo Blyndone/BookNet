@@ -12,6 +12,7 @@ const style = {
   width: "30%",
   bgcolor: "background.paper",
   border: "2px solid #000",
+  borderRadius: "25px",
   boxShadow: 24,
   p: 4
 };
@@ -57,12 +58,18 @@ export default function BasicModal(props) {
           <Typography variant="body2" color="text.secondary">
             Publish Year: {bookdata.publishyear}, {bookdata.publication_year}
           </Typography>
-          <input
-            className={"inputButton"}
-            type="button"
-            onClick={() => onClose(false)}
-            value="Close"
-          />
+          <Box
+            sx={{
+              display: "flex", // Make the box a flex container
+              justifyContent: "center" // Center children horizontally
+            }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => onClose(false)}>
+              Close
+            </Button>
+          </Box>
         </Box>
       </Modal>
     </div>

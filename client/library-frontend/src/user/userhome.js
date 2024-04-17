@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import Header from ".././component/header";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import ButtonBase from "@mui/material/ButtonBase";
@@ -25,6 +25,25 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect } from "react";
 
 const UserHome = props => {
+  const [userid, setUserId] = useState(props.userid);
+
+  useEffect(() => {
+    if (
+      !loggedIn ||
+      loggedIn === "" ||
+      !email ||
+      email === "" ||
+      !userid ||
+      userid === ""
+    ) {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+
+      if (storedUser) {
+        setUserId(storedUser.id);
+      }
+    }
+  }, []);
+
   const location = useLocation();
   const [query, setQuery] = useState(
     location.state === null ? "" : location.state.q
@@ -60,15 +79,7 @@ const UserHome = props => {
 
   const [offset, setOffset] = useState(0);
 
-  const submitQuery = e => {
-    e.preventDefault();
-    setPage(0);
-    RetrieveBooks();
-  };
-
   const RetrieveBooks = async e => {
-    const userid = 4;
-
     if (e) {
       e.preventDefault();
     }
@@ -76,6 +87,7 @@ const UserHome = props => {
     // // if (!query) return;
 
     async function bookBuddy() {
+      console.log("USERID", userid);
       let querystring = "?userid=" + userid + "&offset=" + offset;
       const response = await fetch(
         `http://localhost:3006/books/bookbuddy/` + querystring
@@ -88,6 +100,7 @@ const UserHome = props => {
     }
 
     async function popGenre() {
+      console.log("USERID", userid);
       let querystring = "?userid=" + userid + "&offset=" + offset;
       const response = await fetch(
         `http://localhost:3006/books/popgenre/` + querystring
@@ -126,17 +139,26 @@ const UserHome = props => {
 
   useEffect(
     () => {
-      RetrieveBooks();
+      if (userid) {
+        RetrieveBooks();
+      }
     },
     [page]
   );
-
+  useEffect(
+    () => {
+      if (userid) {
+        RetrieveBooks();
+      }
+    },
+    [userid]
+  );
   return (
     <Grid container direction="column" spacing={2}>
       {" "}{/* Set container direction to column */}
       <Grid item>
         {" "}{/* Header takes full width of the column */}
-        <Header loggedIn={loggedIn} />
+        <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
       </Grid>
       <Grid container spacing={2} style={{ marginLeft: "auto" }}>
         {" "}{/* Nested container for three columns */}
@@ -145,10 +167,10 @@ const UserHome = props => {
           {/* Main Content */}
           <Container>
             <Typography variant="h2" textAlign={"center"} sx={{ mt: 4 }}>
-              USER HOME
+              USER HOME for {email}
             </Typography>
             <Typography variant="h5" textAlign={"center"} sx={{ mt: 2, mb: 4 }}>
-              Your Book Reccomendations!
+              Your Book Recomendations!
             </Typography>
             <div>
               <Paper
@@ -213,13 +235,25 @@ const UserHome = props => {
                   />}
             </Container>
 
-            <Button
-              variant="contained"
-              onClick={() => {
-                navigate("/");
-              }}>
-              Home
-            </Button>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  navigate("/");
+                }}
+                sx={{
+                  padding: "16px", // Increase padding to make the button larger
+                  fontSize: "20px", // Increase font size
+                  backgroundColor: "#3f51b5", // Change the background color
+                  color: "#fff", // Change the color of the text
+                  "&:hover": {
+                    backgroundColor: "#303f9f" // Change the background color on hover
+                  }
+                }}>
+                Home
+              </Button>
+            </Box>
           </Container>
 
           {/* Footer */}
@@ -362,6 +396,7 @@ const SearchBar = ({ setSearchQuery }) =>
     <TextField
       id="search-bar"
       className="text"
+      UserHome
       onInput={e => {
         setSearchQuery(e.target.value);
       }}

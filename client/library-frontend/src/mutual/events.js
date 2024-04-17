@@ -11,7 +11,7 @@ const Events = props => {
   return (
     <div>
       {/* Header */}
-      <Header loggedIn={loggedIn} />
+      <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
 
       {/* Main Content */}
       <Container>
