@@ -36,7 +36,7 @@ const StyledTableRow = styled(TableRow)(({ theme, instock }) => ({
 
 const Profile = (props) => {
   useEffect(() => {
-    document.title = `Book.net: Profile PAge`;
+    document.title = `Book.net: Profile Page`;
   }, []);
 
   console.log('LOCAL', localStorage.getItem('user'));
@@ -174,8 +174,8 @@ const Profile = (props) => {
                         .split(/(?=[A-Z])/)
                         .join(" "));
                     if (key === "balance") {
-                      return <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-                          <Paper key={index} elevation={3} style={{ padding: "20px", backgroundColor: "#ADD8E6" }}>
+                      return <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", mt: 3 }}>
+                          <Paper key={index} elevation={3} style={{ padding: "20px", backgroundColor: userdata.balance > 0 ? "#FFCCCC" : "#ADD8E6" }}>
                             <Typography variant="h4" align="center">
                               <b>{`${formattedKey}:`}</b> ${userdata[key]}
                             </Typography>
