@@ -431,14 +431,15 @@ app.get('/checkedout/:id', async (req, res) => {
   try {
     const { id } = req.params;
     console.log(id);
-   const query = `
+    const query = `
   SELECT * 
   FROM testusers U 
   JOIN teststock S ON U.id = S.user_id 
   JOIN testbooks B ON B.book_id = S.book_id
   JOIN testauthors A ON B.author = A.id
   WHERE S.user_id = $1
-`;    const users = await pool.query(query, [id]);
+`;
+    const users = await pool.query(query, [id]);
     res.json(users.rows);
     console.log(users.rows);
   } catch (err) {
@@ -891,37 +892,90 @@ app.post('/book', async (req, res) => {
   }
 });
 
-app.delete('/book_delete', async (req, res) => {
-  const { isbn } = req.body;
-  try {
-    const queryResult =
-      // Search for the isbn.
-      await pool.query('SELECT isbn FROM books WHERE isbn = $1', [isbn]);
+app.delete('/deletebook', async (req, res) => {
+  console.log('Deleting book...');
+  const { stockid } = req.body;
+  console.log(`Stock ID: ${stockid}`);
+  
+  const query = `
+    SELECT *,
+    (
+        SELECT COUNT(ID)
+        FROM TESTSTOCK
+        WHERE S.BOOK_ID = BOOK_ID
+    ) AS STOCKCOUNT
+    FROM TESTSTOCK S
+    WHERE S.ID = $1
+  `;
+  console.log(`Executing query: ${query}`);
+  const stock = await pool.query(query, [stockid]);
+  console.log('Query result:', JSON.stringify(stock.rows, null, 2));
 
-    // If the isbn is in the DB, delete book.
-    if (queryResult.rows.length > 0) {
-      const delete_query = await pool.query(
-        'DELETE FROM books WHERE isbn = $1',
-        [isbn],
-      );
-
-      // 200 Message
-      return res.status(200).json({
-        message: 'THe book has been deleted.',
-      });
-    } else {
-      // Send response indicating the book not in DB.
-      return res.status(404).json({
-        message: 'This book is not in the database.',
-      });
-    }
-  } catch (error) {
-    console.error('Error deleting book:', error);
-    return res.status(500).json({
-      message: 'An error occurred while deleting the book.',
+  if (!stock.rows[0] || stock.rows[0].stockcount == 0) {
+    console.log('Stock:', stock);
+    return res.status(404).json({
+      message: 'This book is not in the database.',
     });
   }
+
+  const delete_query3 = `
+    DELETE FROM testreservations 
+    WHERE book_id = $1
+  `;
+  console.log(`Executing query: ${delete_query3}`);
+  const result1 = await pool.query(delete_query3, [stock.rows[0].book_id]);
+  console.log('Query result:', JSON.stringify(result1.rows, null, 2));
+
+  const delete_query = `
+    DELETE FROM teststock 
+    WHERE id = $1
+  `;
+  console.log(`Executing query: ${delete_query}`);
+  const result2 = await pool.query(delete_query, [stockid]);
+  console.log('Query result:', JSON.stringify(result2.rows, null, 2));
+
+  if (stock.rows[0].stockcount == 1) {
+    console.log('Stock:', stock.rows[0].stockcount);
+
+    const delete_query2 = `
+      DELETE FROM testbooks 
+      WHERE book_id = $1
+    `;
+    console.log(`Executing query: ${delete_query2}`);
+    const result3 = await pool.query(delete_query2, [stock.rows[0].book_id]);
+    console.log('Query result:', JSON.stringify(result3.rows, null, 2));
+    
+    const authorcountquery = `
+      SELECT count(id) as count, id 
+      FROM testauthors 
+      WHERE id = (Select author from testbooks where book_id = $1) 
+      GROUP BY id
+    `;
+    console.log(`Executing query: ${authorcountquery}`);
+    const authorcount = await pool.query(authorcountquery, [
+      stock.rows[0].book_id,
+    ]);
+    console.log('Query result:', JSON.stringify(authorcount.rows, null, 2));
+    
+    if (authorcount.rows.length > 0  && authorcount.rows[0].count == 1) {
+      const delete_query5 = `
+        DELETE FROM testauthors 
+        WHERE id = $1
+      `;
+      console.log(`Executing: ${delete_query5}`);
+      const result4 = await pool.query(delete_query5, [authorcount.rows[0].id]);
+      console.log('Query result:', JSON.stringify(result4.rows, null, 2));
+    }
+  }
+
+  console.log('Book deleted successfully.');
+  return res.status(200).json({
+    message: 'The book has been deleted.',
+  });
 });
+
+
+
 
 app.post('/event_insert', async (req, res) => {
   const { event_name, event_date, book_id, author_id } = req.body;

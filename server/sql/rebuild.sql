@@ -1,8 +1,8 @@
+DROP TABLE IF EXISTS teststock;
+DROP TABLE IF EXISTS testreservations;
+DROP TABLE IF EXISTS testusers;
 DROP TABLE IF EXISTS testbooks;
 DROP TABLE IF EXISTS testauthors;
-DROP TABLE IF EXISTS teststock;
-DROP TABLE IF EXISTS testusers;
-DROP TABLE IF EXISTS testreservations;
 
 CREATE TABLE testauthors (
     id SERIAL PRIMARY KEY NOT NULL,

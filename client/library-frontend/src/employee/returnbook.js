@@ -202,7 +202,7 @@ const ReturnBook = (props) => {
                     </Box>
                   </form>
                   <Typography variant="h5" sx={{ mt: 4 }}>
-                    Book Data{null === data ? '' : ' - ' + data.title}
+                   Book Data{data == null || Object.keys(data).length === 0 ? '' : ' - ' + data.title}
                     <br />
                     InStock:{' '}
                     {data.instock === true
@@ -317,7 +317,7 @@ const ReturnBook = (props) => {
               navigate('/employee/emphome');
             }}
           >
-            Emp Landing
+            Employee Home Page
           </Button>
           {/* Footer */}
         </Grid>

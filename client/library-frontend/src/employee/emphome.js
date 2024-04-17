@@ -166,13 +166,15 @@ const EmpHome = (props) => {
                 >
                   <Button
                     variant="contained"
-                    sx={{
-                      width: '100%',
-                      padding: '16px',
-                      fontSize: '20px',
-                      marginBottom: '10px',
-                      backgroundColor: '#00008B', // Medium Blue
-                    }}
+                    sx={
+                      {
+                        width: '100%',
+                        padding: '16px',
+                        fontSize: '20px',
+                        marginBottom: '10px',
+                        backgroundColor: '#00008B',
+                      } // Medium Blue
+                    }
                     onClick={() => {
                       navigate('/employee/checkoutbook');
                     }}
@@ -181,13 +183,15 @@ const EmpHome = (props) => {
                   </Button>
                   <Button
                     variant="contained"
-                    sx={{
-                      width: '100%',
-                      padding: '16px',
-                      fontSize: '20px',
-                      marginBottom: '10px',
-                      backgroundColor: '#00008B', // Medium Blue
-                    }}
+                    sx={
+                      {
+                        width: '100%',
+                        padding: '16px',
+                        fontSize: '20px',
+                        marginBottom: '10px',
+                        backgroundColor: '#00008B',
+                      } // Medium Blue
+                    }
                     onClick={() => {
                       navigate('/employee/returnbook');
                     }}
@@ -197,13 +201,15 @@ const EmpHome = (props) => {
                   <Box sx={{ height: '20px' }} /> {/* Space */}
                   <Button
                     variant="contained"
-                    sx={{
-                      width: '100%',
-                      padding: '16px',
-                      fontSize: '20px',
-                      marginBottom: '10px',
-                      backgroundColor: '#00008B', // Medium Blue
-                    }}
+                    sx={
+                      {
+                        width: '100%',
+                        padding: '16px',
+                        fontSize: '20px',
+                        marginBottom: '10px',
+                        backgroundColor: '#00008B',
+                      } // Medium Blue
+                    }
                     onClick={() => {
                       navigate('/addbooks');
                     }}
@@ -212,29 +218,50 @@ const EmpHome = (props) => {
                   </Button>
                   <Button
                     variant="contained"
-                    sx={{
-                      width: '100%',
-                      padding: '16px',
-                      fontSize: '20px',
-                      marginBottom: '10px',
-                      backgroundColor: '#00008B', // Medium Blue
-                    }}
+                    sx={
+                      {
+                        width: '100%',
+                        padding: '16px',
+                        fontSize: '20px',
+                        marginBottom: '10px',
+                        backgroundColor: '#00008B',
+                      } // Medium Blue
+                    }
                     onClick={() => {
                       navigate('/editbook');
                     }}
                   >
                     Edit Book
                   </Button>
+                  <Button
+                    variant="contained"
+                    sx={
+                      {
+                        width: '100%',
+                        padding: '16px',
+                        fontSize: '20px',
+                        marginBottom: '10px',
+                        backgroundColor: '#00008B',
+                      } // Medium Blue
+                    }
+                    onClick={() => {
+                      navigate('/employee/deletebook');
+                    }}
+                  >
+                    Delete Book
+                  </Button>
                   <Box sx={{ height: '20px' }} /> {/* Space */}
                   <Button
                     variant="contained"
-                    sx={{
-                      width: '100%',
-                      padding: '16px',
-                      fontSize: '20px',
-                      marginBottom: '10px',
-                      backgroundColor: '#00008B', // Medium Blue
-                    }}
+                    sx={
+                      {
+                        width: '100%',
+                        padding: '16px',
+                        fontSize: '20px',
+                        marginBottom: '10px',
+                        backgroundColor: '#00008B',
+                      } // Medium Blue
+                    }
                     onClick={() => {
                       navigate('/employee/stocksearch');
                     }}
