@@ -898,13 +898,13 @@ app.delete('/deletebook', async (req, res) => {
   console.log(`Stock ID: ${stockid}`);
   
   const query = `
-    SELECT *,
+    SELECT * , B.author as author_id,
     (
         SELECT COUNT(ID)
         FROM TESTSTOCK
         WHERE S.BOOK_ID = BOOK_ID
     ) AS STOCKCOUNT
-    FROM TESTSTOCK S
+    FROM TESTSTOCK S JOIN TESTBOOKS B ON S.BOOK_ID = B.BOOK_ID
     WHERE S.ID = $1
   `;
   console.log(`Executing query: ${query}`);
@@ -946,24 +946,21 @@ app.delete('/deletebook', async (req, res) => {
     console.log('Query result:', JSON.stringify(result3.rows, null, 2));
     
     const authorcountquery = `
-      SELECT count(id) as count, id 
-      FROM testauthors 
-      WHERE id = (Select author from testbooks where book_id = $1) 
-      GROUP BY id
+           SELECT count(book_id) as count
+      FROM testbooks 
+      WHERE author = $1
     `;
     console.log(`Executing query: ${authorcountquery}`);
-    const authorcount = await pool.query(authorcountquery, [
-      stock.rows[0].book_id,
-    ]);
+    const authorcount = await pool.query(authorcountquery, [stock.rows[0].author_id]);
     console.log('Query result:', JSON.stringify(authorcount.rows, null, 2));
     
-    if (authorcount.rows.length > 0  && authorcount.rows[0].count == 1) {
+    if (authorcount.rows.length > 0  && authorcount.rows[0].count == 0) {
       const delete_query5 = `
         DELETE FROM testauthors 
         WHERE id = $1
       `;
-      console.log(`Executing: ${delete_query5}`);
-      const result4 = await pool.query(delete_query5, [authorcount.rows[0].id]);
+      console.log(`Executing: ${delete_query5}`, stock.rows);
+      const result4 = await pool.query(delete_query5, [stock.rows[0].author_id]);
       console.log('Query result:', JSON.stringify(result4.rows, null, 2));
     }
   }

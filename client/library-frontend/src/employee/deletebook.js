@@ -191,7 +191,7 @@ const DeleteBook = (props) => {
                     </Box>
                   </form>
                   <Typography variant="h5" sx={{ mt: 4 }}>
-                    Book Data{null === data ? '' : ' - ' + data.title}
+                 Book Data{data == null || Object.keys(data).length === 0 ? '' : ' - ' + data.title}
                     <br />
                     InStock:{' '}
                     {data.instock === true
@@ -238,7 +238,7 @@ const DeleteBook = (props) => {
                   xs={12}
                   style={{ display: 'flex', justifyContent: 'flex-end' }}
                 >
-                  {Object.keys(data).length !== 0 && !data.instock && (
+                  {Object.keys(data).length !== 0 && (
                     <Button
                       variant="contained"
                       sx={{
