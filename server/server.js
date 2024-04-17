@@ -298,12 +298,12 @@ app.get('/books/stocksearch/', async (req, res) => {
 
 const querystring = `
 SELECT
-	B.book_id, B.title, A.author_name, B.genre, S.id, S.instock, s.book_condition,U.id, U.firstname, U.lastname, s.due_date
+	B.book_id, B.title, A.author_name, B.genre, S.id , S.instock, s.book_condition,  U.firstname, U.lastname, s.due_date
 FROM
 	TESTBOOKS B
 	JOIN TESTAUTHORS A ON B.AUTHOR = A.ID
 	JOIN TESTSTOCK S ON S.BOOK_ID = B.BOOK_ID
-	Left JOIN TESTUSERS U ON s.USER_ID = U.ID
+	Left JOIN TESTUSERS U ON S.USER_ID = U.ID
 WHERE
 	B.TITLE ~* $1 OR B.GENRE ~* $1 OR A.AUTHOR_NAME ~* $1
 ORDER BY
@@ -731,31 +731,35 @@ app.post("/login", async (req, res) => {
         password
     } = req.body;
 
+    console.log(`Attempting to log in user with email: ${email}`); // Log the email of the user attempting to log in
+    console.log('password:', password)
     try {
         const getUserQuery = 'SELECT * FROM testusers WHERE email = $1';
         const userResult = await pool.query(getUserQuery, [email]);
         const user = userResult.rows[0];
 
         if (!user) {
+            console.log(`User with email: ${email} not found`); // Log when a user is not found
             return res.status(401).json({
                 message: "User not found"
             });
         }
-
+       
         const passwordMatch = await bcrypt.compare(password, user.password);
-
+        console.log('passwordMatch:', passwordMatch)
         if (!passwordMatch) {
+            console.log(`Invalid password for user with email: ${email}`); // Log when an invalid password is entered
             return res.status(401).json({
                 message: "Invalid password"
             });
         }
 
-  let loginData = {
-    id: user.id,
-    email: user.email,
-    role: user.role,
-    signInTime: Date.now(),
-};
+        let loginData = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            signInTime: Date.now(),
+        };
         const token = jwt.sign(loginData, jwtSecretKey);
         res.status(200).json({
             message: "success",
@@ -764,6 +768,7 @@ app.post("/login", async (req, res) => {
             id:user.id,
             loggedIn: true
         });
+        console.log(`User with email: ${email} successfully logged in`); // Log when a user successfully logs in
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).json({
@@ -771,7 +776,6 @@ app.post("/login", async (req, res) => {
         });
     }
 });
-
 // The verify endpoint that checks if a given JWT token is valid
 app.post('/verify', (req, res) => {
     const tokenHeaderKey = "jwt-token";

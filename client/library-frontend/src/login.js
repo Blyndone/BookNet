@@ -104,6 +104,7 @@ const Login = (props) => {
       })
       .then(r => r.json())
       .then(r => {
+        console.log("RRR",r)
           if ('success' === r.message) {
               localStorage.setItem("user", JSON.stringify({email: r.email, id:r.id,  role: r.role, token: r.token}))
               console.log(r)

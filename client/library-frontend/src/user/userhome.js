@@ -167,7 +167,7 @@ const UserHome = props => {
           {/* Main Content */}
           <Container>
             <Typography variant="h2" textAlign={"center"} sx={{ mt: 4 }}>
-              USER HOME for {userid}
+              USER HOME for {email}
             </Typography>
             <Typography variant="h5" textAlign={"center"} sx={{ mt: 2, mb: 4 }}>
               Your Book Recomendations!
