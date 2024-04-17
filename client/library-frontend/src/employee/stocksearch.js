@@ -37,6 +37,10 @@ const StyledTableRow = styled(TableRow)(({ theme, instock }) => ({
 }));
 
 const StockSearch = (props) => {
+  useEffect(() => {
+    document.title = `Book.net: Book Stock Search`;
+  }, []);
+
   const { loggedIn, email } = props;
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -88,14 +92,18 @@ const StockSearch = (props) => {
     });
   };
 
-  return <Grid container direction="column" spacing={2}>
-      {" "}{/* Set container direction to column */}
+  return (
+    <Grid container direction="column" spacing={2}>
+      {' '}
+      {/* Set container direction to column */}
       <Grid item>
-        {" "}{/* Header takes full width of the column */}
+        {' '}
+        {/* Header takes full width of the column */}
         <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
       </Grid>
-      <Grid container spacing={2} style={{ marginLeft: "auto" }}>
-        {" "}{/* Nested container for three columns */}
+      <Grid container spacing={2} style={{ marginLeft: 'auto' }}>
+        {' '}
+        {/* Nested container for three columns */}
         <SideBar />
         <Grid item xs={6} columns={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid container spacing={2}>
@@ -106,165 +114,217 @@ const StockSearch = (props) => {
                   Stock Search
                 </Typography>
               </Grid>
-              <Paper sx={{ padding: 5, bgcolor: "azure", margin: 5, width: "100%" }}>
+              <Paper
+                sx={{ padding: 5, bgcolor: 'azure', margin: 5, width: '100%' }}
+              >
                 <Box>
                   <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-                    Type a book name, author, or genre to search what is in stock!
+                    Type a book name, author, or genre to search what is in
+                    stock!
                   </Typography>
-                  <TextField label="Book Name" type="text" placeholder="Search a book Title" value={query} onChange={e => {
+                  <TextField
+                    label="Book Name"
+                    type="text"
+                    placeholder="Search a book Title"
+                    value={query}
+                    onChange={(e) => {
                       const val = e.target.value;
                       setQuery(val);
-                    }} />
+                    }}
+                  />
 
-                  {Object.keys(data).length != 0 ? <TableContainer component={Paper}>
-                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                          <IconButton disabled={offset === 0} onClick={() => {
-                              setOffset(prevOffset =>
-                                Math.max(0, prevOffset - 10)
-                              );
-                            }} style={{ margin: "0 20px" }}>
-                            <NavigateBeforeIcon fontSize="large" />
-                          </IconButton>
-                          <div style={{ fontSize: "24px", margin: "0 20px", userSelect: "none" }}>
-                            More Results
-                          </div>
-                          <IconButton disabled={data.length < 10} onClick={() => {
-                              setOffset(prevOffset => prevOffset + 10);
-                            }} style={{ margin: "0 20px" }}>
-                            <NavigateNextIcon fontSize="large" />
-                          </IconButton>
+                  {Object.keys(data).length != 0 ? (
+                    <TableContainer component={Paper}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <IconButton
+                          disabled={offset === 0}
+                          onClick={() => {
+                            setOffset((prevOffset) =>
+                              Math.max(0, prevOffset - 10),
+                            );
+                          }}
+                          style={{ margin: '0 20px' }}
+                        >
+                          <NavigateBeforeIcon fontSize="large" />
+                        </IconButton>
+                        <div
+                          style={{
+                            fontSize: '24px',
+                            margin: '0 20px',
+                            userSelect: 'none',
+                          }}
+                        >
+                          More Results
                         </div>
-                        <Typography variant="h5" sx={{ mt: 4 }}>
-                          Global Stock Search
-                          <br />
-                        </Typography>
-                        <StyledTable aria-label="simple table">
-                          <TableHead>
-                            <TableRow>
-                              <StyledTableCell>Book ID</StyledTableCell>
-                              <StyledTableCell>Stock ID</StyledTableCell>
-                              <StyledTableCell>Title</StyledTableCell>
-                              <StyledTableCell>Author Name</StyledTableCell>
-                              <StyledTableCell>Genre</StyledTableCell>
-                              <StyledTableCell>In Stock</StyledTableCell>
-                              <StyledTableCell>
-                                Book Condition
-                              </StyledTableCell>
-                              <StyledTableCell>Name</StyledTableCell>
-                              <StyledTableCell>Due Date</StyledTableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {data.map(book =>
-                              <StyledTableRow
-                                key={book.bookId}
-                                instock={book.instock}>
-                                <TableCell
-                                  style={{
-                                    maxWidth: "100px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }}>
-                                  {book.book_id}
-                                </TableCell>
-                                <TableCell
-                                  style={{
-                                    maxWidth: "100px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }}>
-                                  {book.id}
-                                </TableCell>
-                                <TableCell
-                                  style={{
-                                    maxWidth: "200px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }}>
-                                  {book.title}
-                                </TableCell>
-                                <TableCell
-                                  style={{
-                                    maxWidth: "150px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }}>
-                                  {book.author_name}
-                                </TableCell>
-                                <TableCell
-                                  style={{
-                                    maxWidth: "200px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }}>
-                                  {book.genre}
-                                </TableCell>
-                                <TableCell
-                                  style={{
-                                    maxWidth: "200px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }}>
-                                  {book.instock ? "Yes" : "No"}
-                                </TableCell>
-                                <TableCell
-                                  style={{
-                                    maxWidth: "100px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }}>
-                                  {book.book_condition}
-                                </TableCell>
-                                <TableCell
-                                  style={{
-                                    maxWidth: "200px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }}>
-                                  {book.firstname && book.lastname
-                                    ? `${book.firstname[0]}. ${book
-                                        .lastname[0]}.`
-                                    : "--"}
-                                </TableCell>
-                                <TableCell
-                                  style={{
-                                    maxWidth: "200px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                  }}>
-                                  {book.due_date
-                                    ? new Date(
-                                        book.due_date
-                                      ).toLocaleDateString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric"
-                                      })
-                                    : "--"}
-                                </TableCell>
-                              </StyledTableRow>
-                            )}
-                          </TableBody>
-                        </StyledTable>
-                      </TableContainer> : ""}
+                        <IconButton
+                          disabled={data.length < 10}
+                          onClick={() => {
+                            setOffset((prevOffset) => prevOffset + 10);
+                          }}
+                          style={{ margin: '0 20px' }}
+                        >
+                          <NavigateNextIcon fontSize="large" />
+                        </IconButton>
+                      </div>
+                      <Typography variant="h5" sx={{ mt: 4 }}>
+                        Global Stock Search
+                        <br />
+                      </Typography>
+                      <StyledTable aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            <StyledTableCell>Book ID</StyledTableCell>
+                            <StyledTableCell>Stock ID</StyledTableCell>
+                            <StyledTableCell>Title</StyledTableCell>
+                            <StyledTableCell>Author Name</StyledTableCell>
+                            <StyledTableCell>Genre</StyledTableCell>
+                            <StyledTableCell>In Stock</StyledTableCell>
+                            <StyledTableCell>Book Condition</StyledTableCell>
+                            <StyledTableCell>Name</StyledTableCell>
+                            <StyledTableCell>Due Date</StyledTableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {data.map((book) => (
+                            <StyledTableRow
+                              key={book.bookId}
+                              instock={book.instock}
+                            >
+                              <TableCell
+                                style={{
+                                  maxWidth: '100px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {book.book_id}
+                              </TableCell>
+                              <TableCell
+                                style={{
+                                  maxWidth: '100px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {book.id}
+                              </TableCell>
+                              <TableCell
+                                style={{
+                                  maxWidth: '200px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {book.title}
+                              </TableCell>
+                              <TableCell
+                                style={{
+                                  maxWidth: '150px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {book.author_name}
+                              </TableCell>
+                              <TableCell
+                                style={{
+                                  maxWidth: '200px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {book.genre}
+                              </TableCell>
+                              <TableCell
+                                style={{
+                                  maxWidth: '200px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {book.instock ? 'Yes' : 'No'}
+                              </TableCell>
+                              <TableCell
+                                style={{
+                                  maxWidth: '100px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {book.book_condition}
+                              </TableCell>
+                              <TableCell
+                                style={{
+                                  maxWidth: '200px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {book.firstname && book.lastname
+                                  ? `${book.firstname[0]}. ${book.lastname[0]}.`
+                                  : '--'}
+                              </TableCell>
+                              <TableCell
+                                style={{
+                                  maxWidth: '200px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {book.due_date
+                                  ? new Date(book.due_date).toLocaleDateString(
+                                      'en-US',
+                                      {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      },
+                                    )
+                                  : '--'}
+                              </TableCell>
+                            </StyledTableRow>
+                          ))}
+                        </TableBody>
+                      </StyledTable>
+                    </TableContainer>
+                  ) : (
+                    ''
+                  )}
                 </Box>
               </Paper>
             </Grid>
           </Grid>
 
-          <Button variant="contained" sx={{ width: "80%", margin: "30px", padding: "16px", fontSize: "20px", marginBottom: "10px", backgroundColor: "#0000CD" }} onClick={() => {
+          <Button
+            variant="contained"
+            sx={{
+              width: '80%',
+              margin: '30px',
+              padding: '16px',
+              fontSize: '20px',
+              marginBottom: '10px',
+              backgroundColor: '#00008B',
+            }}
+            onClick={() => {
               // Medium Blue
-              navigate("/employee/emphome");
-            }}>
+              navigate('/employee/emphome');
+            }}
+          >
             Employee Home
           </Button>
           {/* Footer */}
@@ -272,7 +332,8 @@ const StockSearch = (props) => {
         <SideBar />
         <Footer />
       </Grid>
-    </Grid>;
+    </Grid>
+  );
 };
 
 const Img = styled('img')({

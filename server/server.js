@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 var cors = require('cors');
 const app = express();
 const pool = require('./db');
+const e = require('express');
 
 app.use(cors());
 app.use(express.json());
@@ -423,6 +424,39 @@ app.get('/stockuser/:id', async (req, res) => {
     console.error(err);
   }
 });
+
+app.patch('/user/payment/', async (req, res) => {
+  const { amount, id } = req.body;
+  console.log('user/payment:', amount, id);
+
+  try {
+    const query = 'SELECT * FROM testusers WHERE id = $1';
+
+    const user = await pool.query(query, [id]);
+    console.log(user.rows);
+    if (user.rows.length == 0) {
+      res.status(500).json({ message: 'User Not Found' });
+      return;
+    }
+
+    const newBalance = Math.max(0, user.rows[0].balance - amount);
+
+const updated = 'UPDATE testusers SET balance = $1 WHERE id = $2 RETURNING balance, id';
+    const updateduser = await pool.query(updated, [newBalance, id]);
+
+    res.status(200).json({
+      user: updateduser.rows,
+      message: 'User updated',
+    });
+
+
+    console.log(updateduser.rows[0]);
+  } catch (err) {
+    // If any errors occur during the execution of the try block, catch them and log them to the console
+    console.error(err);
+  }
+});
+
 //Update Books API endpoint
 //
 //Patch Body Format:

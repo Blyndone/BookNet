@@ -25,6 +25,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect } from "react";
 
 const BookSearch = props => {
+
+  useEffect(() => {
+        document.title = `Book.net: Book Search Page`;
+      }, []);
+
   const location = useLocation();
   const [query, setQuery] = useState(
     location.state === null ? "" : location.state.q

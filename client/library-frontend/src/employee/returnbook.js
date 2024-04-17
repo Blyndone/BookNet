@@ -16,6 +16,10 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 
 const ReturnBook = (props) => {
+  useEffect(() => {
+    document.title = `Book.net: Return Books`;
+  }, []);
+
   const { loggedIn, email } = props;
   const navigate = useNavigate();
   const [data, setData] = useState({
@@ -158,7 +162,10 @@ const ReturnBook = (props) => {
               <Paper
                 sx={{
                   padding: 5,
-                  bgcolor: data.instock || Object.keys(data).length == 0 ? 'azure' :'#00cccc',
+                  bgcolor:
+                    data.instock || Object.keys(data).length == 0
+                      ? 'azure'
+                      : '#00cccc',
                   width: '100%',
                   height: '90%',
                 }}
@@ -250,7 +257,7 @@ const ReturnBook = (props) => {
                         padding: '16px',
                         fontSize: '20px',
                         marginBottom: '10px',
-                        backgroundColor: '#0000CD', // Medium Blue
+                        backgroundColor: '#00008B', // Medium Blue
                       }}
                       onClick={() => {
                         ReturnBook();
@@ -288,7 +295,7 @@ const ReturnBook = (props) => {
               padding: '16px',
               fontSize: '20px',
               marginBottom: '10px',
-              backgroundColor: '#0000CD', // Medium Blue
+              backgroundColor: '#00008B', // Medium Blue
             }}
             onClick={() => {
               navigate('/employee/checkoutbook');
@@ -304,7 +311,7 @@ const ReturnBook = (props) => {
               padding: '16px',
               fontSize: '20px',
               marginBottom: '10px',
-              backgroundColor: '#0000CD', // Medium Blue
+              backgroundColor: '#00008B', // Medium Blue
             }}
             onClick={() => {
               navigate('/employee/emphome');
