@@ -243,9 +243,9 @@ const EmpHome = props => {
                       backgroundColor: "#0000CD" // Medium Blue
                     }}
                     onClick={() => {
-                      navigate("/booksearch");
+                      navigate("/employee/stocksearch");
                     }}>
-                    Book Search
+                    Stock Search
                   </Button>
                 </Grid>
               </Grid>

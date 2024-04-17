@@ -14,8 +14,11 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import Header from "./component/header";
+import Footer from "./component/footer";
+import SideBar from "./component/sidebar";
 const Login = (props) => {
+  const { loggedIn } = props;
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [emailError, setEmailError] = useState("")
@@ -25,18 +28,7 @@ const Login = (props) => {
     const navigate = useNavigate();
     const defaultTheme = createTheme();
     
-    function Copyright(props) {
-        return (
-          <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-              Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-          </Typography>
-        );
-      }
+
       
 
     const handleSubmit = (event) => {
@@ -71,6 +63,7 @@ const Login = (props) => {
                 // Check if email has an account associated with it
                 checkAccountExists(accountExists => {
                     // If yes, log in 
+                    console.log(accountExists)
                     if (accountExists)
                         logIn()
                     else
@@ -117,12 +110,14 @@ const Login = (props) => {
               props.setLoggedIn(true)
               props.setEmail(email)
               props.setUserID(r.id)
+              props.setRole(r.role)
 
               console.log(r.role)
-              console.log(r.role === "employee")
+              console.log(r.role == "employee")
               console.log(r.id)
-              if (r.role === "employee") {
-                  navigate("/employee/emphome", props);
+              if (r.role == "employee") {
+                console.log("dddddemployee")
+                  navigate("/employee/emphome");
               } else {
                   navigate("/userhome");
               }
@@ -135,6 +130,17 @@ const Login = (props) => {
     console.log(role)
 
     return (
+      
+    <Grid container direction="column" spacing={2} >
+    {/* Set container direction to column */}
+    <Grid item>
+      {/* Header takes full width of the column */}
+      <Header loggedIn={loggedIn} setLoggedIn={props.setLoggedIn} />
+    </Grid>
+    <Grid container  spacing={2} style={{ marginLeft: "auto" }}>
+      {/* Nested container for three columns */}
+      <SideBar />
+      <Grid item xs={6}>
         <ThemeProvider theme={defaultTheme}>
           <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -205,9 +211,14 @@ const Login = (props) => {
                 </Grid>
               </Box>
             </Box>
-            <Copyright sx={{ mt: 8, mb: 4 }} />
+           
           </Container>
         </ThemeProvider>
+        </Grid>
+        <SideBar />
+        <Footer />
+      </Grid>
+    </Grid>
       );
 }
 

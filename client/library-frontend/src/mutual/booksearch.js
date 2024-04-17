@@ -62,41 +62,6 @@ const BookSearch = props => {
     RetrieveBooks();
   };
 
-  // const RetrieveBooks = async e => {
-  //   if (e) {
-  //     e.preventDefault();
-  //   }
-  //   // window.alert(query);
-  //   // // if (!query) return;
-
-  //   async function fetchData() {
-  //     // if (query.length == 0) {
-  //     //   return;
-  //     // }
-  //     // console.log("saveddata", saveddata);
-  //     var ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  //     var index = new URLSearchParams(ids.map(s => ["id", s]));
-  //     console.log("" + index);
-  //     const response = await fetch(`http://localhost:3006/books/` + index);
-  //     const res = await response.json();
-  //     // const results = data[0];
-  //     // setData(res);
-  //     return res;
-  //   }
-  //   if (saveddata.length != 0) {
-  //     console.log("saveddata skip", saveddata.length);
-  //     return saveddata;
-  //   }
-  //   fetchData()
-  //     .then(res => {
-  //       if (saveddata.length == 0) {
-  //         setSavedData(res);
-  //         setData(res);
-  //       }
-  //     })
-  //     .catch(err => console.log(err));
-  // };
-
   const RetrieveBooks = async e => {
     if (e) {
       e.preventDefault();

@@ -15,6 +15,7 @@ import UserHome from "./user/userhome";
 import BookSearch from "./mutual/booksearch";
 import "./App.css";
 import AddBooks from "./employee/addbooks";
+import StockSearch from "./employee/stocksearch";
 
 function App() {
   const [userid, setUserID] = useState("");
@@ -237,6 +238,17 @@ function App() {
                 path="addbooks"
                 element={
                   <AddBooks
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
+              />{" "}
+              <Route
+                path="stocksearch"
+                element={
+                  <StockSearch
                     loggedIn={loggedIn}
                     email={email}
                     userid={userid}

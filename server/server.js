@@ -43,6 +43,8 @@ app.get('/books/query/', async (req, res) => {
     // console.log(query.next().value.query)
 
 
+    
+
     try {
 
        const querystring = `
@@ -54,7 +56,7 @@ app.get('/books/query/', async (req, res) => {
         (testbooks B JOIN testauthors A ON B.author = A.id) 
         JOIN teststock S ON B.book_id = S.book_id   
     WHERE 
-        title ~* $1  
+        B.title ~* $1 OR A.author_name ~* $1 OR B.genre ~* $1
     GROUP BY 
         B.book_id, 
         A.id 
@@ -269,6 +271,43 @@ ON     B.book_id = S.book_id
 JOIN   testauthors A 
 ON     B.author = A.id
 WHERE  S.id = $1
+`;
+        const books = await pool.query(querystring, [query])
+        res.json(books.rows)
+        console.log(books.rows)
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+// ==========================
+
+app.get('/books/stocksearch/', async (req, res) => {
+    console.log("get:books/stocsearch")
+
+
+    let { query } = req.query
+    console.log("params", query)
+    if (query.length <= 0){
+        query = '.*'
+    }
+
+
+
+    try {
+
+const querystring = `
+SELECT
+	B.book_id, B.title, A.author_name, B.genre, S.id, S.instock, s.book_condition,U.id, U.firstname, U.lastname, s.due_date
+FROM
+	TESTBOOKS B
+	JOIN TESTAUTHORS A ON B.AUTHOR = A.ID
+	JOIN TESTSTOCK S ON S.BOOK_ID = B.BOOK_ID
+	Left JOIN TESTUSERS U ON s.USER_ID = U.ID
+WHERE
+	B.TITLE ~* $1 OR B.GENRE ~* $1 OR A.AUTHOR_NAME ~* $1
+ORDER BY
+    B.BOOK_ID, S.ID
 `;
         const books = await pool.query(querystring, [query])
         res.json(books.rows)
@@ -779,7 +818,7 @@ app.post('/check-account', async (req, res) => {
 
         res.status(200).json({
             status: user.length > 1 ? "User exists" : "User does not exist",
-            userExists: user.length > 1,
+            userExists: user.length >= 1,
         });
     } catch (error) {
         console.error("Error checking account:", error);
