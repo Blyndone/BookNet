@@ -135,27 +135,7 @@ const EmpHome = props => {
                       key.split(/(?=[A-Z])/).join(" ")
                     );
                     if (key === "balance") {
-                      return (
-                        <Box
-                          sx={{
-                            flexGrow: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "flex-end"
-                          }}>
-                          <Paper
-                            key={index}
-                            elevation={3}
-                            style={{
-                              padding: "20px",
-                              backgroundColor: "#ADD8E6"
-                            }}>
-                            <Typography variant="h4" align="center">
-                              <b>{`${formattedKey}:`}</b> ${userdata[key]}
-                            </Typography>
-                          </Paper>
-                        </Box>
-                      );
+                      return "";
                     } else {
                       return (
                         <Typography key={index} variant="h6">

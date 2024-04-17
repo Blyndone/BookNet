@@ -136,12 +136,11 @@ const CheckoutBook = props => {
                   bgcolor:
                     userdata.balance > 0
                       ? "#e08585"
-                      : !data.instock ? "#00cccc" : "azure",
+                      : data.instock || Object.keys(data).length == 0  ? "azure": "#00cccc",
                   width: "100%"
                 }}>
                 <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-                  Type in the ID of the book you want to Checkout, and the User
-                  ID!
+                  Type in the Stock ID and User ID to checkout a book!
                 </Typography>
                 <div />
                 <div>
@@ -157,9 +156,9 @@ const CheckoutBook = props => {
                         gap: "10px"
                       }}>
                       <TextField
-                        label="Book ID"
+                        label="Stock ID"
                         type="text"
-                        placeholder={data === null ? "Book ID" : data.id}
+                        placeholder={data === null ? "Stock ID" : data.id}
                         value={query}
                         onChange={e => {
                           const val = e.target.value;

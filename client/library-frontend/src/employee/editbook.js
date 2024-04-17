@@ -145,7 +145,7 @@ const EditBook = props => {
               <Paper sx={{ padding: 5, bgcolor: "azure" }}>
                 <Box>
                   <Typography variant="h5" sx={{ mt: 2, mb: 4 }}>
-                    Type in information of the book you want to edit!
+                    Enter the Book ID of the book you want to edit!
                   </Typography>
                   <TextField
                     label="Book ID"
