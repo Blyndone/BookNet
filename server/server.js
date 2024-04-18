@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 app.get('/books', async (req, res) => {
   console.log('get:books');
   try {
-    const books = await pool.query('SELECT * from testbooks ORDER BY book_id');
+    const books = await pool.query('SELECT * from books ORDER BY book_id');
     res.json(books.rows);
     // console.log(books.rows)
   } catch (err) {
@@ -46,8 +46,8 @@ app.get('/books/query/', async (req, res) => {
         B.*, 
         A.* 
     FROM 
-        (testbooks B JOIN testauthors A ON B.author = A.id) 
-        JOIN teststock S ON B.book_id = S.book_id   
+        (books B JOIN authors A ON B.author = A.id) 
+        JOIN stock S ON B.book_id = S.book_id   
     WHERE 
         B.title ~* $1 OR A.author_name ~* $1 OR B.genre ~* $1
     GROUP BY 
@@ -94,10 +94,10 @@ app.get('/books/bookbuddy/', async (req, res) => {
                 U2.ID,
                 U1.ID
             FROM
-                TESTUSERS U1
-                JOIN TESTRESERVATIONS R1 ON U1.ID = R1.USER_ID
-                JOIN TESTRESERVATIONS R2 ON R1.BOOK_ID = R2.BOOK_ID
-                JOIN TESTUSERS U2 ON R2.USER_ID = U2.ID
+                users U1
+                JOIN reservations R1 ON U1.ID = R1.USER_ID
+                JOIN reservations R2 ON R1.BOOK_ID = R2.BOOK_ID
+                JOIN users U2 ON R2.USER_ID = U2.ID
             WHERE
                 U1.ID = $1
                 AND U1.ID <> U2.ID
@@ -114,21 +114,21 @@ app.get('/books/bookbuddy/', async (req, res) => {
         COUNT(S.INSTOCK) AS STOCKCOUNT,
         A.AUTHOR_NAME
     FROM
-        TESTBOOKS B
-        JOIN TESTAUTHORS A ON B.AUTHOR = A.ID
-        JOIN TESTSTOCK S ON B.BOOK_ID = S.BOOK_ID
+        books B
+        JOIN authors A ON B.AUTHOR = A.ID
+        JOIN stock S ON B.BOOK_ID = S.BOOK_ID
     WHERE
         B.BOOK_ID IN (
             SELECT
                 BOOK_ID
             FROM
-                TESTRESERVATIONS R1
+                reservations R1
                 JOIN USER2 ON R1.USER_ID = USER2.U2ID
             EXCEPT
             SELECT
                 BOOK_ID
             FROM
-                TESTRESERVATIONS R2
+                reservations R2
                 JOIN USER2 ON R2.USER_ID = USER2.U1ID
         ) 
     GROUP BY
@@ -171,9 +171,9 @@ app.get('/books/popgenre/', async (req, res) => {
 			B.GENRE,
 			U.ID
 		FROM
-			TESTUSERS U
-			JOIN TESTRESERVATIONS R ON U.ID = R.USER_ID
-			JOIN TESTBOOKS B ON B.BOOK_ID = R.BOOK_ID
+			users U
+			JOIN reservations R ON U.ID = R.USER_ID
+			JOIN books B ON B.BOOK_ID = R.BOOK_ID
 		WHERE
 			U.ID = $1
 		GROUP BY
@@ -188,15 +188,15 @@ app.get('/books/popgenre/', async (req, res) => {
 		SELECT
 			BOOK_ID
 		FROM
-			TESTBOOKS B
+			books B
 			JOIN TOPGENRES G ON B.GENRE = G.TGENRES
 		EXCEPT
 		(
 			SELECT
 				BOOK_ID
 			FROM
-				TESTRESERVATIONS R
-				JOIN TESTUSERS U ON U.ID = R.USER_ID
+				reservations R
+				JOIN users U ON U.ID = R.USER_ID
 			WHERE
 				U.ID = $2
 		)
@@ -206,10 +206,10 @@ SELECT DISTINCT
 	COUNT(S.INSTOCK) AS STOCKCOUNT,
 	A.AUTHOR_NAME
 FROM
-	TESTBOOKS B1
+	books B1
 	JOIN NOTREAD B2 ON B1.BOOK_ID = B2.BOOKS
-	JOIN TESTAUTHORS A ON B1.AUTHOR = A.ID
-	JOIN TESTSTOCK S ON B1.BOOK_ID = S.BOOK_ID
+	JOIN authors A ON B1.AUTHOR = A.ID
+	JOIN stock S ON B1.BOOK_ID = S.BOOK_ID
 GROUP BY
 	B1.BOOK_ID,
 	A.AUTHOR_NAME
@@ -247,10 +247,10 @@ app.get('/books/stock/', async (req, res) => {
     const querystring = `
 SELECT *, S.id as ID,
        A.author_name
-FROM   testbooks B
-JOIN   teststock S 
+FROM   books B
+JOIN   stock S 
 ON     B.book_id = S.book_id
-JOIN   testauthors A 
+JOIN   authors A 
 ON     B.author = A.id
 WHERE  S.id = $1
 `;
@@ -278,10 +278,10 @@ app.get('/books/stocksearch/', async (req, res) => {
 SELECT
 	B.book_id, B.title, A.author_name, B.genre, S.id , S.instock, s.book_condition,  U.firstname, U.lastname, s.due_date
 FROM
-	TESTBOOKS B
-	JOIN TESTAUTHORS A ON B.AUTHOR = A.ID
-	JOIN TESTSTOCK S ON S.BOOK_ID = B.BOOK_ID
-	Left JOIN TESTUSERS U ON S.USER_ID = U.ID
+	books B
+	JOIN authors A ON B.AUTHOR = A.ID
+	JOIN stock S ON S.BOOK_ID = B.BOOK_ID
+	Left JOIN users U ON S.USER_ID = U.ID
 WHERE
 	B.TITLE ~* $1 OR B.GENRE ~* $1 OR A.AUTHOR_NAME ~* $1
 ORDER BY
@@ -310,8 +310,8 @@ app.get('/book/index/', async (req, res) => {
     const querystring = `
             SELECT *, 
                    A.author_name
-            FROM   testbooks B
-            JOIN   testauthors A 
+            FROM   books B
+            JOIN   authors A 
             ON     B.author = A.id
             WHERE  B.book_ID = $1
         `;
@@ -343,8 +343,8 @@ app.get('/books/index/', async (req, res) => {
         B.*, 
         A.* 
     FROM 
-        (testbooks B JOIN testauthors A ON B.author = A.id) 
-        JOIN teststock S ON B.book_id = S.book_id   
+        (books B JOIN authors A ON B.author = A.id) 
+        JOIN stock S ON B.book_id = S.book_id   
     WHERE 
         S.id = $1  
     GROUP BY 
@@ -371,7 +371,7 @@ app.get('/books/:title', async (req, res) => {
   try {
     const { title } = req.params;
     console.log(title);
-    const query = 'SELECT * FROM testbooks WHERE title ~* $1 limit 1';
+    const query = 'SELECT * FROM books WHERE title ~* $1 limit 1';
     const books = await pool.query(query, [title]);
     res.json(books.rows);
     console.log(books.rows);
@@ -391,8 +391,8 @@ app.get('/user/:id', async (req, res) => {
     // Log the 'id' parameter
     console.log(id);
 
-    // Define a SQL query that selects all columns from the 'testusers' table where the 'id' column matches a parameter
-    const query = 'SELECT * FROM testusers WHERE id = $1';
+    // Define a SQL query that selects all columns from the 'users' table where the 'id' column matches a parameter
+    const query = 'SELECT * FROM users WHERE id = $1';
 
     // Execute the SQL query, passing the 'id' parameter as the value to match
     // Use the 'await' keyword to wait for the query to complete before moving on to the next line of code
@@ -416,7 +416,7 @@ app.get('/stockuser/:id', async (req, res) => {
     const { id } = req.params;
     console.log(id);
     const query =
-      'SELECT * FROM testusers U JOIN teststock S on U.id=S.user_id where s.id = $1';
+      'SELECT * FROM users U JOIN stock S on U.id=S.user_id where s.id = $1';
     const users = await pool.query(query, [id]);
     res.json(users.rows);
     console.log(users.rows);
@@ -433,10 +433,10 @@ app.get('/checkedout/:id', async (req, res) => {
     console.log(id);
     const query = `
   SELECT * 
-  FROM testusers U 
-  JOIN teststock S ON U.id = S.user_id 
-  JOIN testbooks B ON B.book_id = S.book_id
-  JOIN testauthors A ON B.author = A.id
+  FROM users U 
+  JOIN stock S ON U.id = S.user_id 
+  JOIN books B ON B.book_id = S.book_id
+  JOIN authors A ON B.author = A.id
   WHERE S.user_id = $1
 `;
     const users = await pool.query(query, [id]);
@@ -452,7 +452,7 @@ app.patch('/user/payment/', async (req, res) => {
   console.log('user/payment:', amount, id);
 
   try {
-    const query = 'SELECT * FROM testusers WHERE id = $1';
+    const query = 'SELECT * FROM users WHERE id = $1';
 
     const user = await pool.query(query, [id]);
     console.log(user.rows);
@@ -464,7 +464,7 @@ app.patch('/user/payment/', async (req, res) => {
     const newBalance = Math.max(0, user.rows[0].balance - amount);
 
     const updated =
-      'UPDATE testusers SET balance = $1 WHERE id = $2 RETURNING balance, id';
+      'UPDATE users SET balance = $1 WHERE id = $2 RETURNING balance, id';
     const updateduser = await pool.query(updated, [newBalance, id]);
 
     res.status(200).json({
@@ -499,7 +499,7 @@ app.patch('/user/payment/', async (req, res) => {
 app.patch('/book', async (req, res) => {
   const { book_id, author_name } = req.body;
   try {
-    const query = 'SELECT * FROM testbooks WHERE book_id = $1';
+    const query = 'SELECT * FROM books WHERE book_id = $1';
     const books = await pool.query(query, [book_id]);
     if (books.rows.length > 0) {
       for (const [key, value] of Object.entries(req.body)) {
@@ -511,7 +511,7 @@ app.patch('/book', async (req, res) => {
       }
       const merge = books.rows[0];
       const query = `
-                UPDATE testbooks 
+                UPDATE books 
                 SET 
                 title=$1,
                 publishyear=$2,
@@ -532,9 +532,9 @@ app.patch('/book', async (req, res) => {
       ];
       const booksupdated = await pool.query(query, values);
 
-      // Update author name in testauthors table
+      // Update author name in authors table
       const authorQuery = `
-                UPDATE testauthors
+                UPDATE authors
                 SET author_name = $1
                 WHERE id = $2
             `;
@@ -555,34 +555,34 @@ app.patch('/book', async (req, res) => {
   }
 });
 
-app.get('/events', async (req, res) => {
-  try {
-    // Query the database to retrieve events data
-    const queryText = `
-        SELECT 
-            e.event_id, 
-            e.event_name, 
-            e.event_date, 
-            e.book_id, 
-            e.author_id, 
-            b.title, 
-            a.author_name
-        FROM 
-            events e
-        JOIN 
-            books b ON e.book_id = b.book_id
-        JOIN 
-            author a ON e.author_id = a.author_id
-    `;
-    const { rows } = await pool.query(queryText);
+// app.get('/events', async (req, res) => {
+//   try {
+//     // Query the database to retrieve events data
+//     const queryText = `
+//         SELECT 
+//             e.event_id, 
+//             e.event_name, 
+//             e.event_date, 
+//             e.book_id, 
+//             e.author_id, 
+//             b.title, 
+//             a.author_name
+//         FROM 
+//             events e
+//         JOIN 
+//             books b ON e.book_id = b.book_id
+//         JOIN 
+//             author a ON e.author_id = a.author_id
+//     `;
+//     const { rows } = await pool.query(queryText);
 
-    // Send the events data as a response
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching events:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+//     // Send the events data as a response
+//     res.json(rows);
+//   } catch (error) {
+//     console.error('Error fetching events:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 
 app.patch('/checkoutbook/', async (req, res) => {
   const { stockid, user_id } = req.body;
@@ -596,7 +596,7 @@ app.patch('/checkoutbook/', async (req, res) => {
   console.log(due_date);
   try {
     const query = `
-            UPDATE teststock 
+            UPDATE stock 
             SET 
             instock=false, user_id = $1, due_date = $3
             WHERE id = $2
@@ -626,13 +626,13 @@ app.patch('/returnbook/', async (req, res) => {
 
   try {
     const query1 = `
-            UPDATE teststock 
+            UPDATE stock 
             SET 
             instock=true, user_id = NULL, due_date = NULL
             WHERE id = $1;`;
 
     const query2 = `
-            UPDATE testusers
+            UPDATE users
             SET
             balance = $1
             WHERE id = $2;
@@ -667,7 +667,7 @@ app.post('/signup', async (req, res) => {
 
   try {
     // Check if user already exists
-    const existingUserQuery = 'SELECT * FROM testusers WHERE email = $1';
+    const existingUserQuery = 'SELECT * FROM users WHERE email = $1';
     console.log('Executing query:', existingUserQuery);
     const existingUserResult = await pool.query(existingUserQuery, [email]);
     console.log('Query result:', existingUserResult.rows);
@@ -686,7 +686,7 @@ app.post('/signup', async (req, res) => {
 
     // Insert new user into the database
     const insertUserQuery =
-      'INSERT INTO testusers( firstName, lastName, email, password, role) VALUES($1, $2, $3, $4, $5) RETURNING *';
+      'INSERT INTO users( firstName, lastName, email, password, role) VALUES($1, $2, $3, $4, $5) RETURNING *';
     console.log('Executing query:', insertUserQuery);
     const insertedUserResult = await pool.query(insertUserQuery, [
       firstName,
@@ -731,7 +731,7 @@ app.post('/login', async (req, res) => {
   console.log(`Attempting to log in user with email: ${email}`); // Log the email of the user attempting to log in
   console.log('password:', password);
   try {
-    const getUserQuery = 'SELECT * FROM testusers WHERE email = $1';
+    const getUserQuery = 'SELECT * FROM users WHERE email = $1';
     const userResult = await pool.query(getUserQuery, [email]);
     const user = userResult.rows[0];
 
@@ -807,7 +807,7 @@ app.post('/check-account', async (req, res) => {
     console.log('Received email:', email);
 
     // Check if user exists in the database
-    const getUserQuery = 'SELECT * FROM testusers WHERE email = $1';
+    const getUserQuery = 'SELECT * FROM users WHERE email = $1';
     console.log('Executing query:', getUserQuery);
     const result = await pool.query(getUserQuery, [email]);
 
@@ -841,7 +841,7 @@ app.post('/book', async (req, res) => {
   } = req.body;
   try {
     const authorquery =
-      'INSERT INTO TESTAUTHORS  (AUTHOR_NAME)  SELECT $1   WHERE  NOT EXISTS (  SELECT *  FROM   TESTAUTHORS WHERE AUTHOR_NAME = $2) RETURNING id';
+      'INSERT INTO authors  (AUTHOR_NAME)  SELECT $1   WHERE  NOT EXISTS (  SELECT *  FROM   authors WHERE AUTHOR_NAME = $2) RETURNING id';
     const insertId = await pool.query(authorquery, [author_name, author_name]);
     let author_id = '';
     console.log('# of Inserted Author Rows:', insertId.rowCount);
@@ -849,12 +849,12 @@ app.post('/book', async (req, res) => {
       console.log('RowID:', insertId.rows[0].id);
       author_id = insertId.rows[0].id;
     } else {
-      const aquery = 'SELECT id FROM testauthors where author_name = $1';
+      const aquery = 'SELECT id FROM authors where author_name = $1';
 
       const authorquery = await pool.query(aquery, [author_name]);
       author_id = authorquery.rows[0].id;
     }
-    const bquery = `INSERT INTO testbooks (title, author,  publishyear, isbn, genre, img, checkout_count, description)
+    const bquery = `INSERT INTO books (title, author,  publishyear, isbn, genre, img, checkout_count, description)
                  VALUES ($1, $2, $3, $4, $5, $6, 0, $7)  RETURNING book_id`;
     const bookinsert = await pool.query(bquery, [
       title,
@@ -868,7 +868,7 @@ app.post('/book', async (req, res) => {
 
     console.log(bookinsert.rows);
 
-    const stockquery = `INSERT INTO teststock (book_id, instock, book_condition)
+    const stockquery = `INSERT INTO stock (book_id, instock, book_condition)
     VALUES($1, 'true', 'Good') RETURNING id;`;
     let bid = bookinsert.rows[0].book_id;
     console.log(bid);
@@ -901,10 +901,10 @@ app.delete('/deletebook', async (req, res) => {
     SELECT * , B.author as author_id,
     (
         SELECT COUNT(ID)
-        FROM TESTSTOCK
+        FROM stock
         WHERE S.BOOK_ID = BOOK_ID
     ) AS STOCKCOUNT
-    FROM TESTSTOCK S JOIN TESTBOOKS B ON S.BOOK_ID = B.BOOK_ID
+    FROM stock S JOIN books B ON S.BOOK_ID = B.BOOK_ID
     WHERE S.ID = $1
   `;
   console.log(`Executing query: ${query}`);
@@ -919,7 +919,7 @@ app.delete('/deletebook', async (req, res) => {
   }
 
   const delete_query3 = `
-    DELETE FROM testreservations 
+    DELETE FROM reservations 
     WHERE book_id = $1
   `;
   console.log(`Executing query: ${delete_query3}`);
@@ -927,7 +927,7 @@ app.delete('/deletebook', async (req, res) => {
   console.log('Query result:', JSON.stringify(result1.rows, null, 2));
 
   const delete_query = `
-    DELETE FROM teststock 
+    DELETE FROM stock 
     WHERE id = $1
   `;
   console.log(`Executing query: ${delete_query}`);
@@ -938,7 +938,7 @@ app.delete('/deletebook', async (req, res) => {
     console.log('Stock:', stock.rows[0].stockcount);
 
     const delete_query2 = `
-      DELETE FROM testbooks 
+      DELETE FROM books 
       WHERE book_id = $1
     `;
     console.log(`Executing query: ${delete_query2}`);
@@ -947,7 +947,7 @@ app.delete('/deletebook', async (req, res) => {
     
     const authorcountquery = `
            SELECT count(book_id) as count
-      FROM testbooks 
+      FROM books 
       WHERE author = $1
     `;
     console.log(`Executing query: ${authorcountquery}`);
@@ -956,7 +956,7 @@ app.delete('/deletebook', async (req, res) => {
     
     if (authorcount.rows.length > 0  && authorcount.rows[0].count == 0) {
       const delete_query5 = `
-        DELETE FROM testauthors 
+        DELETE FROM authors 
         WHERE id = $1
       `;
       console.log(`Executing: ${delete_query5}`, stock.rows);
@@ -974,28 +974,28 @@ app.delete('/deletebook', async (req, res) => {
 
 
 
-app.post('/event_insert', async (req, res) => {
-  const { event_name, event_date, book_id, author_id } = req.body;
-  try {
-    const id_count = await pool.query('SELECT COUNT(*) FROM events');
-    let rowCount = parseInt(id_count.rows[0].count);
-    rowCount += 1;
+// app.post('/event_insert', async (req, res) => {
+//   const { event_name, event_date, book_id, author_id } = req.body;
+//   try {
+//     const id_count = await pool.query('SELECT COUNT(*) FROM events');
+//     let rowCount = parseInt(id_count.rows[0].count);
+//     rowCount += 1;
 
-    const insert_query = await pool.query(
-      'INSERT INTO events (event_id, event_name, event_date, book_id, author_id) VALUES ($1, $2, $3, $4, $5)',
-      [rowCount, event_name, event_date, book_id, author_id],
-    );
+//     const insert_query = await pool.query(
+//       'INSERT INTO events (event_id, event_name, event_date, book_id, author_id) VALUES ($1, $2, $3, $4, $5)',
+//       [rowCount, event_name, event_date, book_id, author_id],
+//     );
 
-    // 200 Message
-    return res.status(200).json({
-      message: 'A new event has been added.',
-    });
-  } catch (error) {
-    console.error('Error adding event:', error);
-    return res.status(500).json({
-      message: 'An error occurred while adding the event.',
-    });
-  }
-});
+//     // 200 Message
+//     return res.status(200).json({
+//       message: 'A new event has been added.',
+//     });
+//   } catch (error) {
+//     console.error('Error adding event:', error);
+//     return res.status(500).json({
+//       message: 'An error occurred while adding the event.',
+//     });
+//   }
+// });
 
 app.listen(PORT, () => console.log(`Server running on Port ${PORT}`));
