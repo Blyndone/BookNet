@@ -1,6 +1,6 @@
 -- Harry Potter
 
-UPDATE TESTSTOCK
+UPDATE stock
 SET
 	USER_ID = 1, due_date = '2024-04-22', instock = false
 WHERE
@@ -21,7 +21,7 @@ WHERE
 	);
 
 -- LOTR
-UPDATE TESTSTOCK
+UPDATE stock
 SET
 	USER_ID = 2, due_date = '2024-04-21', instock = false
 WHERE
@@ -41,7 +41,7 @@ WHERE
 	);
 
 --Calvin and Hobbes
-    UPDATE TESTSTOCK
+    UPDATE stock
 SET
 	USER_ID = 3, due_date = '2024-04-23', instock = false
 WHERE
@@ -57,7 +57,7 @@ WHERE
 	);
 
 --sking
-    UPDATE TESTSTOCK
+    UPDATE stock
 SET
 	USER_ID = 4, due_date = '2024-04-25', instock = false
 WHERE
@@ -79,7 +79,7 @@ WHERE
 
 ---gaiman
 
-    UPDATE TESTSTOCK
+    UPDATE stock
 SET
 	USER_ID = 5, due_date = '2024-04-26', instock = false
 WHERE

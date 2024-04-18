@@ -1,18 +1,18 @@
-DROP TABLE IF EXISTS teststock;
-DROP TABLE IF EXISTS testreservations;
-DROP TABLE IF EXISTS testusers;
-DROP TABLE IF EXISTS testbooks;
-DROP TABLE IF EXISTS testauthors;
+DROP TABLE IF EXISTS stock;
+DROP TABLE IF EXISTS reservations;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS books;
+DROP TABLE IF EXISTS authors;
 
-CREATE TABLE testauthors (
+CREATE TABLE authors (
     id SERIAL PRIMARY KEY NOT NULL,
     author_name VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE testbooks (
+CREATE TABLE books (
     book_id SERIAL PRIMARY KEY NOT NULL,
     title VARCHAR(255) NOT NULL,
-    author INT NOT NULL REFERENCES testauthors(id),
+    author INT NOT NULL REFERENCES authors(id),
     publishyear INT,
     isbn INT,
     genre VARCHAR(100),
@@ -21,7 +21,7 @@ CREATE TABLE testbooks (
     checkout_count INT
 );
 
-CREATE TABLE testusers (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY NOT NULL,
     firstname VARCHAR(50),
     lastname VARCHAR(50),
@@ -32,21 +32,21 @@ CREATE TABLE testusers (
 );
 
 
-CREATE TABLE teststock (
+CREATE TABLE stock (
     id SERIAL PRIMARY KEY NOT NULL,
-    book_id INT NOT NULL REFERENCES testbooks(book_id),
+    book_id INT NOT NULL REFERENCES books(book_id),
     instock BOOLEAN,
     book_condition VARCHAR(255),
-    user_id INT REFERENCES testusers(id),
+    user_id INT REFERENCES users(id),
     due_date DATE
 );
 
-CREATE TABLE testreservations (
+CREATE TABLE reservations (
     id SERIAL PRIMARY KEY NOT NULL,
-    book_id INT REFERENCES testbooks(book_id),
-    user_id INT REFERENCES testusers(id)
+    book_id INT REFERENCES books(book_id),
+    user_id INT REFERENCES users(id)
 );
-INSERT INTO testusers (firstname, lastname, email, password, role, balance) 
+INSERT INTO users (firstname, lastname, email, password, role, balance) 
 VALUES 
     ('Ron', 'Weasley', 'RWeasley@gmail.com', '$2b$10$KWMcPcm/nn29gdYOcXGM6OuMA.qSqVY4d8oI.JChmUHaggB.nq4FO', 'customer', 0.00),
     ('Bilbo', 'Baggins', 'BBaggins@gmail.com', '$2b$10$KWMcPcm/nn29gdYOcXGM6OuMA.qSqVY4d8oI.JChmUHaggB.nq4FO', 'customer', 20.00),
@@ -62,7 +62,7 @@ VALUES
 
 
 
-INSERT INTO testauthors (author_name)
+INSERT INTO authors (author_name)
 VALUES
 ('Bill Watterson'),
 ('J. K. Rowling'),
@@ -649,7 +649,7 @@ VALUES
 ('Friedrich Wilhelm Nietzsche'),
 ('Peter Biskind');
 
-INSERT INTO testbooks (title, author,  publishyear, isbn, genre, img, checkout_count, description)
+INSERT INTO books (title, author,  publishyear, isbn, genre, img, checkout_count, description)
 VALUES
 ('The Complete Calvin and Hobbes', '1', '2005', '740748475', 'Comics & Graphic Novels', 'http://books.google.com/books/content?id=wmjG5g4Yx7gC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api&fife=h900', '5', 'Brings together every "Calvin and Hobbes" cartoon that has ever appeared in syndication, along with stories and poems from classic collections.'),
 ('Harry Potter', '2', '2004', '439682584', 'Juvenile Fiction', 'http://books.google.com/books/content?id=DAAAAAAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api&fife=h900', '3', 'The first five years of Harry Potter magic are captured in a boxed set which includes The Sorcerers Stone, The Chamber of Secrets, The Prisoner of Azkaban, The Goblet of Fire, and The Order of the Phoenix. Simultaneous.'),
@@ -1512,7 +1512,7 @@ VALUES
 
 
 
-INSERT INTO teststock (book_id, instock, book_condition)
+INSERT INTO stock (book_id, instock, book_condition)
 VALUES
 
 ('1', 'true', 'Good'),
@@ -3196,7 +3196,7 @@ VALUES
 
 -- Harry Potter
 
-UPDATE TESTSTOCK
+UPDATE stock
 SET
 	USER_ID = 1, due_date = '2024-04-22', instock = false
 WHERE
@@ -3215,7 +3215,7 @@ WHERE
 	);
 
 -- LOTR
-UPDATE TESTSTOCK
+UPDATE stock
 SET
 	USER_ID = 2, due_date = '2024-04-21', instock = false
 WHERE
@@ -3235,7 +3235,7 @@ WHERE
 	);
 
 --Calvin and Hobbes
-    UPDATE TESTSTOCK
+    UPDATE stock
 SET
 	USER_ID = 3, due_date = '2024-04-23', instock = false
 WHERE
@@ -3251,7 +3251,7 @@ WHERE
 	);
 
 --sking
-    UPDATE TESTSTOCK
+    UPDATE stock
 SET
 	USER_ID = 4, due_date = '2024-04-25', instock = false
 WHERE
@@ -3273,7 +3273,7 @@ WHERE
 
 ---gaiman
 
-    UPDATE TESTSTOCK
+    UPDATE stock
 SET
 	USER_ID = 5, due_date = '2024-04-26', instock = false
 WHERE
@@ -3296,7 +3296,7 @@ WHERE
 
 
 
-INSERT INTO testreservations (book_id, user_id)
+INSERT INTO reservations (book_id, user_id)
 VALUES
 
 
