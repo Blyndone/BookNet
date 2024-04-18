@@ -211,7 +211,7 @@ const EmpHome = (props) => {
                       } // Medium Blue
                     }
                     onClick={() => {
-                      navigate('/addbooks');
+                      navigate('/employee/addbooks');
                     }}
                   >
                     Add Book
@@ -228,7 +228,7 @@ const EmpHome = (props) => {
                       } // Medium Blue
                     }
                     onClick={() => {
-                      navigate('/editbook');
+                      navigate('/employee/editbook');
                     }}
                   >
                     Edit Book

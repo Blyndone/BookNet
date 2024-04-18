@@ -13,6 +13,8 @@ const Header = (props) => {
   const { loggedIn } = props;
   const navigate = useNavigate();
   const [query, setQuery] = React.useState(''); // [1
+  console.log("Pleaaaaaaaaaaaaaaa")
+  console.log(loggedIn)
   const onButtonClick = () => {
     if (loggedIn) {
       localStorage.removeItem('user');
@@ -53,26 +55,19 @@ const Header = (props) => {
               navigate('/booksearch', { state: { q: query } });
             }}
           >
-            <TextField
-              label="Search"
-              type=""
-              onChange={(e) => {
-                setQuery(e.target.value);
-              }}
-              InputProps={{
-                endAdornment: (
+           
                   <InputAdornment>
                     <IconButton type="submit">
                       <SearchIcon />
                     </IconButton>
                   </InputAdornment>
-                ),
-              }}
-            />
+              
+           
           </form>
-          <Button color="inherit" onClick={onButtonClick}>
+
+          { loggedIn && <Button color="inherit" onClick={onButtonClick}>
             Log Out
-          </Button>
+          </Button>}
           <Button
             color="inherit"
             onClick={() => {

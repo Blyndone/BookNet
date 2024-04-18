@@ -141,28 +141,6 @@ function App() {
             }
           />
           <Route
-            path="/addbooks"
-            element={
-              <AddBooks
-                loggedIn={loggedIn}
-                email={email}
-                userid={userid}
-                setLoggedIn={setLoggedIn}
-              />
-            }
-          />{' '}
-          <Route
-            path="/editbook"
-            element={
-              <EditBook
-                loggedIn={loggedIn}
-                email={email}
-                userid={userid}
-                setLoggedIn={setLoggedIn}
-              />
-            }
-          />
-          <Route
             path="/booksearch"
             element={
               <BookSearch
@@ -210,6 +188,17 @@ function App() {
                   />
                 }
               />
+              <Route
+                path="addbooks"
+                element={
+                  <AddBooks
+                    loggedIn={loggedIn}
+                    email={email}
+                    userid={userid}
+                    setLoggedIn={setLoggedIn}
+                  />
+                }
+              />{' '}
               <Route
                 path="checkoutbook"
                 element={
