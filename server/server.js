@@ -604,9 +604,16 @@ app.patch('/checkoutbook/', async (req, res) => {
 
     console.log(stockid);
     const booksupdated = await pool.query(query, [user_id, stockid, due_date]);
+
+    reservationquery = `Insert into reservations (book_id, user_id) values ((select book_id from stock where id = $1), $2)`;
+    const reservation = await pool.query(reservationquery, [stockid, user_id]);
+
+
+
     console.log(booksupdated.rows);
 
     res.status(200).json({
+      reservation: reservation.rows,
       books: stockid,
       message: 'Book Checked Out',
     });
